@@ -51,6 +51,8 @@ public sealed class TranslationResourceManager : IDisposable
 
     public bool HasSheet(string sheetName) => File.Exists(ToPath(sheetName));
 
+    public bool IsLoaded(string sheetName) => _cache.ContainsKey(sheetName);
+
     public List<string> GetAllSheets() => _cache.Keys.ToList();
 
     public (int ResourceCount, long NativeMemoryBytes) GetCacheStats()

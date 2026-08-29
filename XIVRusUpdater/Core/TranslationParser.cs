@@ -95,6 +95,12 @@ public class TranslationParser : IDisposable
         }
     }
 
+    public bool IsSheetLoaded(string sheetName)
+    {
+        lock (syncRoot)
+            return _ResourceManager.IsLoaded(sheetName);
+    }
+
     public bool TryGetValue(string sheetName, uint RowId, uint Column, out ByteArrayWrapper? translation)
     {
         lock (syncRoot)

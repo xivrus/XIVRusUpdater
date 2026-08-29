@@ -10,6 +10,7 @@ public class LruCache<TKey, TValue> where TKey : notnull
     private readonly Dictionary<TKey, LinkedListNode<CacheItem>> cache;
     private readonly LinkedList<CacheItem> lruList;
     private readonly object syncRoot = new();
+    private long evictedCount;
 
     public LruCache(int capacity)
     {
@@ -29,12 +30,51 @@ public class LruCache<TKey, TValue> where TKey : notnull
         }
     }
 
+    public LruCacheEntryView<TKey, TValue>[] GetEntriesOrderedByRecency()
+    {
+        lock (syncRoot)
+        {
+            var count = lruList.Count;
+            var result = new LruCacheEntryView<TKey, TValue>[count];
+            var rank = 0;
+            foreach (var node in lruList)
+            {
+                var proximity = count <= 1 ? 0d : (double)rank / (count - 1);
+                result[rank] = new LruCacheEntryView<TKey, TValue>(
+                    node.Key, node.Value, rank, proximity);
+                rank++;
+            }
+
+            return result;
+        }
+    }
+
     public int Count
     {
         get
         {
             lock (syncRoot)
                 return cache.Count;
+        }
+    }
+
+    public int Capacity => capacity;
+
+    public double FillRatio
+    {
+        get
+        {
+            lock (syncRoot)
+                return capacity == 0 ? 0 : (double)cache.Count / capacity;
+        }
+    }
+
+    public long EvictedCount
+    {
+        get
+        {
+            lock (syncRoot)
+                return evictedCount;
         }
     }
 
@@ -91,6 +131,7 @@ public class LruCache<TKey, TValue> where TKey : notnull
             {
                 cache.Remove(lastNode.Value.Key);
                 lruList.RemoveLast();
+                evictedCount++;
             }
         }
 
@@ -111,5 +152,21 @@ public class LruCache<TKey, TValue> where TKey : notnull
             Key = key;
             Value = value;
         }
+    }
+}
+
+public readonly record struct LruCacheEntryView<TKey, TValue> where TKey : notnull
+{
+    public TKey Key { get; }
+    public TValue Value { get; }
+    public int AgeRank { get; }
+    public double EvictionProximity { get; }
+
+    public LruCacheEntryView(TKey key, TValue value, int ageRank, double evictionProximity)
+    {
+        Key = key;
+        Value = value;
+        AgeRank = ageRank;
+        EvictionProximity = evictionProximity;
     }
 }
