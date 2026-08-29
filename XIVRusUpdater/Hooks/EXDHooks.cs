@@ -41,7 +41,7 @@ public unsafe partial class EXDHooks : IDisposable
 
     public TranslationParser Parser { get; }
 
-    private readonly LruCache<nint, ColumnInfo> columnMap = new(capacity: 65536);
+    private readonly LruCache<nint, ColumnInfo> columnMap = new(capacity: 131072);
     private readonly ConcurrentDictionary<string, uint[]> stringColumnIndicesMap = new(StringComparer.Ordinal);
 
     public EXDHooks(IGameInteropProvider provider, String engineId)
@@ -53,6 +53,9 @@ public unsafe partial class EXDHooks : IDisposable
 
     public int ColumnCacheCount => columnMap.Count;
     public int StringColumnCacheCount => stringColumnIndicesMap.Count;
+    public int ColumnCacheCapacity => columnMap.Capacity;
+    public double ColumnCacheFillRatio => columnMap.FillRatio;
+    public long ColumnCacheEvictedCount => columnMap.EvictedCount;
 
     public KeyValuePair<string, uint[]>[] GetStringColumnIndicesCacheSnapshot()
         => stringColumnIndicesMap.ToArray();
@@ -216,6 +219,9 @@ public unsafe partial class EXDHooks : IDisposable
         string source)
     {
         if (!TryGetRowContext(wrapper, sheet, out var row, out var activeSheet, out var sheetName))
+            return;
+
+        if (!Parser.IsSheetLoaded(sheetName))
             return;
 
         if (CurrentAddonId is not null &&
