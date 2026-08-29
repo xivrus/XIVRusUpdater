@@ -147,9 +147,6 @@ public class NetworkService
 
         if (release == null) return;
 
-        if (release.Version != null)
-            plugin.Configuration.LastInstalledVersion = release.Version;
-
         var downloadSource = await GetFastestSource(release.DownloadUrl);
 
         if (downloadSource == null)
@@ -165,6 +162,8 @@ public class NetworkService
             return;
 
         Plugin.Log.Info($"Downloading {downloadSource.FileName} successful complete");
+
+        plugin.Configuration.LastInstalledVersion = release.Version;
 
         await InstallDownloadedVersionAsync(tempFile);
 
