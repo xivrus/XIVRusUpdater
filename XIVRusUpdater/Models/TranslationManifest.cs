@@ -6,11 +6,14 @@ namespace XIVRusUpdater.Models;
 public sealed class TranslationManifest
 {
     [JsonProperty("version")] 
-    public string Version { get; init; } = "";
+    public string Version { get; set; } = string.Empty;
+    public string PenumbraVersion { get; set; } = string.Empty;
 
     [JsonProperty("changelog")] 
-    public string Changelog { get; init; } = "";
+    public string Changelog { get; set; } = string.Empty;
+    public string PenumbraChangelog {  get; set; } = string.Empty;
 
-    [JsonProperty("downloadUrls")] 
-    public List<string> DownloadUrl { get; init; } = new List<string>();
+    [JsonProperty("urls")] 
+    public List<string> DownloadUrl { get; set; } = [];
+    public List<string> PenumbraDownloadUrls { get; set; } = [];
 }

@@ -1,6 +1,7 @@
 using Dalamud.Configuration;
 using System;
 using System.Collections.Generic;
+using XIVRusUpdater.Core.Components;
 
 namespace XIVRusUpdater;
 
@@ -8,6 +9,8 @@ namespace XIVRusUpdater;
 public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 1;
+
+    public string EngineId { get; set; } = "XIVRusEnglish";
 
     #region UI
 
@@ -38,8 +41,10 @@ public class Configuration : IPluginConfiguration
     #region State
 
     public string LastInstalledVersion { get; set; } = string.Empty;
+    public string LastInstalledPenumbra { get; set;  } = string.Empty;
 
     public string LastKnownRemoteVersion { get; set; } = string.Empty;
+    public string LastKnownRemotePenumbra { get; set; } = string.Empty;
 
     public DateTime LastUpdateCheck { get; set; }
 
@@ -61,6 +66,7 @@ public class Configuration : IPluginConfiguration
     }
 
     #endregion
+
     public void Save()
     {
         Plugin.PluginInterface.SavePluginConfig(this);

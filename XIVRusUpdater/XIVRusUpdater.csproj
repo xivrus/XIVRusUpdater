@@ -7,10 +7,8 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 	<PropertyGroup>
-		<Version>0.0.0.1</Version>
-
 		<!-- Plugin metadata -->
-		<Author>hOst1k</Author>
+		<Author>hOst1k,pokeda</Author>
 		<Name>XIV Rus</Name>
 		<Punchline>Localization engine for Final Fantasy XIV.</Punchline>
 		<Description>Provides translated text and supporting resources for Final Fantasy XIV through a dedicated localization engine. Localization content is updated independently, with support for multiple translation variants. Requires Penumbra for font replacement and supporting texture assets.</Description>
@@ -31,11 +29,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CheapLoc" Version="1.1.8" />
     <PackageReference Include="HQIPC" Version="1.1.2" />
     <PackageReference Include="morelinq" Version="4.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Penumbra.Api" Version="5.15.1" />
+    <PackageReference Include="Sep" Version="0.17.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\XIVRus.Generators\XIVRus.Generators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
   </ItemGroup>
 
   <ItemGroup>

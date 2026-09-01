@@ -1,6 +1,6 @@
 [
   {
-    "Author": "hOst1k",
+    "Author": "hOst1k,pokeda",
     "Name": "XIV Rus",
     "Punchline": "Localization engine for Final Fantasy XIV.",
     "Description": "localization engine for Final Fantasy XIV that provides translated text and supporting resources. Translation content is maintained separately from the engine, allowing different localization versions to be developed and updated independently. Uses Penumbra for font replacement and supporting texture assets.",

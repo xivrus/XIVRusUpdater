@@ -6,10 +6,12 @@ namespace XIVRusUpdater.Utils;
 
 public unsafe class ByteArrayWrapper : IDisposable
 {
-    private bool _disposed;
+    private bool disposed;
 
     public unsafe byte* Pointer { get; private set; }
     public int Length { get; }
+    public string? Error { get; }
+    public bool IsError => Error is not null;
 
     public string Value =>
         Encoding.UTF8.GetString(AsReadOnlySpan());
@@ -31,6 +33,12 @@ public unsafe class ByteArrayWrapper : IDisposable
         }
     }
 
+    public ByteArrayWrapper(string error)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(error);
+        Error = error;
+    }
+
     public ReadOnlySpan<byte> AsReadOnlySpan()
     {
         ThrowIfDisposed();
@@ -45,17 +53,17 @@ public unsafe class ByteArrayWrapper : IDisposable
 
     private void ThrowIfDisposed()
     {
-        if (_disposed)
+        if (disposed)
             throw new ObjectDisposedException(nameof(ByteArrayWrapper));
     }
 
     public void Dispose()
     {
-        if (_disposed)
+        if (disposed)
             return;
 
         Marshal.FreeHGlobal((nint)Pointer);
         Pointer = null;
-        _disposed = true;
+        disposed = true;
     }
 }

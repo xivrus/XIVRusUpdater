@@ -6,29 +6,31 @@ namespace XIVRusUpdater.Core;
 
 public sealed class TranslationFilter
 {
-    private volatile HashSet<string> _activeSheets = new();
-    private volatile List<string> _activePrefixes = new();
+    private sealed class SheetState
+    {
+        public bool? WholeSheet;
+        public Dictionary<uint, bool>? RowOverrides;
+    }
 
-    private volatile HashSet<string> _allSheets = new();
-    private volatile List<string> _allPrefixes = new();
+    private volatile Dictionary<string, SheetState> _sheets = new(StringComparer.OrdinalIgnoreCase);
+    private volatile HashSet<string> _activePrefixes = new(StringComparer.OrdinalIgnoreCase);
+    private volatile HashSet<string> _allPrefixes = new(StringComparer.OrdinalIgnoreCase);
 
     public void Rebuild(IReadOnlySet<string> disabledComponents)
     {
-        var activeSheets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var activePrefixes = new List<string>();
-
-        var allSheets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var allPrefixes = new List<string>();
+        var sheets = new Dictionary<string, SheetState>(StringComparer.OrdinalIgnoreCase);
+        var activePrefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var allPrefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var component in TranslationComponents.All)
         {
             bool disabled = disabledComponents.Contains(component.Id);
 
-            foreach (var sheet in component.Sheets.Keys)
+            foreach (var (sheetName, rows) in component.Sheets)
             {
-                if (sheet.EndsWith('*'))
+                if (sheetName.EndsWith('*'))
                 {
-                    var prefix = sheet[..^1];
+                    var prefix = sheetName[..^1];
 
                     allPrefixes.Add(prefix);
 
@@ -37,27 +39,40 @@ public sealed class TranslationFilter
                 }
                 else
                 {
-                    allSheets.Add(sheet);
+                    if (!sheets.TryGetValue(sheetName, out var state))
+                        sheets[sheetName] = state = new SheetState();
 
-                    if (!disabled)
-                        activeSheets.Add(sheet);
+                    if (rows.Length == 0)
+                    {
+                        state.WholeSheet = (state.WholeSheet ?? false) || !disabled;
+                    }
+                    else
+                    {
+                        state.RowOverrides ??= new Dictionary<uint, bool>();
+                        foreach (var row in rows)
+                            state.RowOverrides[row] = !disabled;
+                    }
                 }
             }
         }
 
-        _activeSheets = activeSheets;
+        _sheets = sheets;
         _activePrefixes = activePrefixes;
-        _allSheets = allSheets;
         _allPrefixes = allPrefixes;
     }
 
-    public bool IsActive(string sheetName)
+    public bool IsActive(string sheetName, uint rowId)
     {
-        if (_activeSheets.Contains(sheetName))
-            return true;
+        if (_sheets.TryGetValue(sheetName, out var state))
+        {
+            if (state.RowOverrides is { } overrides && overrides.TryGetValue(rowId, out var rowActive))
+                return rowActive;
 
-        if (_allSheets.Contains(sheetName))
+            if (state.WholeSheet is { } wholeSheetActive)
+                return wholeSheetActive;
+
             return false;
+        }
 
         foreach (var prefix in _activePrefixes)
         {
