@@ -40,8 +40,8 @@ public class NetworkService
         return client;
     }
 
-    public string CurrentBranch() => plugin.Configuration.Channel == UpdateChannel.Beta ? $"{Plugin.State.mod.API_BASE}/branches/test" 
-        : $"{Plugin.State.mod.API_BASE}/branches/release";
+    public string CurrentBranch() => plugin.Configuration.Channel == UpdateChannel.Beta ? $"{Plugin.State.mod.API_BASE}/branches/test.json" 
+        : $"{Plugin.State.mod.API_BASE}/branches/release.json";
 
     public async Task<XIVStatus?> GetBranchStatus()
     {
