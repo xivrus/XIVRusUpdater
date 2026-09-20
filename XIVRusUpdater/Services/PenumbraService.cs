@@ -1,8 +1,8 @@
 using Dalamud.Plugin;
 using Dalamud.Plugin.Ipc.Exceptions;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Kernel;
+using Luna;
 using Penumbra.Api.Enums;
-using Penumbra.Api.Helpers;
 using Penumbra.Api.IpcSubscribers;
 using Penumbra.Api.IpcSubscribers.Legacy;
 using System;
@@ -21,7 +21,7 @@ public sealed class PenumbraService
     private Penumbra.Api.IpcSubscribers.DeleteMod DeleteMod { get; } = null!;
     private Penumbra.Api.IpcSubscribers.ReloadMod ReloadMod { get; } = null!;
     private Penumbra.Api.IpcSubscribers.GetEnabledState GetEnableStatus { get; } = null!;
-    private Penumbra.Api.IpcSubscribers.GetModListAdapter ModList { get; } = null!;
+    private Penumbra.Api.IpcSubscribers.GetModListAdapterOld ModList { get; } = null!;
     private Penumbra.Api.IpcSubscribers.GetCollection GetCollection { get; } = null!;
     private Penumbra.Api.IpcSubscribers.TrySetMod ChangeEnabled { get; } = null!;
     private Penumbra.Api.IpcSubscribers.GetCurrentModSettings ModSettings { get; } = null!;
