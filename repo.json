@@ -6,7 +6,7 @@
     "Description": "Maintains the latest compatible version of XIVRus by checking for updates, downloading releases, and installing them through Penumbra. Includes update channels, patch compatibility warnings, and manual update controls.",
     "InternalName": "XIVRusUpdater",
     "AssemblyVersion": "1.0.3.0",
-    "TestingAssemblyVersion": "1.0.3.0",
+    "TestingAssemblyVersion": "1.9.9.0",
     "RepoUrl": "https://github.com/xivrus/XIVRusUpdater",
     "IconUrl": "https://raw.githubusercontent.com/xivrus/XIVRusUpdater/master/Data/icon.png",
     "ApplicableVersion": "any",
@@ -18,7 +18,7 @@
     "IsHide": false,
     "IsTestingExclusive": false,
     "DownloadLinkInstall": "https://github.com/xivrus/XIVRusUpdater/releases/download/v1.0.3.0/XIVRusUpdater.zip",
-	"DownloadLinkTesting": "https://github.com/xivrus/XIVRusUpdater/releases/download/v1.0.3.0/XIVRusUpdater.zip",
-	"DownloadLinkUpdate": "https://github.com/xivrus/XIVRusUpdater/releases/download/v1.0.3.0/XIVRusUpdater.zip"
+    "DownloadLinkTesting": "https://github.com/xivrus/XIVRusUpdater/releases/download/v1.9.9.0-testing/XIVRusUpdater.zip",
+    "DownloadLinkUpdate": "https://github.com/xivrus/XIVRusUpdater/releases/download/v1.0.3.0/XIVRusUpdater.zip"
   }
 ]
