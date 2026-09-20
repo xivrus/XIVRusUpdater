@@ -16,7 +16,11 @@
 
   <ItemGroup>
     <PackageReference Include="CheapLoc" Version="1.1.8" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Penumbra.Api" Version="5.15.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Penumbra.Api" Version="5.19.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="DotNet.ReproducibleBuilds" Version="2.0.5" />
   </ItemGroup>
 </Project>
