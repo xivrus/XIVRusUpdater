@@ -11,7 +11,7 @@ public sealed class PenumbraService
     private Penumbra.Api.IpcSubscribers.InstallMod InstallMOD { get; } = null!;
     private Penumbra.Api.IpcSubscribers.DeleteMod DeleteMOD { get; } = null!;
     private Penumbra.Api.IpcSubscribers.GetEnabledState GetEnableStatus { get; } = null!;
-    private Penumbra.Api.IpcSubscribers.GetModListAdapter ModList { get; } = null!;
+    private Penumbra.Api.IpcSubscribers.GetModListAdapterOld ModList { get; } = null!;
     private Penumbra.Api.IpcSubscribers.GetModDirectory GetDirectory { get; } = null!;
     
     private const string InternalName = "Penumbra";

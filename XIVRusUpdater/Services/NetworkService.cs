@@ -39,14 +39,14 @@ public class NetworkService
     {
         var engine = TranslationEngines.Get(plugin.Configuration.EngineId);
 
-        return plugin.Configuration.Channel == UpdateChannel.Beta ? $"{engine.ApiUrl}/branches/test" : $"{engine.ApiUrl}/branches/release";
+        return plugin.Configuration.Channel == UpdateChannel.Beta ? $"{engine.ApiUrl}/branches/test.json" : $"{engine.ApiUrl}/branches/release.json";
     }
 
     public string CurrentXRT()
     {
         var engine = TranslationEngines.Get(plugin.Configuration.EngineId);
 
-        return $"{engine!.ApiUrl}/branches/xrt";
+        return $"{engine!.ApiUrl}/branches/xrt.json";
     }
 
     public async Task<TranslationManifest?> GetBranchStatus()
