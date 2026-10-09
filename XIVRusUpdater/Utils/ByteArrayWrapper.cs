@@ -8,7 +8,7 @@ public unsafe class ByteArrayWrapper : IDisposable
 {
     private bool disposed;
 
-    public unsafe byte* Pointer { get; private set; }
+    public byte* Pointer { get; private set; }
     public int Length { get; }
     public string? Error { get; }
     public bool IsError => Error is not null;
@@ -25,18 +25,9 @@ public unsafe class ByteArrayWrapper : IDisposable
         if (Length == 0)
             return;
 
-        Pointer = (byte*)Marshal.AllocHGlobal(Length);
+        Pointer = (byte*)Marshal.AllocHGlobal(Math.Max(Length, 1));
 
-        fixed (byte* src = bytes)
-        {
-            Buffer.MemoryCopy(src, Pointer, Length, Length);
-        }
-    }
-
-    public ByteArrayWrapper(string error)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(error);
-        Error = error;
+        bytes.AsSpan().CopyTo(new Span<byte>(Pointer, Length));
     }
 
     public ReadOnlySpan<byte> AsReadOnlySpan()
@@ -62,8 +53,8 @@ public unsafe class ByteArrayWrapper : IDisposable
         if (disposed)
             return;
 
+        disposed = true;
         Marshal.FreeHGlobal((nint)Pointer);
         Pointer = null;
-        disposed = true;
     }
 }

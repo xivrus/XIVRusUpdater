@@ -32,8 +32,8 @@
     <PackageReference Include="HQIPC" Version="1.1.2" />
     <PackageReference Include="morelinq" Version="4.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="Penumbra.Api" Version="5.15.1" />
-    <PackageReference Include="Sep" Version="0.17.0" />
+    <PackageReference Include="Penumbra.Api" Version="5.19.2" />
+    <PackageReference Include="Sep" Version="0.17.1" />
   </ItemGroup>
 
   <ItemGroup>

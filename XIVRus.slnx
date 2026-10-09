@@ -2,9 +2,8 @@
   <Configurations>
     <Platform Name="x64" />
   </Configurations>
-  <Project Path="XIVRus.Generators/XIVRus.Generators.csproj"/>
+  <Project Path="XIVRus.Generators/XIVRus.Generators.csproj" />
   <Project Path="XIVRusUpdater/XIVRusUpdater.csproj">
     <Platform Project="x64" />
   </Project>
-  <Project Path="XIVRusUpdater.Tests/XIVRusUpdater.Tests.csproj" />
 </Solution>

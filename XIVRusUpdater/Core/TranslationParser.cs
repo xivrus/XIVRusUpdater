@@ -12,22 +12,22 @@ namespace XIVRusUpdater.Core;
 public class TranslationParser : IDisposable
 {
     private readonly object syncRoot = new();
-    // TODO: обязательный перезапуск игры при смене движка в релизе?
-    private readonly List<TranslationResourceManager> retiredResourceManagers = new();
-    private TranslationResourceManager _ResourceManager { get; set; }
-    private string _CurrentEngineId { get; set; }
+    
+    private readonly List<TranslationResourceManager> retired = new();
+    private TranslationResourceManager _resources { get; set; }
+    private string _engineId { get; set; }
 
     public TranslationParser(string @engineId)
     {
-        _CurrentEngineId = engineId;
-        _ResourceManager = CreateResourceManager(_CurrentEngineId);
+        _engineId = engineId;
+        _resources = CreateResourceManager(_engineId);
     }
 
     public void UpdateEngine(string engineId)
     {
         lock (syncRoot)
         {
-            if (engineId == _CurrentEngineId)
+            if (engineId == _engineId)
                 return;
         }
 
@@ -35,15 +35,15 @@ public class TranslationParser : IDisposable
 
         lock (syncRoot)
         {
-            if (engineId == _CurrentEngineId)
+            if (engineId == _engineId)
             {
                 newManager.Dispose();
                 return;
             }
 
-            retiredResourceManagers.Add(_ResourceManager);
-            _ResourceManager = newManager;
-            _CurrentEngineId = engineId;
+            retired.Add(_resources);
+            _resources = newManager;
+            _engineId = engineId;
         }
     }
 
@@ -51,7 +51,8 @@ public class TranslationParser : IDisposable
     {
         lock (syncRoot)
         {
-            return !Directory.EnumerateFileSystemEntries(_ResourceManager.GetResourceDir()).Any();
+            var dir = _resources.GetResourceDir();
+            return !Directory.Exists(dir) || !Directory.EnumerateFileSystemEntries(dir).Any();
         }
     }
 
@@ -67,38 +68,14 @@ public class TranslationParser : IDisposable
     {
         lock (syncRoot)
         {
-            return _ResourceManager.GetResourceDir();
-        }
-    }
-
-    public CacheMemoryStats GetCacheMemoryStats()
-    {
-        lock (syncRoot)
-        {
-            var active = _ResourceManager.GetCacheStats();
-            int retiredResourceCount = 0;
-            long retiredMemory = 0;
-
-            foreach (var manager in retiredResourceManagers)
-            {
-                var retired = manager.GetCacheStats();
-                retiredResourceCount += retired.ResourceCount;
-                retiredMemory += retired.NativeMemoryBytes;
-            }
-
-            return new CacheMemoryStats(
-                active.ResourceCount,
-                active.NativeMemoryBytes,
-                retiredResourceCount,
-                retiredMemory,
-                retiredResourceManagers.Count);
+            return _resources.GetResourceDir();
         }
     }
 
     public bool IsSheetLoaded(string sheetName)
     {
         lock (syncRoot)
-            return _ResourceManager.IsLoaded(sheetName);
+            return _resources.IsLoaded(sheetName);
     }
 
     public bool TryGetValue(string sheetName, uint RowId, uint Column, out ByteArrayWrapper? translation)
@@ -106,16 +83,34 @@ public class TranslationParser : IDisposable
         lock (syncRoot)
         {
             translation = null;
-            if (_ResourceManager.TryGet(sheetName, out var fileResource))
+            if (_resources.TryGet(sheetName, out var fileResource) && fileResource.TryGetData(RowId, Column, out var @byte))
             {
-                if (fileResource.TryGetData(RowId, Column, out var @byte))
-                {
-                    translation = @byte;
-                    return true;
-                }
+                translation = @byte;
+                return true;
             }
 
             return false;
+        }
+    }
+
+    public void Reload()
+    {
+        string id;
+        lock (syncRoot)
+            id = _engineId;
+
+        var next = CreateResourceManager(id);
+
+        lock (syncRoot)
+        {
+            if (id != _engineId)
+            {
+                next.Dispose();
+                return;
+            }
+
+            retired.Add(_resources);
+            _resources = next;
         }
     }
 
@@ -123,18 +118,10 @@ public class TranslationParser : IDisposable
     {
         lock (syncRoot)
         {
-            // Буферы могли быть возвращены игре и поэтому остаются жить до завершения процесса.
-            retiredResourceManagers.Clear();
+            foreach (var manager in retired)
+                manager.Dispose();
+            retired.Clear();
+            _resources.Dispose();
         }
     }
-}
-
-public readonly record struct CacheMemoryStats(
-    int ActiveResourceCount,
-    long ActiveNativeMemoryBytes,
-    int RetiredResourceCount,
-    long RetiredNativeMemoryBytes,
-    int RetiredManagerCount)
-{
-    public long TotalNativeMemoryBytes => ActiveNativeMemoryBytes + RetiredNativeMemoryBytes;
 }

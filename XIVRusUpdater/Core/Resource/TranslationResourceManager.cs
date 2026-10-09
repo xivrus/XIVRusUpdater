@@ -2,20 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using static System.Net.WebRequestMethods;
 
 namespace XIVRusUpdater.Core.Resource;
 
 public sealed class TranslationResourceManager : IDisposable
 {
     private readonly string _resourceDir;
-    private readonly ResourceFormat _format;
     private readonly string _extension;
 
     private readonly Dictionary<string, FileResource> _cache = new();
     
     public TranslationResourceManager(string dataDir, string engine, ResourceFormat format)
     {
-        _format = format;
         _extension = ResourceFormatParser.GetExtension(format);
         _resourceDir = Path.Combine(dataDir, engine, _extension);
 
@@ -29,7 +28,7 @@ public sealed class TranslationResourceManager : IDisposable
 
             var sheetName = relative.Replace(Path.DirectorySeparatorChar, '/');
 
-            _cache[sheetName] = new FileResource(file, _format, sheetName);
+            _cache[sheetName] = new FileResource(file, format, sheetName);
         }
     }
 
@@ -40,20 +39,16 @@ public sealed class TranslationResourceManager : IDisposable
 
     public string GetResourceDir() => _resourceDir;
 
+    public bool IsLoaded(string sheetName) => _cache.ContainsKey(sheetName);
+
     private string ToPath(string sheetName)
     {
         var relative = sheetName.Replace('/', Path.DirectorySeparatorChar) + $".{_extension}";
         return Path.Combine(_resourceDir, relative);
     }
 
-    public bool TryGet(string sheetName, out FileResource data)
-        => _cache.TryGetValue(sheetName, out data);
-
-    public bool HasSheet(string sheetName) => File.Exists(ToPath(sheetName));
-
-    public bool IsLoaded(string sheetName) => _cache.ContainsKey(sheetName);
-
-    public List<string> GetAllSheets() => _cache.Keys.ToList();
+    public bool TryGet(string sheetName, out FileResource resource)
+        => _cache.TryGetValue(sheetName, out resource!);
 
     public (int ResourceCount, long NativeMemoryBytes) GetCacheStats()
     {
@@ -64,13 +59,11 @@ public sealed class TranslationResourceManager : IDisposable
         return (_cache.Count, memory);
     }
 
-    public void UnloadAll()
+    public void Dispose()
     {
-        foreach(var (_, file) in _cache)
+        foreach (var (_, file) in _cache)
             file.Dispose();
 
         _cache.Clear();
     }
-
-    public void Dispose() => UnloadAll();
 }
