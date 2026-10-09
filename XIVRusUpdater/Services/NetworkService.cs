@@ -14,6 +14,7 @@ using XIVRusUpdater.Models;
 using XIVRusUpdater.Utils.Extentions;
 using XIVRusUpdater.Utils.States;
 using static XIVRusUpdater.Utils.Extentions.HttpClientProgressExtensions;
+using Action = System.Action;
 
 namespace XIVRusUpdater.Services;
 
@@ -21,6 +22,9 @@ public class NetworkService
 {
     private static readonly HttpClient Client = CreateClient();
     
+    public event Action? TranslationInstalled;
+    public event Action? PenumbraInstalled;
+
     private readonly Plugin plugin;
     
     private static HttpClient CreateClient()
@@ -163,15 +167,18 @@ public class NetworkService
 
         Plugin.Log.Info($"Downloading {downloadSource.FileName} successful complete");
 
-        plugin.Configuration.LastInstalledVersion = release.Version;
-
-        await InstallDownloadedVersionAsync(tempFile);
+        var installed = await InstallDownloadedVersionAsync(tempFile);
 
         File.Delete(tempFile);
+
+        if (!installed)
+            return;
+
+        plugin.Configuration.LastInstalledVersion = release.Version;
         Plugin.State.Translation.UpdateAvailable = false;
     }
 
-    public async Task InstallDownloadedVersionAsync(string filePath)
+    public async Task<bool> InstallDownloadedVersionAsync(string filePath)
     {
         var resourceDir = Plugin.HookLayers.parser.GetResourceDir();
 
@@ -184,10 +191,12 @@ public class NetworkService
         catch (Exception ex)
         {
             Plugin.Log.Error($"XIV Rus: failed to extract patch: {ex}");
-            return;
+            return false;
         }
 
         Plugin.Log.Information($"XIV Rus has been extracted to resource path ({resourceDir}).");
+        TranslationInstalled?.Invoke();
+        return true;
     }
 
     public void InstallDownloadedPenumbraAsync(string filePath)

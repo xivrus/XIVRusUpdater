@@ -50,7 +50,10 @@ public class TranslationParser : IDisposable
     public bool IsResourceEmpty()
     {
         lock (syncRoot)
-            return !Directory.EnumerateFileSystemEntries(_resources.GetResourceDir()).Any();
+        {
+            var dir = _resources.GetResourceDir();
+            return !Directory.Exists(dir) || !Directory.EnumerateFileSystemEntries(dir).Any();
+        }
     }
 
     private static TranslationResourceManager CreateResourceManager(string engineId)
@@ -87,6 +90,27 @@ public class TranslationParser : IDisposable
             }
 
             return false;
+        }
+    }
+
+    public void Reload()
+    {
+        string id;
+        lock (syncRoot)
+            id = _engineId;
+
+        var next = CreateResourceManager(id);
+
+        lock (syncRoot)
+        {
+            if (id != _engineId)
+            {
+                next.Dispose();
+                return;
+            }
+
+            retired.Add(_resources);
+            _resources = next;
         }
     }
 
