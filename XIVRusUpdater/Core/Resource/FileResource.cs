@@ -14,7 +14,6 @@ public class FileResource : IDisposable
     private static readonly Dictionary<ResourceFormat, Func<IResourceFormatReader>> Readers = new()
     {
         [ResourceFormat.Xrt] = () => new XrtResourceFormatReader(),
-        [ResourceFormat.Csv] = () => new CsvResourceFormatReader(),
     };
 
     public FileResource(string filePath, ResourceFormat format, string? sheetName = null)

@@ -22,11 +22,7 @@ public sealed class Plugin : IDalamudPlugin
 
     [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
 
-    [PluginService] internal static IDataManager DataManager { get; private set; } = null!;
-
-    [PluginService] internal static IChatGui ChatGui { get; private set; } = null!;
-
-    [PluginService] internal static INotificationManager NotificationManager { get; private set; } = null!;
+    [PluginService] internal static ISigScanner SigScanner { get; private set; } = null!;
 
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
 
@@ -59,7 +55,7 @@ public sealed class Plugin : IDalamudPlugin
         Instance = this;
         filter = new TranslationFilter();
         filter.Rebuild(Configuration.DisabledComponents);
-        HookLayers = new EXDHooks(interopProvider, Configuration.EngineId);
+        HookLayers = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
         State = new UpdaterState();
         networkService = new NetworkService(this);
         PenumbraApi = new PenumbraService(PluginInterface);
