@@ -5,8 +5,8 @@
     "Punchline": "Localization engine for Final Fantasy XIV.",
     "Description": "localization engine for Final Fantasy XIV that provides translated text and supporting resources. Translation content is maintained separately from the engine, allowing different localization versions to be developed and updated independently. Uses Penumbra for font replacement and supporting texture assets.",
     "InternalName": "XIVRusUpdater",
-    "AssemblyVersion": "1.0.3.0",
-    "TestingAssemblyVersion": "1.0.3.0",
+    "AssemblyVersion": "1.9.9.7",
+    "TestingAssemblyVersion": "1.9.9.8",
     "RepoUrl": "https://github.com/xivrus/XIVRusUpdater",
     "IconUrl": "https://raw.githubusercontent.com/xivrus/XIVRusUpdater/master/Data/icon.png",
     "ApplicableVersion": "any",
@@ -14,8 +14,8 @@
     "LoadRequiredState": 2,
     "IsHide": false,
     "IsTestingExclusive": false,
-    "DownloadLinkInstall": "https://github.com/xivrus/XIVRusUpdater/releases/download/v1.0.3.0/XIVRusUpdater.zip",
-	"DownloadLinkTesting": "https://github.com/xivrus/XIVRusUpdater/releases/download/v1.0.3.0/XIVRusUpdater.zip",
-	"DownloadLinkUpdate": "https://github.com/xivrus/XIVRusUpdater/releases/download/v1.0.3.0/XIVRusUpdater.zip"
+    "DownloadLinkInstall": "https://github.com/xivrus/XIVRusUpdater/releases/download/v1.9.9.7/XIVRusUpdater.zip",
+    "DownloadLinkTesting": "https://github.com/xivrus/XIVRusUpdater/releases/download/v1.9.9.8-testing/XIVRusUpdater.zip",
+    "DownloadLinkUpdate": "https://github.com/xivrus/XIVRusUpdater/releases/download/v1.9.9.7/XIVRusUpdater.zip"
   }
 ]
