@@ -6,6 +6,20 @@
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+	<PropertyGroup>
+		<!-- Plugin metadata -->
+		<Author>hOst1k,pokeda</Author>
+		<Name>XIV Rus</Name>
+		<Punchline>Localization engine for Final Fantasy XIV.</Punchline>
+		<Description>Provides translated text and supporting resources for Final Fantasy XIV through a dedicated localization engine. Localization content is updated independently, with support for multiple translation variants. Requires Penumbra for font replacement and supporting texture assets.</Description>
+		<RepoUrl>https://github.com/xivrus/XIVRusUpdater</RepoUrl>
+		<Tags>localization;translation;xivrus;rus</Tags>
+		<IconUrl>https://raw.githubusercontent.com/xivrus/XIVRusUpdater/master/Data/icon.png</IconUrl>
+
+		<!-- Runtime / loading -->
+		<ApplicableVersion>any</ApplicableVersion>
+		<LoadRequiredState>2</LoadRequiredState>
+	</PropertyGroup>
 
   <ItemGroup>
     <Content Include="..\Data\**\*">
@@ -15,10 +29,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CheapLoc" Version="1.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
+    <PackageReference Include="HQIPC" Version="1.1.2" />
+    <PackageReference Include="morelinq" Version="4.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="Penumbra.Api" Version="5.19.1" />
+    <PackageReference Include="Penumbra.Api" Version="5.19.2" />
+    <PackageReference Include="Sep" Version="0.17.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\XIVRus.Generators\XIVRus.Generators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
   </ItemGroup>
 
   <ItemGroup>

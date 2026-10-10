@@ -1,9 +1,9 @@
 [
   {
-    "Author": "hOst1k",
-    "Name": "XIV Rus Auto Update",
-    "Punchline": "Keeps your XIV Rus installation up to date.",
-    "Description": "Maintains the latest compatible version of XIVRus by checking for updates, downloading releases, and installing them through Penumbra. Includes update channels, patch compatibility warnings, and manual update controls.",
+    "Author": "hOst1k,pokeda",
+    "Name": "XIV Rus",
+    "Punchline": "Localization engine for Final Fantasy XIV.",
+    "Description": "localization engine for Final Fantasy XIV that provides translated text and supporting resources. Translation content is maintained separately from the engine, allowing different localization versions to be developed and updated independently. Uses Penumbra for font replacement and supporting texture assets.",
     "InternalName": "XIVRusUpdater",
     "AssemblyVersion": "1.9.9.7",
     "TestingAssemblyVersion": "1.9.9.8",
@@ -12,9 +12,6 @@
     "ApplicableVersion": "any",
     "DalamudApiLevel": 15,
     "LoadRequiredState": 2,
-    "LoadSync": true,
-    "CanUnloadAsync": true,
-    "LoadPriority": 69440,
     "IsHide": false,
     "IsTestingExclusive": false,
     "DownloadLinkInstall": "https://github.com/xivrus/XIVRusUpdater/releases/download/v1.9.9.7/XIVRusUpdater.zip",
