@@ -8,16 +8,23 @@ namespace XIVRusUpdater.Windows;
 
 public sealed class ChangelogWindow : Window, IDisposable
 {
-    private readonly Plugin plugin;
+    private readonly Plugin _plugin;
 
     public ChangelogWindow(Plugin plugin)
         : base("XIV Rus Update Changelog###XIVRusChangelog")
     {
+        SizeConstraints = new WindowSizeConstraints
+        {
+            MinimumSize = new Vector2(375, 330),
+            MaximumSize = new Vector2(float.MaxValue, float.MaxValue),
+            
+        };
+        Size = new Vector2(750, 600);
+
         Flags = ImGuiWindowFlags.NoCollapse;
         RespectCloseHotkey = false;
-        this.plugin = plugin;
+        _plugin = plugin;
 
-        Size = new Vector2(750, 600);
         SizeCondition = ImGuiCond.FirstUseEver;
 
         RespectCloseHotkey = false;

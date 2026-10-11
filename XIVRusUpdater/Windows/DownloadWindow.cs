@@ -16,6 +16,12 @@ public class DownloadWindow : Window
     public DownloadWindow()
         : base($"Downloading###DownloadWindow")
     {
+        SizeConstraints = new WindowSizeConstraints
+        {
+            MinimumSize = new Vector2(375, 330),
+            MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
+        };
+
         RespectCloseHotkey = false;
     }
 
