@@ -121,6 +121,8 @@ public class ConfigWindow : Window, IDisposable
 
                     ImGuiComponents.HelpMarker(component.Description);
                 }
+
+                _config.Save();
             }
         }
 
