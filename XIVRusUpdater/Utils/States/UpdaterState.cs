@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using XIVRusUpdater.Core.Components;
 using XIVRusUpdater.Models;
 using XIVRusUpdater.Services;
@@ -18,5 +19,19 @@ public sealed class UpdaterState
 
     public bool UpdateAvailable => Translation.UpdateAvailable || Penumbra.UpdateAvailable;
     public bool ShowChangelog => Translation.ShowChangelog || Penumbra.ShowChangelog;
-    public string LastChangelog => $"Translation Changelog: {Translation.LastChangelog}\n\nPenumbra Changelog: {Penumbra.LastChangelog}";
+    public string LastChangelog
+    {
+        get
+        {
+            var builder = new StringBuilder();
+
+            if(!string.IsNullOrEmpty(Translation.LastChangelog))
+                builder.Append($"Translation Changelog:\n{Translation.LastChangelog}");
+
+            if (!string.IsNullOrEmpty(Penumbra.LastChangelog))
+                builder.Append($"Penumbra Changelog:\n{Penumbra.LastChangelog}");
+
+            return builder.ToString();
+        }
+    }
 }

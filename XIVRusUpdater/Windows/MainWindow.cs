@@ -72,11 +72,14 @@ public class MainWindow : Window, IDisposable
             }
         }
 
-        using (var header = ImRaii.Header("Last Changelog", ImGuiTreeNodeFlags.None))
+        if (!string.IsNullOrEmpty(Plugin.State.LastChangelog))
         {
-            if (header.Success)
+            using (var header = ImRaii.Header("Last Changelog", ImGuiTreeNodeFlags.None))
             {
-                ImGui.TextWrapped(Plugin.State.LastChangelog ?? "No changelog available.");
+                if (header.Success)
+                {
+                    ImGui.TextWrapped(Plugin.State.LastChangelog);
+                }
             }
         }
 
