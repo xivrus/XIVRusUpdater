@@ -26,8 +26,6 @@ public class Configuration : IPluginConfiguration
 
     public bool AutoDownloadUpdates { get; set; } = true;
 
-    public bool AutoInstallUpdates { get; set; } = true;
-
     #endregion
 
     #region Tester Access

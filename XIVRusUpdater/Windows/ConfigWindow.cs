@@ -144,16 +144,10 @@ public class ConfigWindow : Window, IDisposable
                         ImGui.Spacing();
 
                         var autoDownload = _config.AutoDownloadUpdates;
-                        var autoInstall = _config.AutoInstallUpdates;
-
+                        
                         if (ImGui.Checkbox("Auto download updates", ref autoDownload))
                         {
                             _config.AutoDownloadUpdates = autoDownload;
-                            _config.Save();
-                        }
-                        if (ImGui.Checkbox("Auto install updates", ref autoInstall))
-                        {
-                            _config.AutoInstallUpdates = autoInstall;
                             _config.Save();
                         }
                     }

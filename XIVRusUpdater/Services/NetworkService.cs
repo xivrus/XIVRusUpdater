@@ -151,9 +151,6 @@ public class NetworkService
 
         Plugin.Log.Info($"Downloading {downloadSource.FileName} successful complete");
 
-        if (!plugin.Configuration.AutoInstallUpdates)
-            return;
-
         InstallDownloadedPenumbraAsync(tempFile);
         Plugin.State.Penumbra.UpdateAvailable = false;
     }
