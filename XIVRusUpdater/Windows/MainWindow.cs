@@ -19,7 +19,6 @@ public class MainWindow : Window, IDisposable
     {
         Ok,
         UpdateAvailable,
-        Warning,
         Disabled,
         Error
     }
