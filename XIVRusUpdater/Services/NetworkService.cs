@@ -22,8 +22,8 @@ public class NetworkService
 {
     private static readonly HttpClient Client = CreateClient();
     
-    public event Action? TranslationInstalled;
-    public event Action? PenumbraInstalled;
+    public event Action? OnTranslationInstalled;
+    public event Action? OnPenumbraInstalled;
 
     private readonly Plugin plugin;
     
@@ -43,19 +43,32 @@ public class NetworkService
     {
         var engine = TranslationEngines.Get(plugin.Configuration.EngineId);
 
-        return plugin.Configuration.Channel == UpdateChannel.Beta ? $"{engine.ApiUrl}/branches/test.json" : $"{engine.ApiUrl}/branches/release.json";
+        var api = engine?.ApiUrl;
+
+        if (string.IsNullOrEmpty(api))
+            return string.Empty;
+
+        return plugin.Configuration.Channel == UpdateChannel.Beta ? $"{api}/branches/test.json" : $"{api}/branches/release.json";
     }
 
     public string CurrentXRT()
     {
         var engine = TranslationEngines.Get(plugin.Configuration.EngineId);
 
-        return $"{engine!.ApiUrl}/branches/xrt.json";
+        var api = engine?.ApiUrl;
+
+        if (string.IsNullOrEmpty(api))
+            return string.Empty;
+
+        return $"{api}/branches/xrt.json";
     }
 
     public async Task<TranslationManifest?> GetBranchStatus()
     {
         var branch = CurrentBranch();
+
+        if (string.IsNullOrEmpty(branch))
+            throw new ArgumentNullException("API brench empty");
 
         using HttpResponseMessage responseMessage = await Client.GetAsync(branch);
 
@@ -69,7 +82,7 @@ public class NetworkService
 
         var xrtStatus = JsonConvert.DeserializeObject<TranslationManifest>(await xrtMessage.Content.ReadAsStringAsync());
 
-        xrtStatus.PenumbraVersion = status.Version;
+        xrtStatus!.PenumbraVersion = status!.Version;
         xrtStatus.PenumbraChangelog = status.Changelog;
         xrtStatus.PenumbraDownloadUrls = status.DownloadUrl;
 
@@ -129,7 +142,7 @@ public class NetworkService
 
         Plugin.Log.Information($"Starting download {downloadSource.FileName} from {downloadSource.Url}...");
 
-        var tempFile = Path.Combine(Plugin.PenumbraApi.GetDefaultDirectory(), downloadSource.FileName);
+        var tempFile = Path.Combine(Plugin.PenumbraApi.GetDefaultDirectory() ?? Path.GetTempPath(), downloadSource.FileName);
 
         var success = await DownloadRemoteAsync(downloadSource.Url, tempFile, Plugin.State.Penumbra.Download);
 
@@ -195,7 +208,7 @@ public class NetworkService
         }
 
         Plugin.Log.Information($"XIV Rus has been extracted to resource path ({resourceDir}).");
-        TranslationInstalled?.Invoke();
+        OnTranslationInstalled?.Invoke();
         return true;
     }
 

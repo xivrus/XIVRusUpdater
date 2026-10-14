@@ -10,11 +10,11 @@ public sealed unsafe class SheetNameCache
 
     public string Get(ExcelSheet* sheet)
     {
-        var namePtr = (nint)sheet->SheetName.Value;
+        var namePtr = (nint)sheet->SheetNameVar.SheetNamePtr.Value;
         if (cache.TryGetValue((nint)sheet, out var cached) && cached.NamePtr == namePtr)
             return cached.Name;
 
-        var name = sheet->SheetName.ToString();
+        var name = sheet->SheetNameVar.SheetName.ToString();
         cache[(nint)sheet] = (namePtr, name);
         return name;
     }
@@ -31,7 +31,7 @@ public static unsafe class StringColumns
         var count = 0;
         for (var i = 0; i < sheet->ColumnCount; i++)
         {
-            if (definitions[i].Type == 0)
+            if (definitions[i].ColumnType == ExcelColumnType.String)
                 count++;
         }
 
@@ -43,7 +43,7 @@ public static unsafe class StringColumns
         var definitions = sheet->ColumnDefinitions;
         for (int i = 0, n = 0; i < sheet->ColumnCount; i++)
         {
-            if (definitions[i].Type == 0)
+            if (definitions[i].ColumnType == ExcelColumnType.String)
                 fields[n++] = new ExcelStringField((ushort)i, definitions[i].Offset);
         }
     }
