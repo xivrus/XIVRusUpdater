@@ -65,10 +65,8 @@ public sealed class Plugin : IDalamudPlugin
         
         Framework.Update += OnUpdate;
 
-        var iconPath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "icon.png");
-
         ConfigWindow = new ConfigWindow(this);
-        MainWindow = new MainWindow(this, iconPath);
+        MainWindow = new MainWindow(this);
         DownloadWindow = new DownloadWindow();
         Changelog = new ChangelogWindow(this);
         Debug = new DebugWindow();

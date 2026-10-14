@@ -1,12 +1,8 @@
 using Dalamud.Bindings.ImGui;
-using Dalamud.Interface.Utility.Raii;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
 using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using XIVRusUpdater;
-using XIVRusUpdater.Utils;
 using XIVRusUpdater.Utils.States;
 
 namespace XIVRusUpdater.Windows;
@@ -42,9 +38,7 @@ public class DownloadWindow : Window
     {
         ImGui.TextWrapped(download.FileName);
 
-        ImGui.ProgressBar(
-            download.Progress,
-            new Vector2(-1, 24));
+        ImGui.ProgressBar(download.Progress, new Vector2(-1, 24 * ImGuiHelpers.GlobalScale));
 
         ImGui.Spacing();
 
@@ -52,9 +46,7 @@ public class DownloadWindow : Window
             Math.Round(download.DownloadedBytes / 1024f / 1024f),
             Math.Round(download.TotalBytes / 1024f / 1024f)));
 
-        ImGui.Text("Current Source: ");
-        ImGui.SameLine();
-        ImGui.TextWrapped(download.CurrentSource);
+        ImGui.TextWrapped($"Current Source: {download.CurrentSource}");
 
         ImGui.Text(string.Format("Speed: {0} MB/s", Math.Round(download.SpeedMBps, 2)));
     }
