@@ -303,8 +303,12 @@ public class NetworkService
                 stopwatch.Start();
                 using var response = await Client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
-                if(!response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
+                {
+                    Plugin.Log.Warning($"Download source unavailable: {source}. HTTP {(int)response.StatusCode}");
+
                     return (Url: source, FileName: string.Empty, SpeedMbps: 0.0, Success: false);
+                }
 
                 byte[] content = await response.Content.ReadAsByteArrayAsync();
                 stopwatch.Stop();
@@ -319,23 +323,51 @@ public class NetworkService
 
                 fileName = fileName?.Trim('"') ?? string.Empty;
 
+                if (string.IsNullOrWhiteSpace(fileName))
+                {
+                    Plugin.Log.Warning($"Download source has no valid filename: {source}");
+
+                    return ( Url: source, FileName: string.Empty, SpeedMbps: 0.0, Success: false );
+                }
+
                 Plugin.Log.Debug($"Download link ({source}) checked. Speed: {speedMBps} MB/s");
                 return (Url: source, FileName: fileName, SpeedMbps: speedMBps, Success: true);
             }
-            catch
+            catch (OperationCanceledException ex)
             {
+                Plugin.Log.Warning($"Download source timed out or was canceled: {source}. {ex.Message}");
+
                 return (Url: source, FileName: string.Empty, SpeedMbps: 0.0, Success: false);
+            }
+            catch (HttpRequestException ex)
+            {
+                Plugin.Log.Warning($"Download source connection failed: {source}. {ex.Message}");
+
+                return (Url: source, FileName: string.Empty, SpeedMbps: 0.0, Success: false);
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log.Warning($"Download source check failed: {source}. {ex.Message}");
+
+                return (Url: source, FileName: string.Empty, SpeedMbps: 0.0, Success: false);
+            }
+            finally
+            {
+                stopwatch.Stop();
             }
         });
 
         var results = await Task.WhenAll(tasks);
 
-        var bestSource = results.Where(x => x.Success).OrderByDescending(x => x.SpeedMbps).FirstOrDefault();
+        var bestSource = results.Where(x => x.Success && x.SpeedMbps > 0).OrderByDescending(x => x.SpeedMbps).FirstOrDefault();
 
         if (!bestSource.Success)
-            return null;
+        {
+            Plugin.Log.Warning("No available download sources found.");
+            return null; 
+        }
 
-        Plugin.Log.Debug($"Best download source picked. Url: {bestSource.Url}, Speed: {bestSource.SpeedMbps}");
+        Plugin.Log.Debug($"Best download source picked. Url: {bestSource.Url}, Speed: {bestSource.SpeedMbps:F2}");
 
         return new DownloadSourceInfo
         {
