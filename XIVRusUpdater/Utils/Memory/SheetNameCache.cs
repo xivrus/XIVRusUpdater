@@ -14,7 +14,7 @@ public sealed unsafe class SheetNameCache
         if (cache.TryGetValue((nint)sheet, out var cached) && cached.NamePtr == namePtr)
             return cached.Name;
 
-        var name = sheet->SheetNameVar.SheetName.ToString();
+        var name = sheet->SheetNameVar.SheetNamePtr.ToString();
         cache[(nint)sheet] = (namePtr, name);
         return name;
     }
