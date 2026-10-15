@@ -58,9 +58,7 @@ public sealed class Plugin : IDalamudPlugin
         HookLayers = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
         State = new UpdaterState();
         networkService = new NetworkService(this);
-        networkService.OnTranslationInstalled += OnTranslationInstalled;
-
-
+        
         PenumbraApi = new PenumbraService(PluginInterface);
         
         Framework.Update += OnUpdate;
@@ -92,8 +90,7 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
         PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfigUi;
         PluginInterface.UiBuilder.OpenMainUi -= ToggleMainUi;
-        networkService.OnTranslationInstalled -= OnTranslationInstalled;
-
+        
         WindowSystem.RemoveAllWindows();
 
         HookLayers.Dispose();
@@ -113,12 +110,6 @@ public sealed class Plugin : IDalamudPlugin
         }
 
         MainWindow.Toggle();
-    }
-
-    private void OnTranslationInstalled()
-    {
-        HookLayers.parser.Reload();
-        State.Translation.Installed = true;
     }
 
     private async void OnUpdate(IFramework framework)

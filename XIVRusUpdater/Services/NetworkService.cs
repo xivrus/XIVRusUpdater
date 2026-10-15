@@ -13,6 +13,7 @@ using XIVRusUpdater.Core.Components;
 using XIVRusUpdater.Models;
 using XIVRusUpdater.Utils.Extentions;
 using XIVRusUpdater.Utils.States;
+using static ImSharp.Im;
 using static XIVRusUpdater.Utils.Extentions.HttpClientProgressExtensions;
 using Action = System.Action;
 
@@ -206,6 +207,7 @@ public class NetworkService
 
         Plugin.Log.Information($"XIV Rus has been extracted to resource path ({resourceDir}).");
         OnTranslationInstalled?.Invoke();
+        Plugin.State.Translation.Installed = true;
         return true;
     }
 
@@ -216,6 +218,8 @@ public class NetworkService
         Plugin.PenumbraApi.DeleteMod(engine!.ModName);
 
         bool isInstall = Plugin.PenumbraApi.InstallMod(filePath);
+        if (isInstall)
+            OnPenumbraInstalled?.Invoke();
         Plugin.Log.Information($"XIV Rus has been queued for installation in Penumbra. Status: {isInstall}");
     }
 
