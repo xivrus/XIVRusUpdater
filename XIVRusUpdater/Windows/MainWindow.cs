@@ -6,6 +6,7 @@ using Dalamud.Interface.Windowing;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
+using XIVRusUpdater.Resource;
 
 namespace XIVRusUpdater.Windows;
 
@@ -24,7 +25,7 @@ public class MainWindow : Window, IDisposable
     }
 
     public MainWindow(Plugin plugin)
-        : base($"XIVRus v{Plugin.PluginInterface.Manifest.AssemblyVersion}###XIVMain")
+        : base($"{string.Format(Localization.PluginTitle, Plugin.PluginInterface.Manifest.AssemblyVersion)}###XIVMain")
     {
         _plugin = plugin;
 
@@ -45,35 +46,35 @@ public class MainWindow : Window, IDisposable
 
         ImGui.Spacing();
 
-        using (var header = ImRaii.Header("System Status", ImGuiTreeNodeFlags.DefaultOpen))
+        using (var header = ImRaii.Header(Localization.SystemStatus, ImGuiTreeNodeFlags.DefaultOpen))
         {
             if (header.Success)
             {
-                ImGui.BulletText($"Penumbra: {(state.PenumbraEnabled ? "Enabled" : "Disabled")}");
+                ImGui.BulletText($"Penumbra: {(state.PenumbraEnabled ? Localization.PenumbraEnabled : Localization.PenumbraDisabled)}");
 
                 ImGui.Separator();
 
-                ImGui.BulletText($"Translation Status: {(state.Translation.Installed ? "Installed" : "Not Installed")}");
-                ImGui.BulletText($"Translation Version: {state.Translation.Version ?? "Unknown"}");
-                ImGui.BulletText($"Translation Remote Version: {state.Translation.Version ?? "Unknown"}");
+                ImGui.BulletText(string.Format(Localization.TranslationStatus, state.Translation.Installed ? Localization.Installed : Localization.NotInstalled));
+                ImGui.BulletText(string.Format(Localization.TranslationVersion, state.Translation.Version ?? Localization.Unknown));
+                ImGui.BulletText(string.Format(Localization.RemoteTranslationVersion, state.Translation.RemoteVersion ?? Localization.Unknown));
 
                 ImGui.Separator();
 
-                ImGui.BulletText($"Penumbra Mod Status: {(state.Penumbra.Installed ? "Installed" : "Not Installed")}");
-                ImGui.BulletText($"Penumbra Mod Version: {state.Penumbra.Version ?? "Unknown"}");
-                ImGui.BulletText($"Penumbra Remote Version: {state.Penumbra.Version ?? "Unknown"}");
+                ImGui.BulletText(string.Format(Localization.PenumbraModStatus, state.Penumbra.Installed ? Localization.Installed : Localization.NotInstalled));
+                ImGui.BulletText(string.Format(Localization.PenumbraModVersion, state.Penumbra.Version ?? Localization.Unknown));
+                ImGui.BulletText(string.Format(Localization.PenumbraModRemoteVersion, state.Penumbra.RemoteVersion ?? Localization.Unknown));
 
                 ImGui.Separator();
 
-                ImGui.Text("Last Check: ");
+                ImGui.Text(Localization.LastCheck);
                 ImGui.SameLine();
-                ImGui.TextDisabled(_plugin.Configuration.LastUpdateCheck == default ? "Never" : _plugin.Configuration.LastUpdateCheck.ToString("G"));
+                ImGui.TextDisabled(_plugin.Configuration.LastUpdateCheck == default ? Localization.Never : _plugin.Configuration.LastUpdateCheck.ToString("G"));
             }
         }
 
         if (!string.IsNullOrEmpty(Plugin.State.LastChangelog))
         {
-            using (var header = ImRaii.Header("Last Changelog", ImGuiTreeNodeFlags.None))
+            using (var header = ImRaii.Header(Localization.LastChangelog, ImGuiTreeNodeFlags.None))
             {
                 if (header.Success)
                 {
@@ -82,11 +83,11 @@ public class MainWindow : Window, IDisposable
             }
         }
 
-        using (var header = ImRaii.Header("Actions", ImGuiTreeNodeFlags.DefaultOpen))
+        using (var header = ImRaii.Header(Localization.Actions, ImGuiTreeNodeFlags.DefaultOpen))
         {
             if (header.Success)
             {
-                if (ImGui.Button("Refresh", new Vector2(-1, 0)))
+                if (ImGui.Button(Localization.Refresh, new Vector2(-1, 0)))
                 {
                     _refreshTask ??= Plugin.networkService.CheckForUpdates();
                 }
@@ -100,7 +101,7 @@ public class MainWindow : Window, IDisposable
 
                 using (var disable = ImRaii.Disabled(!updateAvailable))
                 {
-                    if (ImGui.Button("Update components", new Vector2(-1, 0)))
+                    if (ImGui.Button(Localization.UpdateComponents, new Vector2(-1, 0)))
                     {
                         _downloadTask ??= Plugin.networkService.DownloadLatestModAsync();
                     }
@@ -111,28 +112,28 @@ public class MainWindow : Window, IDisposable
                     _downloadTask = null;
                 }
 
-                if (ImGui.Button("Open config", new Vector2(-1, 0)))
+                if (ImGui.Button(Localization.OpenConfiguration, new Vector2(-1, 0)))
                 {
                     _plugin.ToggleConfigUi();
                 }
             }
         }
 
-        using (var header = ImRaii.Header("Diagnostics", ImGuiTreeNodeFlags.None))
+        using (var header = ImRaii.Header(Localization.Diagnostics, ImGuiTreeNodeFlags.None))
         {
             if (header.Success)
             {
-                ImGui.TextDisabled("Branch: ");
+                ImGui.TextDisabled(Localization.Branch);
                 ImGui.SameLine();
                 ImGui.Text(_plugin.Configuration.Channel.ToString());
 
-                ImGui.TextDisabled("Tester Access Allowance: ");
+                ImGui.TextDisabled(Localization.TesterAccessAllowance);
                 ImGui.SameLine();
 
                 if (!_plugin.Configuration.TesterHumanCheck)
-                    ImGui.TextColored(ImGuiColors.DalamudYellow, "Not Allowed");
+                    ImGui.TextColored(ImGuiColors.DalamudYellow, Localization.NotAllowed);
                 else
-                    ImGui.TextColored(ImGuiColors.HealerGreen, "Allowed");
+                    ImGui.TextColored(ImGuiColors.HealerGreen, Localization.Allowed);
             }
         }
     }
@@ -161,22 +162,22 @@ public class MainWindow : Window, IDisposable
         {
             case OverallStatus.Ok:
                 color = ImGuiColors.HealerGreen;
-                text = "Engine is up to date";
+                text = Localization.EngineUpToDate;
                 break;
 
             case OverallStatus.UpdateAvailable:
                 color = ImGuiColors.DalamudYellow;
-                text = "Update available";
+                text = Localization.UpdateAvailable;
                 break;
 
             case OverallStatus.Disabled:
                 color = ImGuiColors.DalamudRed;
-                text = "Engine temporarily disabled";
+                text = Localization.EngineTemporarilyDisabled;
                 break;
 
             default:
                 color = ImGuiColors.DalamudRed;
-                text = "Unable to determine status";
+                text = Localization.StatusUndetermined;
                 break;
         }
 

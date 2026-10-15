@@ -8,7 +8,7 @@
   </PropertyGroup>
 	<PropertyGroup>
 		<!-- Plugin metadata -->
-		<Author>hOst1k,pokeda</Author>
+		<Author>hOst1k</Author>
 		<Name>XIV Rus</Name>
 		<Punchline>Localization engine for Final Fantasy XIV.</Punchline>
 		<Description>Provides translated text and supporting resources for Final Fantasy XIV through a dedicated localization engine. Localization content is updated independently, with support for multiple translation variants. Requires Penumbra for font replacement and supporting texture assets.</Description>
@@ -34,6 +34,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\XIVRus.Generators\XIVRus.Generators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resource\Localization.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Localization.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resource\Localization.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Localization.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

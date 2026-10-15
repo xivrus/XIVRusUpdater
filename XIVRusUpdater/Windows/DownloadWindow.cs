@@ -3,6 +3,7 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
 using System;
 using System.Numerics;
+using XIVRusUpdater.Resource;
 using XIVRusUpdater.Utils.States;
 
 namespace XIVRusUpdater.Windows;
@@ -10,7 +11,7 @@ namespace XIVRusUpdater.Windows;
 public class DownloadWindow : Window
 {
     public DownloadWindow()
-        : base($"Downloading###DownloadWindow")
+        : base($"{Localization.Downloading}###DownloadWindow")
     {
         SizeConstraints = new WindowSizeConstraints
         {
@@ -42,12 +43,12 @@ public class DownloadWindow : Window
 
         ImGui.Spacing();
 
-        ImGui.Text(string.Format("{0} MB / {1} MB",
+        ImGui.Text(string.Format(Localization.DownloadSize,
             Math.Round(download.DownloadedBytes / 1024f / 1024f),
             Math.Round(download.TotalBytes / 1024f / 1024f)));
 
-        ImGui.TextWrapped($"Current Source: {download.CurrentSource}");
+        ImGui.TextWrapped(string.Format(Localization.CurrentSource, download.CurrentSource));
 
-        ImGui.Text(string.Format("Speed: {0} MB/s", Math.Round(download.SpeedMBps, 2)));
+        ImGui.Text(string.Format(Localization.DownloadSpeed, Math.Round(download.SpeedMBps, 2)));
     }
 }

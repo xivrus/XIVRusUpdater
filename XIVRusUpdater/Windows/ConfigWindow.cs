@@ -6,6 +6,7 @@ using Dalamud.Interface.Windowing;
 using System;
 using System.Numerics;
 using XIVRusUpdater.Core.Components;
+using XIVRusUpdater.Resource;
 
 namespace XIVRusUpdater.Windows;
 
@@ -13,7 +14,7 @@ public class ConfigWindow : Window, IDisposable
 {
     private readonly Configuration _config;
 
-    public ConfigWindow(Plugin plugin) : base("Translation configuration###XIVConfig")
+    public ConfigWindow(Plugin plugin) : base($"{Localization.TranslationConfiguration}###XIVConfig")
     {
         _config = plugin.Configuration;
 
@@ -29,7 +30,7 @@ public class ConfigWindow : Window, IDisposable
 
     public override void Draw()
     {
-        using(var header = ImRaii.Header("General", ImGuiTreeNodeFlags.DefaultOpen))
+        using(var header = ImRaii.Header(Localization.General, ImGuiTreeNodeFlags.DefaultOpen))
         {
             if(header.Success)
             {
@@ -39,7 +40,7 @@ public class ConfigWindow : Window, IDisposable
                     {
                         var currentEngine = TranslationEngines.Get(_config.EngineId);
 
-                        using (var combo = ImRaii.Combo("Translation Engine", currentEngine?.DisplayName ?? "Unknown"))
+                        using (var combo = ImRaii.Combo(Localization.TranslationEngine, currentEngine?.DisplayName ?? Localization.Unknown))
                         {
                             if (combo.Success)
                             {
@@ -62,12 +63,12 @@ public class ConfigWindow : Window, IDisposable
                         var showNotify = _config.ShowNotifications;
                         var showChangelog = _config.ShowChangelogAfterUpdate;
 
-                        if (ImGui.Checkbox("Show notifications", ref showNotify))
+                        if (ImGui.Checkbox(Localization.ShowNotifications, ref showNotify))
                         {
                             _config.ShowNotifications = showNotify;
                             _config.Save();
                         }
-                        if (ImGui.Checkbox("Show changelog after update", ref showChangelog))
+                        if (ImGui.Checkbox(Localization.ShowChangelogAfterUpdate, ref showChangelog))
                         {
                             _config.ShowChangelogAfterUpdate = showChangelog;
                             _config.Save();
@@ -77,13 +78,13 @@ public class ConfigWindow : Window, IDisposable
             }
         }
 
-        using(var header = ImRaii.Header("Components", ImGuiTreeNodeFlags.DefaultOpen))
+        using(var header = ImRaii.Header(Localization.Components, ImGuiTreeNodeFlags.DefaultOpen))
         {
             if (header.Success)
             {
                 var translationFilter = Plugin.filter;
 
-                if (ImGui.Button("Enable All"))
+                if (ImGui.Button(Localization.EnableAll))
                 {
                     _config.DisabledComponents.Clear();
                     translationFilter.Rebuild(_config.DisabledComponents);
@@ -91,7 +92,7 @@ public class ConfigWindow : Window, IDisposable
 
                 ImGui.SameLine();
 
-                if (ImGui.Button("Disable All"))
+                if (ImGui.Button(Localization.DisableAll))
                 {
                     _config.DisabledComponents.Clear();
 
@@ -126,7 +127,7 @@ public class ConfigWindow : Window, IDisposable
             }
         }
 
-        using(var header = ImRaii.Header("Update", ImGuiTreeNodeFlags.None))
+        using(var header = ImRaii.Header(Localization.UpdateSection, ImGuiTreeNodeFlags.None))
         {
             if (header.Success)
             {
@@ -135,7 +136,7 @@ public class ConfigWindow : Window, IDisposable
                     if (child.Success)
                     {
                         int interval = _config.UpdateCheckIntervalMinutes;
-                        if (ImGui.SliderInt("Check interval (minutes)", ref interval, 5, 1440))
+                        if (ImGui.SliderInt(Localization.CheckIntervalMinutes, ref interval, 5, 1440))
                         {
                             _config.UpdateCheckIntervalMinutes = interval;
                             _config.Save();
@@ -145,7 +146,7 @@ public class ConfigWindow : Window, IDisposable
 
                         var autoDownload = _config.AutoDownloadUpdates;
                         
-                        if (ImGui.Checkbox("Auto download updates", ref autoDownload))
+                        if (ImGui.Checkbox(Localization.AutoDownloadUpdates, ref autoDownload))
                         {
                             _config.AutoDownloadUpdates = autoDownload;
                             _config.Save();
@@ -155,7 +156,7 @@ public class ConfigWindow : Window, IDisposable
             }
         }
 
-        using(var header = ImRaii.Header("Access Level", ImGuiTreeNodeFlags.None))
+        using(var header = ImRaii.Header(Localization.AccessLevel, ImGuiTreeNodeFlags.None))
         {
             if (header.Success)
             {
@@ -163,7 +164,7 @@ public class ConfigWindow : Window, IDisposable
                 {
                     if (child.Success)
                     {
-                        using (var combo = ImRaii.Combo("Channel", _config.Channel.ToString()))
+                        using (var combo = ImRaii.Combo(Localization.Channel, _config.Channel.ToString()))
                         {
                             if (combo.Success)
                             {
@@ -191,9 +192,9 @@ public class ConfigWindow : Window, IDisposable
 
                         bool testerHumanCheck = _config.TesterHumanCheck;
 
-                        ImGui.TextWrapped("Test versions may contain unverified translations, incomplete changes, and unexpected issues. The game or localization may behave incorrectly.");
+                        ImGui.TextWrapped(Localization.TestVersionWarning);
 
-                        if (ImGui.Checkbox("I understand the risks of using test versions.", ref testerHumanCheck))
+                        if (ImGui.Checkbox(Localization.AcknowledgeTestVersionRisk, ref testerHumanCheck))
                         {
                             _config.TesterHumanCheck = testerHumanCheck;
                             _config.Save();
@@ -203,7 +204,7 @@ public class ConfigWindow : Window, IDisposable
             }
         }
 
-        using(var header = ImRaii.Header("Information", ImGuiTreeNodeFlags.None))
+        using(var header = ImRaii.Header(Localization.Information, ImGuiTreeNodeFlags.None))
         {
             if (header.Success)
             {
@@ -211,27 +212,27 @@ public class ConfigWindow : Window, IDisposable
                 {
                     if (child.Success)
                     {
-                        ImGui.Text("Last installed translation: ");
+                        ImGui.Text(Localization.LastInstalledTranslation);
                         ImGui.SameLine();
                         ImGui.TextDisabled(_config.LastInstalledVersion);
 
-                        ImGui.Text("Last remote translation: ");
+                        ImGui.Text(Localization.LastRemoteTranslation);
                         ImGui.SameLine();
                         ImGui.TextDisabled(_config.LastKnownRemoteVersion);
 
-                        ImGui.Text("Last installed Penumbra mod: ");
+                        ImGui.Text(Localization.LastInstalledPenumbraMod);
                         ImGui.SameLine();
                         ImGui.TextDisabled(_config.LastInstalledPenumbra);
 
-                        ImGui.Text("Last remote Penumbra mod: ");
+                        ImGui.Text(Localization.LastRemotePenumbraMod);
                         ImGui.SameLine();
                         ImGui.TextDisabled(_config.LastKnownRemotePenumbra);
 
-                        ImGui.Text("Last Update Check: ");
+                        ImGui.Text(Localization.LastUpdateCheck);
                         ImGui.SameLine();
                         ImGui.TextDisabled(_config.LastUpdateCheck.ToString("g"));
 
-                        ImGui.Text("Last Successful Update: ");
+                        ImGui.Text(Localization.LastSuccessfulUpdate);
                         ImGui.SameLine();
                         ImGui.TextDisabled(_config.LastSuccessfulUpdate.ToString("g"));
                     }
