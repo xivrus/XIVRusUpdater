@@ -132,9 +132,6 @@ public class NetworkService
         var release = Plugin.State.LastRemoteStatus;
 
         if(release == null) return;
-
-        if(release.PenumbraVersion != null)
-            plugin.Configuration.LastInstalledPenumbra = release.PenumbraVersion;
         
         var downloadSource = await GetFastestSource(release.PenumbraDownloadUrls);
 
@@ -153,6 +150,7 @@ public class NetworkService
         Plugin.Log.Info($"Downloading {downloadSource.FileName} successful complete");
 
         InstallDownloadedPenumbraAsync(tempFile);
+        Plugin.State.Penumbra.Version = plugin.Configuration.LastInstalledPenumbra = release.PenumbraVersion;
         Plugin.State.Penumbra.UpdateAvailable = false;
     }
 
@@ -185,7 +183,7 @@ public class NetworkService
         if (!installed)
             return;
 
-        plugin.Configuration.LastInstalledVersion = release.Version;
+        Plugin.State.Translation.Version =  plugin.Configuration.LastInstalledVersion = release.Version;
         Plugin.State.Translation.UpdateAvailable = false;
     }
 

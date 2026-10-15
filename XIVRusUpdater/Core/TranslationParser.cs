@@ -61,7 +61,7 @@ public class TranslationParser : IDisposable
         var engine = TranslationEngines.Get(engineId)
             ?? throw new ArgumentException($"Unknown translation engine: {engineId}", nameof(engineId));
 
-        return new TranslationResourceManager(Plugin.PluginInterface.AssemblyLocation.Directory!.FullName, engine.Id, engine.Format);
+        return new TranslationResourceManager(Plugin.PluginInterface.GetPluginConfigDirectory(), engine.Id, engine.Format);
     }
 
     public string GetResourceDir()
