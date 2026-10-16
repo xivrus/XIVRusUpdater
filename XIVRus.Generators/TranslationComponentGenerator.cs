@@ -28,16 +28,21 @@ public sealed class TranslationComponentGenerator : IIncrementalGenerator
         if (args.Length != 3) return null;
 
         var id = args[0].Value as string ?? "";
-        var displayName = args[1].Value as string ?? "";
-        var description = args[2].Value as string ?? "";
+        var displayNameKey = args[1].Value as string ?? "";
+        var descriptionKey = args[2].Value as string ?? "";
+
+        if (!IsValidResourceKey(displayNameKey) || !IsValidResourceKey(descriptionKey))
+        {
+            return null;
+        }
 
         if (ctx.TargetSymbol is not INamedTypeSymbol typeSymbol) return null;
 
         var sheetsMember = typeSymbol.GetMembers("Sheets").FirstOrDefault(m => m is IFieldSymbol or IPropertySymbol);
-        if (sheetsMember is null) return new ComponentModel(id, displayName, description, Array.Empty<(string, int[])>());
+        if (sheetsMember is null) return new ComponentModel(id, displayNameKey, descriptionKey, Array.Empty<(string, int[])>());
 
         var syntaxRef = sheetsMember.DeclaringSyntaxReferences.FirstOrDefault();
-        if (syntaxRef is null) return new ComponentModel(id, displayName, description, Array.Empty<(string, int[])>());
+        if (syntaxRef is null) return new ComponentModel(id, displayNameKey, descriptionKey, Array.Empty<(string, int[])>());
 
         var node = syntaxRef.GetSyntax();
 
@@ -48,13 +53,13 @@ public sealed class TranslationComponentGenerator : IIncrementalGenerator
             _ => null
         };
 
-        if (valueExpr is null) return new ComponentModel(id, displayName, description, Array.Empty<(string, int[])>());
+        if (valueExpr is null) return new ComponentModel(id, displayNameKey, descriptionKey, Array.Empty<(string, int[])>());
 
         var tree = valueExpr.SyntaxTree;
         var model = tree == ctx.SemanticModel.SyntaxTree ? ctx.SemanticModel : ctx.SemanticModel.Compilation.GetSemanticModel(tree);
 
         var sheets = ExtractSheets(valueExpr, model);
-        return new ComponentModel(id, displayName, description, sheets.ToArray());
+        return new ComponentModel(id, displayNameKey, descriptionKey, sheets.ToArray());
     }
 
     private static List<(string Name, int[] Rows)> ExtractSheets(ExpressionSyntax expr, SemanticModel model)
@@ -117,8 +122,8 @@ public sealed class TranslationComponentGenerator : IIncrementalGenerator
         {
             sb.AppendLine("        new(");
             sb.AppendLine($"            {Literal(c.Id)},");
-            sb.AppendLine($"            {Literal(c.DisplayName)},");
-            sb.AppendLine($"            {Literal(c.Description)},");
+            sb.AppendLine($"            global::XIVRusUpdater.Resource.Localization.{c.DisplayNameKey},");
+            sb.AppendLine($"            global::XIVRusUpdater.Resource.Localization.{c.DescriptionKey},");
             sb.AppendLine("            new Dictionary<string, uint[]>");
             sb.AppendLine("            {");
             foreach (var (name, rows) in c.Sheets)
@@ -137,22 +142,24 @@ public sealed class TranslationComponentGenerator : IIncrementalGenerator
 
     private static string Literal(string value) => SyntaxFactory.Literal(value).ToString();
 
+    private static bool IsValidResourceKey(string key) => SyntaxFacts.IsValidIdentifier(key);
+
     private sealed class ComponentModel : IEquatable<ComponentModel>
     {
         public string Id { get; }
-        public string DisplayName { get; }
-        public string Description { get; }
+        public string DisplayNameKey { get; }
+        public string DescriptionKey { get; }
         public (string Name, int[] Rows)[] Sheets { get; }
 
         public ComponentModel(string id, string displayName, string description, (string, int[])[] sheets)
         {
             Id = id;
-            DisplayName = displayName;
-            Description = description;
+            DisplayNameKey = displayName;
+            DescriptionKey = description;
             Sheets = sheets;
         }
 
-        public bool Equals(ComponentModel? other) => other is not null && Id == other.Id && DisplayName == other.DisplayName && Description == other.Description && Sheets.Select(s => s.Name).SequenceEqual(other.Sheets.Select(s => s.Name)) && Sheets.Zip(other.Sheets, (a, b) => a.Rows.SequenceEqual(b.Rows)).All(x => x);
+        public bool Equals(ComponentModel? other) => other is not null && Id == other.Id && DisplayNameKey == other.DisplayNameKey && DescriptionKey == other.DescriptionKey && Sheets.Select(s => s.Name).SequenceEqual(other.Sheets.Select(s => s.Name)) && Sheets.Zip(other.Sheets, (a, b) => a.Rows.SequenceEqual(b.Rows)).All(x => x);
 
         public override bool Equals(object? obj) => Equals(obj as ComponentModel);
         public override int GetHashCode() => Id.GetHashCode();
