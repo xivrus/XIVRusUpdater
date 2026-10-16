@@ -99,3 +99,15 @@ public sealed class EmotesComponent
 {
     public static readonly string[] Sheets = ["Emote"];
 }
+
+[TranslationComponent("color", nameof(Localization.Colors), nameof(Localization.ColorsDescription))]
+public sealed class PaintComponent
+{
+    public static readonly string[] Sheets = ["Stain"];
+}
+
+[TranslationComponent("param", nameof(Localization.Attributes), nameof(Localization.AttributesDescription))]
+public sealed class ParamComponent
+{
+    public static readonly string[] Sheets = ["BaseParam"];
+}

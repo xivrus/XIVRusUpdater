@@ -349,7 +349,7 @@
     <value>Colors</value>
   </data>
   <data name="ColorsDescription" xml:space="preserve">
-    <value>Color-related names and labels.</value>
+    <value>Disable this if you want to see the original color names.</value>
   </data>
   <data name="PenumbraModStatus" xml:space="preserve">
     <value>Penumbra Mod Status: {0}</value>

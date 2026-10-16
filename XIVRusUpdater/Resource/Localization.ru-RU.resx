@@ -349,7 +349,7 @@
     <value>Цвета</value>
   </data>
   <data name="ColorsDescription" xml:space="preserve">
-    <value>Названия и подписи, связанные с цветами.</value>
+    <value>Отключите это, если хотите видеть оригинальное названия цветов.</value>
   </data>
   <data name="PenumbraModStatus" xml:space="preserve">
     <value>Статус мода: {0}</value>

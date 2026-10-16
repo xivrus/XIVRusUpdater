@@ -232,7 +232,7 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Color-related names and labels..
+        ///   Ищет локализованную строку, похожую на Disable this if you want to see the original color names..
         /// </summary>
         internal static string ColorsDescription {
             get {
