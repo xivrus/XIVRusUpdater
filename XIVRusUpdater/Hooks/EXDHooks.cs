@@ -40,8 +40,8 @@ public unsafe partial class EXDHooks : IDisposable
         gate = new TranslationGate(parser);
         allocator = new RowAllocator(scanner.GetStaticAddressFromSig(ExdEnvironmentInstanceSig));
 
-        var hashTable = StoreRowResolver.Resolve(scanner, HashTableStoreRowSig, "HashTableExcelPageRowResolver::StoreRow");
-        var ringBuffer = StoreRowResolver.Resolve(scanner, RingBufferStoreRowSig, "RingBufferExcelPageRowResolver::StoreRow");
+        var hashTable = scanner.ScanText(HashTableStoreRowSig);
+        var ringBuffer = scanner.ScanText(RingBufferStoreRowSig);
 
         hashTableHook = provider.HookFromAddress<StoreRowDelegate>(hashTable, HashTableDetour);
         ringBufferHook = provider.HookFromAddress<StoreRowDelegate>(ringBuffer, RingBufferDetour);
