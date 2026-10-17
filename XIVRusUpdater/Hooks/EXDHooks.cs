@@ -1,3 +1,6 @@
+// Based on Harmonia (https://github.com/AngelicaProject/Harmonia), Copyright (C) 2026 pokeda.
+// Modified for XIVRusUpdater on 2026-10-09. Licensed under AGPL-3.0-or-later.
+
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Common.Component.Excel;
