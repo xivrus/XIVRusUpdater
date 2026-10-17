@@ -754,7 +754,7 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Translation has been updated..
+        ///   Ищет локализованную строку, похожую на The translation has been updated. You can continue playing without any issues, but you will need to restart the game to apply the new translation..
         /// </summary>
         internal static string TranslationUpdated {
             get {

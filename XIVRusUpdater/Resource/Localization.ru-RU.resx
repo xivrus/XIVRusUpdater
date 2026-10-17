@@ -277,7 +277,7 @@
     <value>Cписок изменений обновления</value>
   </data>
   <data name="TranslationUpdated" xml:space="preserve">
-    <value>Перевод обновлён.</value>
+    <value>Перевод был обновлен. Вы можете продолжать играть без каких-либо проблем, но для применения нового перевода потребуется перезапустить игру.</value>
   </data>
   <data name="NoChangelogAvailable" xml:space="preserve">
     <value>Список изменений недоступен.</value>

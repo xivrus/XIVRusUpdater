@@ -1,4 +1,5 @@
 using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
@@ -38,7 +39,10 @@ public sealed class ChangelogWindow : Window, IDisposable
 
     public override void Draw()
     {
-        ImGui.TextUnformatted(Localization.TranslationUpdated);
+        using(ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.HealerGreen))
+        {
+            ImGui.TextWrapped(Localization.TranslationUpdated);
+        }
         ImGui.Separator();
 
         var contentHeight = ImGui.GetContentRegionAvail().Y - 50 * ImGuiHelpers.GlobalScale;

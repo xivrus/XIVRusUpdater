@@ -277,7 +277,7 @@
     <value>Update Changelog</value>
   </data>
   <data name="TranslationUpdated" xml:space="preserve">
-    <value>Translation has been updated.</value>
+    <value>The translation has been updated. You can continue playing without any issues, but you will need to restart the game to apply the new translation.</value>
   </data>
   <data name="NoChangelogAvailable" xml:space="preserve">
     <value>No changelog available.</value>
