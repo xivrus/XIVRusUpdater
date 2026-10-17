@@ -363,4 +363,7 @@
   <data name="LastRemotePenumbraMod" xml:space="preserve">
     <value>Последний удалённая версия мод: </value>
   </data>
+  <data name="RebootImpotance" xml:space="preserve">
+    <value>Настоятельно рекомендуется перезапустить игру, чтобы изменения в компонентах вступили в силу. Хотя некоторые компоненты могут начать работать сразу, в целом рекомендуется выполнить перезапуск.</value>
+  </data>
 </root>

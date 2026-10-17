@@ -637,6 +637,15 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на It is highly recommended to restart the game for changes to components to take effect. While some components may begin working immediately, the general recommendation is to perform a restart..
+        /// </summary>
+        internal static string RebootImpotance {
+            get {
+                return ResourceManager.GetString("RebootImpotance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Refresh.
         /// </summary>
         internal static string Refresh {

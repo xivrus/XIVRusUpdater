@@ -363,4 +363,7 @@
   <data name="LastRemotePenumbraMod" xml:space="preserve">
     <value>Last remote Penumbra mod: </value>
   </data>
+  <data name="RebootImpotance" xml:space="preserve">
+    <value>It is highly recommended to restart the game for changes to components to take effect. While some components may begin working immediately, the general recommendation is to perform a restart.</value>
+  </data>
 </root>

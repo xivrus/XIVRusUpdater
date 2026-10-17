@@ -1,4 +1,5 @@
 using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
@@ -83,6 +84,11 @@ public class ConfigWindow : Window, IDisposable
             if (header.Success)
             {
                 var translationFilter = Plugin.filter;
+                
+                using(ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudYellow))
+                {
+                    ImGui.TextWrapped(Localization.RebootImpotance);
+                }
 
                 if (ImGui.Button(Localization.EnableAll))
                 {
