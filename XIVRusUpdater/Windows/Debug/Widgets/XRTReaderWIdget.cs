@@ -55,8 +55,6 @@ public class XRTReaderWIdget : IDebugWindowWidget
         if (!success || string.IsNullOrEmpty(path))
             return;
 
-        _resource?.Dispose();
-
         _resource = new FileResource(path, ResourceFormat.Xrt);
     }
 
@@ -91,7 +89,7 @@ public class XRTReaderWIdget : IDebugWindowWidget
             {
                 ImGui.TableNextColumn();
 
-                if (column >= columns.Count)
+                if (column >= columns.Length)
                 {
                     ImGui.TextDisabled("-");
                     continue;
@@ -99,7 +97,7 @@ public class XRTReaderWIdget : IDebugWindowWidget
 
                 var value = columns[column];
 
-                ImGui.TextUnformatted(value!.Value);
+                ImGui.TextUnformatted(value.Bytes);
             }
         }
 

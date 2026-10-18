@@ -9,7 +9,7 @@ using XIVRusUpdater.Utils;
 
 namespace XIVRusUpdater.Core;
 
-public class TranslationParser : IDisposable
+public class TranslationParser
 {
     private readonly object syncRoot = new();
     
@@ -37,7 +37,6 @@ public class TranslationParser : IDisposable
         {
             if (engineId == _engineId)
             {
-                newManager.Dispose();
                 return;
             }
 
@@ -78,7 +77,7 @@ public class TranslationParser : IDisposable
             return _resources.IsLoaded(sheetName);
     }
 
-    public bool TryGetValue(string sheetName, uint RowId, uint Column, out ByteArrayWrapper? translation)
+    internal bool TryGetValue(string sheetName, uint RowId, uint Column, out Translation? translation)
     {
         lock (syncRoot)
         {
@@ -86,6 +85,21 @@ public class TranslationParser : IDisposable
             if (_resources.TryGet(sheetName, out var fileResource) && fileResource.TryGetData(RowId, Column, out var @byte))
             {
                 translation = @byte;
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    internal bool TryGetRowTranslations(string sheet, uint rowId, out Translation[] translations)
+    {
+        lock(syncRoot)
+        {
+            translations = null;
+            if (_resources.TryGet(sheet, out var file) && file.TryGetData(rowId, out var columns))
+            {
+                translations = columns;
                 return true;
             }
 
@@ -105,23 +119,11 @@ public class TranslationParser : IDisposable
         {
             if (id != _engineId)
             {
-                next.Dispose();
                 return;
             }
 
             retired.Add(_resources);
             _resources = next;
-        }
-    }
-
-    public void Dispose()
-    {
-        lock (syncRoot)
-        {
-            foreach (var manager in retired)
-                manager.Dispose();
-            retired.Clear();
-            _resources.Dispose();
         }
     }
 }
