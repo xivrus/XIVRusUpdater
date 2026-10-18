@@ -114,7 +114,7 @@ The [SamplePlugin](https://github.com/goatcorp/SamplePlugin) template was used a
 
 The design principle of the debug menu with widgets in XIVRusUpdater was taken from the `/xldata` layer for [Dalamud](https://github.com/goatcorp/Dalamud/tree/master/Dalamud/Interface/Internal/Windows/Data)
 
-The Excel row rewriting layer in XIVRusUpdater is based on [Harmonia](https://github.com/AngelicaProject/Harmonia).
+The Excel row rewriting layer in XIVRusUpdater is based on data mapped in [FFXIVClientStructs](https://github.com/aers/FFXIVClientStructs).
 
 The cross-platform download feature with progress tracking in XIVRusUpdater is based on [HttpClientProgressExtensions](https://gist.github.com/dalexsoto/9fd3c5bdbe9f61a717d47c5843384d11)
 

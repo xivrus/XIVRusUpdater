@@ -8,7 +8,7 @@
   </PropertyGroup>
 	<PropertyGroup>
 		<!-- Plugin metadata -->
-		<Author>hOst1k, pokeda</Author>
+		<Author>hOst1k</Author>
 		<Name>XIV Rus</Name>
 		<Punchline>Localization engine for Final Fantasy XIV.</Punchline>
 		<Description>Provides translated text and supporting resources for Final Fantasy XIV through a dedicated localization engine. Localization content is updated independently, with support for multiple translation variants. Requires Penumbra for font replacement and supporting texture assets.</Description>
