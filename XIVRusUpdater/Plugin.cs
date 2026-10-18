@@ -104,12 +104,12 @@ public sealed class Plugin : IDalamudPlugin
     private void OnCommand(string command, string args)
     {
         if (string.Equals(args.Trim(), "debug", StringComparison.OrdinalIgnoreCase))
-        { 
-            Debug.Toggle();
+        {
+            ToggleDebugUi();
             return;
         }
 
-        MainWindow.Toggle();
+        ToggleMainUi();
     }
 
     private async void OnUpdate(IFramework framework)
@@ -128,4 +128,5 @@ public sealed class Plugin : IDalamudPlugin
 
     public void ToggleConfigUi() => ConfigWindow.Toggle();
     public void ToggleMainUi() => MainWindow.Toggle();
+    public void ToggleDebugUi() => Debug.Toggle();
 }

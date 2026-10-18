@@ -16,7 +16,7 @@ public class MainWindow : Window, IDisposable
     private Task? _refreshTask;
     private Task? _downloadTask;
     
-    private enum OverallStatus
+    public enum OverallStatus
     {
         Ok,
         UpdateAvailable,
@@ -116,6 +116,11 @@ public class MainWindow : Window, IDisposable
                 {
                     _plugin.ToggleConfigUi();
                 }
+
+                if(ImGui.Button("Open debug", new Vector2(-1, 0)))
+                {
+                    _plugin.ToggleDebugUi();
+                }
             }
         }
 
@@ -138,7 +143,7 @@ public class MainWindow : Window, IDisposable
         }
     }
 
-    private OverallStatus GetOverallStatus()
+    public static OverallStatus GetOverallStatus()
     {
         var state = Plugin.State;
 
