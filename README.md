@@ -8,23 +8,6 @@ Final Fantasy XIV Translation Layer for XIVRus
 
 The XIVRus translation engine for Final Fantasy XIV, which handles interactions with the game and automatically distributes the latest translation updates to all users. It uses [Penumbra](https://github.com/xivdev/Penumbra) to replace the in-game font (with one that supports Russian) and to replace in-game textures.
 
-## Main Features
-
-### Update
-* Integrates with Penumbra: it automatically downloads and installs the translation mod (a font with Russian language support and textures) and keeps it up to date.
-* Automatically checks for updates to the translation and the Penumbra mod.
-* Auto-update can be disabled: checks will still run and notify you of new versions, but files will not be downloaded automatically.
-* The update check interval is customizable.
-
-### Translation
-* The translation works on a component-based system. By default, everything that can be translated is translated.
-* Individual components can be enabled or disabled, in which case the corresponding parts of the strings remain in the original language.
-* There is an option to enable or disable all components at once.
-* The translation engine can be selected in the settings.
-
-
-* Access to test builds is enabled in the settings after you confirm that you understand the potential issues and accept responsibility for them.
-
 ## Support
 
 For help resolving issues, you can open an issue directly on GitHub or message us directly on [Discord](https://discord.gg/e6z2VY8fNj)
