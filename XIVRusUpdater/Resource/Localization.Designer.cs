@@ -169,6 +169,15 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Block updates if you are on duty.
+        /// </summary>
+        internal static string BlockUpdateInDuty {
+            get {
+                return ResourceManager.GetString("BlockUpdateInDuty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Branch:.
         /// </summary>
         internal static string Branch {
@@ -255,6 +264,15 @@ namespace XIVRusUpdater.Resource {
         internal static string CurrentSource {
             get {
                 return ResourceManager.GetString("CurrentSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Open debug.
+        /// </summary>
+        internal static string DebugOpen {
+            get {
+                return ResourceManager.GetString("DebugOpen", resourceCulture);
             }
         }
         

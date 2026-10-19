@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
@@ -17,16 +18,12 @@ namespace XIVRusUpdater;
 public sealed class Plugin : IDalamudPlugin
 {
     [PluginService] internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
-
     [PluginService] internal static IFramework Framework { get; private set; } = null!;
-
     [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
-
     [PluginService] internal static ISigScanner SigScanner { get; private set; } = null!;
-
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
-
     [PluginService] internal static IGameInteropProvider interopProvider { get; private set; } = null!;
+    [PluginService] internal static ICondition condition { get; private set;  } = null!;
 
     public static EXDHooks HookLayers { get; private set; } = null!;
     public static TranslationFilter filter { get; private set; } = null!;
@@ -112,14 +109,18 @@ public sealed class Plugin : IDalamudPlugin
         ToggleMainUi();
     }
 
+    public static bool BoundByDuty() => condition[ConditionFlag.BoundByDuty] || condition[ConditionFlag.BoundByDuty56] || condition[ConditionFlag.BoundByDuty95];
+
     private async void OnUpdate(IFramework framework)
     {
         if (DateTime.Now > nextRefresh)
         {
-            nextRefresh = DateTime.Now.AddMinutes(Configuration.UpdateCheckIntervalMinutes);
+            bool inDuty = Configuration.BlockUpdateWhileDuty && BoundByDuty();
+            nextRefresh = DateTime.Now.AddMinutes(inDuty ? 1 : Configuration.UpdateCheckIntervalMinutes);
             Log.Information($"Perform timed update... Next update: {nextRefresh.ToString()}");
 
-            _ = networkService.CheckForUpdates();
+            if(!inDuty)
+                _ = networkService.CheckForUpdates();
         }
 
         DownloadWindow.IsOpen = State.Penumbra.Download.IsDownloading || State.Translation.Download.IsDownloading;

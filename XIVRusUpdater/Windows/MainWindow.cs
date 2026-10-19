@@ -117,7 +117,7 @@ public class MainWindow : Window, IDisposable
                     _plugin.ToggleConfigUi();
                 }
 
-                if(ImGui.Button("Open debug", new Vector2(-1, 0)))
+                if(ImGui.Button(Localization.DebugOpen, new Vector2(-1, 0)))
                 {
                     _plugin.ToggleDebugUi();
                 }

@@ -366,4 +366,10 @@
   <data name="RebootImpotance" xml:space="preserve">
     <value>It is highly recommended to restart the game for changes to components to take effect. While some components may begin working immediately, the general recommendation is to perform a restart.</value>
   </data>
+  <data name="DebugOpen" xml:space="preserve">
+    <value>Open debug</value>
+  </data>
+  <data name="BlockUpdateInDuty" xml:space="preserve">
+    <value>Block updates if you are on duty</value>
+  </data>
 </root>

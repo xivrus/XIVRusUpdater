@@ -366,4 +366,10 @@
   <data name="RebootImpotance" xml:space="preserve">
     <value>Настоятельно рекомендуется перезапустить игру, чтобы изменения в компонентах вступили в силу. Хотя некоторые компоненты могут начать работать сразу, в целом рекомендуется выполнить перезапуск.</value>
   </data>
+  <data name="DebugOpen" xml:space="preserve">
+    <value>Открыть отладочное меню</value>
+  </data>
+  <data name="BlockUpdateInDuty" xml:space="preserve">
+    <value>Не допускать обновлений, если вы находитесь в дюти</value>
+  </data>
 </root>
