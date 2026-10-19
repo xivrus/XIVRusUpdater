@@ -1,32 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Dalamud.NET.Sdk/15.0.0">
-  <PropertyGroup>
+    <PropertyGroup>
     <Version>1.0.1</Version>
     <PackageProjectUrl>https://github.com/xivrus/XIVRusUpdater</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
-  </PropertyGroup>
-	<PropertyGroup>
-		<!-- Plugin metadata -->
-		<Author>hOst1k</Author>
-		<Name>XIV Rus</Name>
-		<Punchline>Localization engine for Final Fantasy XIV.</Punchline>
-		<Description>Provides translated text and supporting resources for Final Fantasy XIV through a dedicated localization engine. Localization content is updated independently, with support for multiple translation variants. Requires Penumbra for font replacement and supporting texture assets.</Description>
-		<RepoUrl>https://github.com/xivrus/XIVRusUpdater</RepoUrl>
-		<Tags>localization;translation;xivrus;rus</Tags>
-		<IconUrl>https://raw.githubusercontent.com/xivrus/XIVRusUpdater/master/Data/icon.png</IconUrl>
+    </PropertyGroup>
+    <PropertyGroup>
+	    <!-- Plugin metadata -->
+	    <Author>hOst1k</Author>
+	    <Name>XIV Rus</Name>
+	    <Punchline>Localization engine for Final Fantasy XIV.</Punchline>
+	    <Description>Provides translated text and supporting resources for Final Fantasy XIV through a dedicated localization engine. Localization content is updated independently, with support for multiple translation variants. Requires Penumbra for font replacement and supporting texture assets.</Description>
+	    <RepoUrl>https://github.com/xivrus/XIVRusUpdater</RepoUrl>
+	    <Tags>localization;translation;xivrus;rus</Tags>
+	    <IconUrl>https://raw.githubusercontent.com/xivrus/XIVRusUpdater/master/Data/icon.png</IconUrl>
 
-		<!-- Runtime / loading -->
-		<ApplicableVersion>any</ApplicableVersion>
-		<LoadRequiredState>2</LoadRequiredState>
-	</PropertyGroup>
-
-  <ItemGroup>
-    <Content Include="..\Data\**\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
-  </ItemGroup>
+	    <!-- Runtime / loading -->
+	    <ApplicableVersion>any</ApplicableVersion>
+	    <LoadRequiredState>2</LoadRequiredState>
+    </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Penumbra.Api" Version="5.19.2" />
