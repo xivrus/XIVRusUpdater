@@ -44,7 +44,9 @@ public sealed class Plugin : IDalamudPlugin
     private readonly MainWindow MainWindow;
     private readonly DownloadWindow DownloadWindow;
     private readonly ChangelogWindow Changelog;
+#if DEBUG
     private readonly DebugWindow Debug;
+#endif
 
     public Plugin()
     {
@@ -64,14 +66,16 @@ public sealed class Plugin : IDalamudPlugin
         MainWindow = new MainWindow(this);
         DownloadWindow = new DownloadWindow();
         Changelog = new ChangelogWindow(this);
+#if DEBUG
         Debug = new DebugWindow();
+        WindowSystem.AddWindow(Debug);
+#endif
 
         WindowSystem.AddWindow(ConfigWindow);
         WindowSystem.AddWindow(MainWindow);
         WindowSystem.AddWindow(DownloadWindow);
         WindowSystem.AddWindow(Changelog);
-        WindowSystem.AddWindow(Debug);
-
+        
         CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
             HelpMessage = "Open the plugin window. Use '/xivrus debug' for open debug window"
@@ -100,11 +104,13 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnCommand(string command, string args)
     {
+#if DEBUG
         if (string.Equals(args.Trim(), "debug", StringComparison.OrdinalIgnoreCase))
         {
             ToggleDebugUi();
             return;
         }
+#endif
 
         ToggleMainUi();
     }
@@ -129,5 +135,8 @@ public sealed class Plugin : IDalamudPlugin
 
     public void ToggleConfigUi() => ConfigWindow.Toggle();
     public void ToggleMainUi() => MainWindow.Toggle();
+
+#if DEBUG
     public void ToggleDebugUi() => Debug.Toggle();
+#endif
 }
