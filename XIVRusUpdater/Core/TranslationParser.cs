@@ -15,10 +15,14 @@ public class TranslationParser
     
     private readonly List<TranslationResourceManager> retired = new();
     private TranslationResourceManager _resources { get; set; }
+    private static TranslationFilter filter { get; set; } = null!;
+
     private string _engineId { get; set; }
 
     public TranslationParser(string @engineId)
     {
+        filter = new TranslationFilter();
+        filter.Rebuild(Plugin.Instance.Configuration.DisabledComponents);
         _engineId = engineId;
         _resources = CreateResourceManager(_engineId);
     }
@@ -77,6 +81,11 @@ public class TranslationParser
             return _resources.IsLoaded(sheetName);
     }
 
+    public bool IsNeedTranslate(string sheetName, uint rowId)
+    {
+        return IsSheetLoaded(sheetName) && filter.IsActive(sheetName, rowId);
+    }
+
     internal bool TryGetValue(string sheetName, uint RowId, uint Column, out Translation? translation)
     {
         lock (syncRoot)
@@ -107,6 +116,8 @@ public class TranslationParser
         }
     }
 
+    public void UpdateFilter() => filter.Rebuild(Plugin.Instance.Configuration.DisabledComponents);
+
     public void Reload()
     {
         string id;
@@ -125,5 +136,7 @@ public class TranslationParser
             retired.Add(_resources);
             _resources = next;
         }
+
+        UpdateFilter();
     }
 }

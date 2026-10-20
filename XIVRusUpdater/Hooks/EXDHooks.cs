@@ -84,7 +84,7 @@ public unsafe partial class EXDHooks : IDisposable
         var sheetName = sheet->SheetNameVar.SheetNamePtr.ToString();
         var rowId = descriptor->RowId;
 
-        if (!parser.IsSheetLoaded(sheetName) || !Plugin.filter.IsActive(sheetName, rowId))
+        if (!parser.IsNeedTranslate(sheetName, rowId))
             return false;
 
         if (!parser.TryGetRowTranslations(sheetName, rowId, out var translations))

@@ -26,8 +26,7 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static ICondition condition { get; private set;  } = null!;
 
     public static EXDHooks HookLayers { get; private set; } = null!;
-    public static TranslationFilter filter { get; private set; } = null!;
-
+    
     internal static PenumbraService PenumbraApi { get; private set; } = null!;
     internal static NetworkService networkService { get; private set; } = null!;
     internal static UpdaterState State { get; private set; } = null!;
@@ -52,8 +51,6 @@ public sealed class Plugin : IDalamudPlugin
     {
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Instance = this;
-        filter = new TranslationFilter();
-        filter.Rebuild(Configuration.DisabledComponents);
         HookLayers = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
         State = new UpdaterState();
         networkService = new NetworkService(this);

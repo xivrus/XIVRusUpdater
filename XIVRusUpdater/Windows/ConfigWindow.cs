@@ -40,6 +40,13 @@ public class ConfigWindow : Window, IDisposable
                     if (child.Success)
                     {
                         var currentEngine = TranslationEngines.Get(_config.EngineId);
+                        
+                        if(ImGui.Button(Localization.Reload))
+                        {
+                            Plugin.HookLayers.parser.Reload();
+                        }
+
+                        ImGui.SameLine();
 
                         using (var combo = ImRaii.Combo(Localization.TranslationEngine, currentEngine?.DisplayName ?? Localization.Unknown))
                         {
@@ -89,7 +96,7 @@ public class ConfigWindow : Window, IDisposable
         {
             if (header.Success)
             {
-                var translationFilter = Plugin.filter;
+                var parser = Plugin.HookLayers.parser;
                 
                 using(ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudYellow))
                 {
@@ -99,7 +106,7 @@ public class ConfigWindow : Window, IDisposable
                 if (ImGui.Button(Localization.EnableAll))
                 {
                     _config.DisabledComponents.Clear();
-                    translationFilter.Rebuild(_config.DisabledComponents);
+                    parser.UpdateFilter();
                 }
 
                 ImGui.SameLine();
@@ -111,7 +118,7 @@ public class ConfigWindow : Window, IDisposable
                     foreach (var component in TranslationComponents.All)
                         _config.DisabledComponents.Add(component.Id);
 
-                    translationFilter.Rebuild(_config.DisabledComponents);
+                    parser.UpdateFilter();
                 }
 
                 ImGui.Separator();
@@ -127,7 +134,7 @@ public class ConfigWindow : Window, IDisposable
                         else
                             _config.DisabledComponents.Add(component.Id);
 
-                        translationFilter.Rebuild(_config.DisabledComponents);
+                        parser.UpdateFilter();
                     }
 
                     ImGui.SameLine();
