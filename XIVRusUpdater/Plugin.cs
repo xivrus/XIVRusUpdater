@@ -50,6 +50,8 @@ public sealed class Plugin : IDalamudPlugin
     public Plugin()
     {
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+        if (Configuration.WasMigrated)
+            Configuration.Save();
         Instance = this;
         HookLayers = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
         State = new UpdaterState();
