@@ -109,22 +109,30 @@ public class NetworkService
 
     public async Task CheckForUpdates()
     {
+        Plugin.State.IsChecking = true;
         Plugin.Log.Information("Update Check started");
         plugin.Configuration.LastUpdateCheck = DateTime.Now;
         
         await RefreshAsync();
 
         plugin.Configuration.LastSuccessfulUpdate = DateTime.Now;
-        plugin.Configuration.Save();
-
+        
         if (!Plugin.State.UpdateAvailable)
-            return;
+        {
+            Plugin.State.IsChecking = false;
+            return; 
+        }
 
         if (!plugin.Configuration.AutoDownloadUpdates)
-            return;
+        {
+            Plugin.State.IsChecking = false;
+            return; 
+        }
 
         if(Plugin.State.Penumbra.UpdateAvailable) await DownloadLatestModAsync();
         if (Plugin.State.Translation.UpdateAvailable) await DownloadLatestTranslationAsync();
+        plugin.Configuration.Save();
+        Plugin.State.IsChecking = false;
     }
 
     public async Task DownloadLatestModAsync()

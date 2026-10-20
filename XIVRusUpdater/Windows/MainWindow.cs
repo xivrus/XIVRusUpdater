@@ -87,9 +87,13 @@ public class MainWindow : Window, IDisposable
         {
             if (header.Success)
             {
-                if (ImGui.Button(Localization.Refresh, new Vector2(-1, 0)))
-                {
-                    _refreshTask ??= Plugin.networkService.CheckForUpdates();
+                var isChecking = Plugin.State.IsChecking;
+                using (var disabled = ImRaii.Disabled(isChecking))
+                { 
+                    if (ImGui.Button(Localization.Refresh, new Vector2(-1, 0)))
+                    {
+                        _refreshTask ??= Plugin.networkService.CheckForUpdates();
+                    }
                 }
 
                 if (_refreshTask?.IsCompleted == true)
@@ -99,7 +103,7 @@ public class MainWindow : Window, IDisposable
 
                 bool updateAvailable = Plugin.State.UpdateAvailable;
 
-                using (var disable = ImRaii.Disabled(!updateAvailable))
+                using (var disable = ImRaii.Disabled(!updateAvailable || isChecking))
                 {
                     if (ImGui.Button(Localization.UpdateComponents, new Vector2(-1, 0)))
                     {
