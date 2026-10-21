@@ -289,13 +289,13 @@
     <value>Enemy NPCs</value>
   </data>
   <data name="EnemyNpcNamesDescription" xml:space="preserve">
-    <value>Disable if translated enemy names make it difficult to follow guides or complete quests.</value>
+    <value>Disable this component if you’re having trouble finding enemies for quests, hunting and so on.</value>
   </data>
   <data name="PlaceNames" xml:space="preserve">
     <value>Place Names</value>
   </data>
   <data name="PlaceNamesDescription" xml:space="preserve">
-    <value>Disable if translated location names make it difficult to use wikis, maps, or guides.</value>
+    <value>Disable this if you are having difficulty finding traders, crafting NPCs, exchange NPCs or other functional NPCs.</value>
   </data>
   <data name="DutyNames" xml:space="preserve">
     <value>Duty Names and Descriptions</value>
@@ -313,13 +313,13 @@
     <value>Actions, Traits and Statuses</value>
   </data>
   <data name="ActionsTraitsStatusesDescription" xml:space="preserve">
-    <value>Disable if you prefer action, trait, and status descriptions in the original language.</value>
+    <value>Disable this component if you wish to view the descriptions in their original form.</value>
   </data>
   <data name="Achievements" xml:space="preserve">
     <value>Achievements</value>
   </data>
   <data name="AchievementsDescription" xml:space="preserve">
-    <value>Disable if you prefer achievement names in the original language. Achievement descriptions will also remain untranslated.</value>
+    <value>Disable this component if you want the original achievement names. Please note that the translations of the achievement descriptions will be lost.</value>
   </data>
   <data name="PlayerTitles" xml:space="preserve">
     <value>Titles</value>
@@ -337,7 +337,7 @@
     <value>Emotes</value>
   </data>
   <data name="EmotesDescription" xml:space="preserve">
-    <value>Disable if you prefer emote names in the original language. Emote commands are never translated.</value>
+    <value>Disable this component if you wish to see the emotion names in their original form. Please note that emotion commands are not translated in any case. You may find that the commands alone are sufficient.</value>
   </data>
   <data name="Attributes" xml:space="preserve">
     <value>Attributes</value>
@@ -363,7 +363,7 @@
   <data name="LastRemotePenumbraMod" xml:space="preserve">
     <value>Last remote Penumbra mod: </value>
   </data>
-  <data name="RebootImpotance" xml:space="preserve">
+  <data name="RebootImportance" xml:space="preserve">
     <value>It is highly recommended to restart the game for changes to components to take effect. While some components may begin working immediately, the general recommendation is to perform a restart.</value>
   </data>
   <data name="DebugOpen" xml:space="preserve">

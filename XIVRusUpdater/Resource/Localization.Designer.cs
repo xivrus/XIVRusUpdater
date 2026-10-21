@@ -88,7 +88,7 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Disable if you prefer achievement names in the original language. Achievement descriptions will also remain untranslated..
+        ///   Ищет локализованную строку, похожую на Disable this component if you want the original achievement names. Please note that the translations of the achievement descriptions will be lost..
         /// </summary>
         internal static string AchievementsDescription {
             get {
@@ -124,7 +124,7 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Disable if you prefer action, trait, and status descriptions in the original language..
+        ///   Ищет локализованную строку, похожую на Disable this component if you wish to view the descriptions in their original form..
         /// </summary>
         internal static string ActionsTraitsStatusesDescription {
             get {
@@ -349,7 +349,7 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Disable if you prefer emote names in the original language. Emote commands are never translated..
+        ///   Ищет локализованную строку, похожую на Disable this component if you wish to see the emotion names in their original form. Please note that emotion commands are not translated in any case. You may find that the commands alone are sufficient..
         /// </summary>
         internal static string EmotesDescription {
             get {
@@ -376,7 +376,7 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Disable if translated enemy names make it difficult to follow guides or complete quests..
+        ///   Ищет локализованную строку, похожую на Disable this component if you’re having trouble finding enemies for quests, hunting and so on..
         /// </summary>
         internal static string EnemyNpcNamesDescription {
             get {
@@ -619,7 +619,7 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Disable if translated location names make it difficult to use wikis, maps, or guides..
+        ///   Ищет локализованную строку, похожую на Disable this if you are having difficulty finding traders, crafting NPCs, exchange NPCs or other functional NPCs..
         /// </summary>
         internal static string PlaceNamesDescription {
             get {
@@ -657,9 +657,9 @@ namespace XIVRusUpdater.Resource {
         /// <summary>
         ///   Ищет локализованную строку, похожую на It is highly recommended to restart the game for changes to components to take effect. While some components may begin working immediately, the general recommendation is to perform a restart..
         /// </summary>
-        internal static string RebootImpotance {
+        internal static string RebootImportance {
             get {
-                return ResourceManager.GetString("RebootImpotance", resourceCulture);
+                return ResourceManager.GetString("RebootImportance", resourceCulture);
             }
         }
         

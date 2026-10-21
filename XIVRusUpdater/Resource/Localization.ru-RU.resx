@@ -274,10 +274,10 @@
     <value>Последнее успешное обновление:</value>
   </data>
   <data name="ChangelogTitle" xml:space="preserve">
-    <value>Cписок изменений обновления</value>
+    <value>Список изменений обновления</value>
   </data>
   <data name="TranslationUpdated" xml:space="preserve">
-    <value>Перевод был обновлен. Вы можете продолжать играть без каких-либо проблем, но для применения нового перевода потребуется перезапустить игру.</value>
+    <value>Перевод был обновлён. Вы можете продолжать играть без каких-либо проблем, но для применения нового перевода потребуется перезапустить игру.</value>
   </data>
   <data name="NoChangelogAvailable" xml:space="preserve">
     <value>Список изменений недоступен.</value>
@@ -289,55 +289,55 @@
     <value>Враждебные NPC</value>
   </data>
   <data name="EnemyNpcNamesDescription" xml:space="preserve">
-    <value>Отключите, если переведённые имена врагов мешают пользоваться руководствами или выполнять задания.</value>
+    <value>Отключите этот компонент, если возникают трудности с поиском врагов для заданий, охоты и прочего.</value>
   </data>
   <data name="PlaceNames" xml:space="preserve">
-    <value>Названия мест</value>
+    <value>Названия локаций</value>
   </data>
   <data name="PlaceNamesDescription" xml:space="preserve">
-    <value>Отключите, если переведённые названия мест мешают пользоваться вики, картами или руководствами.</value>
+    <value>Отключите, если переведённые названия локаций мешают пользоваться вики, картами или руководствами.</value>
   </data>
   <data name="DutyNames" xml:space="preserve">
-    <value>Названия и описания заданий</value>
+    <value>Отключите этот компонент, если хотите видеть названия в Поиске миссий в оригинале. Обратите внимание, что с переводом оригинальное название миссии можно увидеть в её описании.</value>
   </data>
   <data name="DutyNamesDescription" xml:space="preserve">
-    <value>Отключите, если предпочитаете оригинальные названия заданий в окне поиска заданий. При включённом переводе оригинальное название по-прежнему будет отображаться в описании.</value>
+    <value>Отключите этот компонент, если хотите видеть названия в Поиске миссий в оригинале. Обратите внимание, что с переводом оригинальное название миссии можно увидеть в её описании.</value>
   </data>
   <data name="FriendlyNpcNames" xml:space="preserve">
     <value>Имена дружественных NPC</value>
   </data>
   <data name="FriendlyNpcNamesDescription" xml:space="preserve">
-    <value>Отключите, если переведённые имена NPC мешают находить торговцев, персонажей заданий и других NPC, предоставляющих услуги.</value>
+    <value>Отключите, если возникают трудности с поиском торговцев, NPC для ремесла, обмена и других функциональных NPC.</value>
   </data>
   <data name="ActionsTraitsStatuses" xml:space="preserve">
-    <value>Действия, особенности и эффекты</value>
+    <value>Описания действий, навыков и статус-эффектов</value>
   </data>
   <data name="ActionsTraitsStatusesDescription" xml:space="preserve">
-    <value>Отключите, если предпочитаете оригинальные описания действий, особенностей и эффектов.</value>
+    <value>Отключите этот компонент, если хотите видеть указанные описания в оригинале.</value>
   </data>
   <data name="Achievements" xml:space="preserve">
     <value>Достижения</value>
   </data>
   <data name="AchievementsDescription" xml:space="preserve">
-    <value>Отключите, если предпочитаете оригинальные названия достижений. Описания достижений также останутся без перевода.</value>
+    <value>Отключите этот компонент, если нужны оригинальные названия достижений. Обратите внимание, что перевод описаний достижений пропадёт.</value>
   </data>
   <data name="PlayerTitles" xml:space="preserve">
     <value>Титулы</value>
   </data>
   <data name="PlayerTitlesDescription" xml:space="preserve">
-    <value>Отключите, если предпочитаете оригинальные титулы персонажей.</value>
+    <value>Отключите этот компонент, если хотите видеть титулы игроков в оригинале.</value>
   </data>
   <data name="Collectibles" xml:space="preserve">
     <value>Коллекционные предметы</value>
   </data>
   <data name="CollectiblesDescription" xml:space="preserve">
-    <value>Включает средства передвижения, прислужников, оформление визитных карточек, украшения чокобо, карты Тройной триады, записи о Боздже, записи о подземельях с альтернативными маршрутами, оккультные записи и поручения.</value>
+    <value>Включает средства передвижения, миньонов, оформление карточек, украшения чокобо, карты Тройного Трио, записи о Бозье, записи о вариативных подземельях, оккультные записи и поручения.</value>
   </data>
   <data name="Emotes" xml:space="preserve">
     <value>Эмоции</value>
   </data>
   <data name="EmotesDescription" xml:space="preserve">
-    <value>Отключите, если предпочитаете оригинальные названия эмоций. Команды эмоций никогда не переводятся.</value>
+    <value>Отключите этот компонент, если хотите видеть названия эмоций в оригинале. Обратите внимание, что команды эмоций в любом случае не переводятся. Возможно, вам будет достаточно команд вместо названий.</value>
   </data>
   <data name="Attributes" xml:space="preserve">
     <value>Характеристики</value>
@@ -346,10 +346,10 @@
     <value>Названия характеристик и параметров персонажа.</value>
   </data>
   <data name="Colors" xml:space="preserve">
-    <value>Цвета</value>
+    <value>Цвета (Краски)</value>
   </data>
   <data name="ColorsDescription" xml:space="preserve">
-    <value>Отключите это, если хотите видеть оригинальное названия цветов.</value>
+    <value>Отключите это, если хотите видеть оригинальные названия цветов (красок).</value>
   </data>
   <data name="PenumbraModStatus" xml:space="preserve">
     <value>Статус мода: {0}</value>
@@ -361,16 +361,16 @@
     <value>Удалённая версия мода: {0}</value>
   </data>
   <data name="LastRemotePenumbraMod" xml:space="preserve">
-    <value>Последний удалённая версия мод: </value>
+    <value>Последняя удалённая версия мода: </value>
   </data>
-  <data name="RebootImpotance" xml:space="preserve">
+  <data name="RebootImportance" xml:space="preserve">
     <value>Настоятельно рекомендуется перезапустить игру, чтобы изменения в компонентах вступили в силу. Хотя некоторые компоненты могут начать работать сразу, в целом рекомендуется выполнить перезапуск.</value>
   </data>
   <data name="DebugOpen" xml:space="preserve">
     <value>Открыть отладочное меню</value>
   </data>
   <data name="BlockUpdateInDuty" xml:space="preserve">
-    <value>Не допускать обновлений, если вы находитесь в дюти</value>
+    <value>Не допускать обновлений, если вы находитесь в подземелье</value>
   </data>
   <data name="Reload" xml:space="preserve">
     <value>Перезагрузить</value>

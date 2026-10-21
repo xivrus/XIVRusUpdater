@@ -100,7 +100,7 @@ public class ConfigWindow : Window, IDisposable
                 
                 using(ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudYellow))
                 {
-                    ImGui.TextWrapped(Localization.RebootImpotance);
+                    ImGui.TextWrapped(Localization.RebootImportance);
                 }
 
                 if (ImGui.Button(Localization.EnableAll))
