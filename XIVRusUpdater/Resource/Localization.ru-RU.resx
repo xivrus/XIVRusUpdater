@@ -375,4 +375,11 @@
   <data name="Reload" xml:space="preserve">
     <value>Перезагрузить</value>
   </data>
+  <data name="ThirdParty" xml:space="preserve">
+    <value>Сторонние плагины</value>
+  </data>
+  <data name="ThirdPartyDescription" xml:space="preserve">
+    <value>Отключите этот компонент, если хотите исправить работу некоторых плагинов: LazyLoad. 
+Это приведёт к тому, что нужные этим плагинам строки переводится не будут.</value>
+  </data>
 </root>

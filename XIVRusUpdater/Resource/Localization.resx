@@ -375,4 +375,11 @@
   <data name="Reload" xml:space="preserve">
     <value>Reload</value>
   </data>
+  <data name="ThirdParty" xml:space="preserve">
+    <value>Third-party plugins</value>
+  </data>
+  <data name="ThirdPartyDescription" xml:space="preserve">
+    <value>Disable this component if you want to fix issues with certain plugins: LazyLoad. 
+Please note that this will prevent the strings required by these plugins from being translated.</value>
+  </data>
 </root>

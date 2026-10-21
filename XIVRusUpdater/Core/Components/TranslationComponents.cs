@@ -111,3 +111,13 @@ public sealed class ParamComponent
 {
     public static readonly string[] Sheets = ["BaseParam"];
 }
+
+// LazyLoot
+[TranslationComponent("thirdparty", nameof(Localization.ThirdParty), nameof(Localization.ThirdPartyDescription))]
+public sealed class ThirtPartyComponent
+{
+    public static readonly Dictionary<string, int[]> Sheets = new()
+    {
+        ["LogMessage"] = [4234, 5194]
+    };
+}

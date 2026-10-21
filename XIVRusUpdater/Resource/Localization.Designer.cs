@@ -754,6 +754,25 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Third-party plugins.
+        /// </summary>
+        internal static string ThirdParty {
+            get {
+                return ResourceManager.GetString("ThirdParty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Disable this component if you want to fix issues with certain plugins: LazyLoad. 
+        ///Please note that this will prevent the strings required by these plugins from being translated..
+        /// </summary>
+        internal static string ThirdPartyDescription {
+            get {
+                return ResourceManager.GetString("ThirdPartyDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Translation configuration.
         /// </summary>
         internal static string TranslationConfiguration {
