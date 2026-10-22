@@ -520,6 +520,24 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на LazyLoot.
+        /// </summary>
+        internal static string LazyLootPlugin {
+            get {
+                return ResourceManager.GetString("LazyLootPlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Lifestream.
+        /// </summary>
+        internal static string LifestreamPlugin {
+            get {
+                return ResourceManager.GetString("LifestreamPlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Never.
         /// </summary>
         internal static string Never {
@@ -718,6 +736,15 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Simple Tweaks.
+        /// </summary>
+        internal static string SimpleTweaksPlugin {
+            get {
+                return ResourceManager.GetString("SimpleTweaksPlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Unable to determine status.
         /// </summary>
         internal static string StatusUndetermined {
@@ -754,17 +781,7 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Third-party plugins.
-        /// </summary>
-        internal static string ThirdParty {
-            get {
-                return ResourceManager.GetString("ThirdParty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Disable this component if you want to fix issues with certain plugins: LazyLoad. 
-        ///Please note that this will prevent the strings required by these plugins from being translated..
+        ///   Ищет локализованную строку, похожую на If the specified plugin does not work correctly due to the use of a translation, disable this component..
         /// </summary>
         internal static string ThirdPartyDescription {
             get {
@@ -814,6 +831,15 @@ namespace XIVRusUpdater.Resource {
         internal static string TranslationVersion {
             get {
                 return ResourceManager.GetString("TranslationVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на TriadBuddy.
+        /// </summary>
+        internal static string TriadBuddyPlugin {
+            get {
+                return ResourceManager.GetString("TriadBuddyPlugin", resourceCulture);
             }
         }
         

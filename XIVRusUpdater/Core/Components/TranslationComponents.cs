@@ -112,12 +112,51 @@ public sealed class ParamComponent
     public static readonly string[] Sheets = ["BaseParam"];
 }
 
-// LazyLoot
-[TranslationComponent("thirdparty", nameof(Localization.ThirdParty), nameof(Localization.ThirdPartyDescription))]
-public sealed class ThirtPartyComponent
+[TranslationComponent("Plugin LazyLoot", nameof(Localization.LazyLootPlugin), nameof(Localization.ThirdPartyDescription))]
+public sealed class LazyLootComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
     {
         ["LogMessage"] = [4234u, 5194u]
+    };
+}
+
+// CustomDefaultQuantity, FastSearch, FixTarget
+
+[TranslationComponent("Plugin SimpleTweak", nameof(Localization.SimpleTweaksPlugin), nameof(Localization.ThirdPartyDescription))]
+public sealed class SimpleTweaksComponent
+{
+    public static readonly Dictionary<string, uint[]> Sheets = new()
+    {
+        ["Addon"] = [914u, 915u, 3136u, 3621u]
+    };
+}
+
+
+[TranslationComponent("Plugin TriadBuddy", nameof(Localization.TriadBuddyPlugin), nameof(Localization.ThirdPartyDescription))]
+public sealed class TriadBuddyComponent
+{
+    public static readonly Dictionary<string, uint[]> Sheets = new()
+    {
+        ["TripleTriadRule"] = Array.Empty<uint>()
+    };
+}
+
+[TranslationComponent("Plugin Lifestream", nameof(Localization.LifestreamPlugin), nameof(Localization.ThirdPartyDescription))]
+public sealed class LifeStreamComponent
+{
+    public static readonly Dictionary<string, uint[]> Sheets = new()
+    {
+        ["Addon"] = [115u, 2090u, 6349u, 6355u, 6782u, 6784u, 12519u, 12624u, 17531u],
+        ["Lobby"] = [11u, 25u, 95u, 96u, 629u, 1117u, 1150u, 1218u],
+        ["LogMessage"] = [430u, 9419u, 9426u, 9427u],
+        ["PlaceName"] = [1250u, 1251u, 1252u, 1300u],
+        ["EObjName"] = [2002737u, 2002739u, 2004353u],
+        ["Warp"] = [131148u],
+        ["transport/Aetheryte"] = [1u, 2u, 3u, 16u],
+        ["transport/AetheryteIshgard"] = [0u],
+        ["custom/003/HouFixMansionEntrance_00359"] = [0u, 2u],
+        ["custom/007/CtsMjiEntrance_00798"] = [4u, 7u],
+        ["custom/001/CmnDefHousingPersonalRoomEntrance_00178"] = [11u]
     };
 }

@@ -375,11 +375,20 @@
   <data name="Reload" xml:space="preserve">
     <value>Перезагрузить</value>
   </data>
-  <data name="ThirdParty" xml:space="preserve">
-    <value>Сторонние плагины</value>
+  <data name="LazyLootPlugin" xml:space="preserve">
+    <value>LazyLoot</value>
   </data>
   <data name="ThirdPartyDescription" xml:space="preserve">
-    <value>Отключите этот компонент, если хотите исправить работу некоторых плагинов: LazyLoad. 
+    <value>Отключите этот компонент, если хотите испрЕсли указанный плагин работает некорректно в следствии использования перевода, отключите этот компонент.авить работу некоторых плагинов: LazyLoad. 
 Это приведёт к тому, что нужные этим плагинам строки переводится не будут.</value>
+  </data>
+  <data name="SimpleTweaksPlugin" xml:space="preserve">
+    <value>Simple Tweaks</value>
+  </data>
+  <data name="TriadBuddyPlugin" xml:space="preserve">
+    <value>TriadBuddy</value>
+  </data>
+  <data name="LifestreamPlugin" xml:space="preserve">
+    <value>Lifestream</value>
   </data>
 </root>
