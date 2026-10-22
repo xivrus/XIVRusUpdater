@@ -15,9 +15,9 @@ public class ConfigWindow : Window, IDisposable
 {
     private readonly Configuration _config;
 
-    public ConfigWindow(Plugin plugin) : base($"{Localization.TranslationConfiguration}###XIVConfig")
+    public ConfigWindow() : base($"{Localization.TranslationConfiguration}###XIVConfig")
     {
-        _config = plugin.Configuration;
+        _config = Plugin.Instance.Configuration;
 
         SizeConstraints = new WindowSizeConstraints
         {

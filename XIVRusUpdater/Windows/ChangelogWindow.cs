@@ -11,12 +11,9 @@ namespace XIVRusUpdater.Windows;
 
 public sealed class ChangelogWindow : Window, IDisposable
 {
-    private readonly Plugin _plugin;
-
-    public ChangelogWindow(Plugin plugin)
+    public ChangelogWindow()
         : base($"{Localization.ChangelogTitle}###Changelog")
     {
-        _plugin = plugin;
         RespectCloseHotkey = false;
         RespectCloseHotkey = false;
 

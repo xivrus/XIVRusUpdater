@@ -26,7 +26,6 @@ public class NetworkService
     public event Action? OnTranslationInstalled;
     public event Action? OnPenumbraInstalled;
 
-    private readonly Plugin plugin;
     private readonly SemaphoreSlim checkLock = new(1, 1);
 
     private static HttpClient CreateClient()
@@ -43,19 +42,19 @@ public class NetworkService
 
     public string CurrentBranch()
     {
-        var engine = TranslationEngines.Get(plugin.Configuration.EngineId);
+        var engine = TranslationEngines.Get(Plugin.Instance.Configuration.EngineId);
 
         var api = engine?.ApiUrl;
 
         if (string.IsNullOrEmpty(api))
             return string.Empty;
 
-        return plugin.Configuration.Channel == UpdateChannel.Beta ? $"{api}/branches/test.json" : $"{api}/branches/release.json";
+        return Plugin.Instance.Configuration.Channel == UpdateChannel.Beta ? $"{api}/branches/test.json" : $"{api}/branches/release.json";
     }
 
     public string CurrentXRT()
     {
-        var engine = TranslationEngines.Get(plugin.Configuration.EngineId);
+        var engine = TranslationEngines.Get(Plugin.Instance.Configuration.EngineId);
 
         var api = engine?.ApiUrl;
 
@@ -116,12 +115,12 @@ public class NetworkService
         try
         {
             Plugin.Log.Information("Update Check started");
-            plugin.Configuration.LastUpdateCheck = DateTime.Now;
+            Plugin.Instance.Configuration.LastUpdateCheck = DateTime.Now;
 
             if (!await RefreshAsync()) return;
-            plugin.Configuration.LastSuccessfulUpdate = DateTime.Now;
+            Plugin.Instance.Configuration.LastSuccessfulUpdate = DateTime.Now;
 
-            if (!plugin.Configuration.AutoDownloadUpdates) return;
+            if (!Plugin.Instance.Configuration.AutoDownloadUpdates) return;
 
             if (Plugin.State.Penumbra.UpdateAvailable) await DownloadLatestModAsync();
             if (Plugin.State.Translation.UpdateAvailable) await DownloadLatestTranslationAsync();
@@ -132,7 +131,7 @@ public class NetworkService
         }
         finally
         {
-            plugin.Configuration.Save();
+            Plugin.Instance.Configuration.Save();
             Plugin.State.IsChecking = false;
             checkLock.Release();
         }
@@ -157,9 +156,9 @@ public class NetworkService
         if (!InstallDownloadedPenumbraAsync(tempFile))
             return;
 
-        Plugin.State.Penumbra.Version = plugin.Configuration.LastInstalledPenumbra = release.PenumbraVersion;
+        Plugin.State.Penumbra.Version = Plugin.Instance.Configuration.LastInstalledPenumbra = release.PenumbraVersion;
         Plugin.State.Penumbra.UpdateAvailable = false;
-        plugin.Configuration.Save();
+        Plugin.Instance.Configuration.Save();
 
         OnPenumbraInstalled?.Invoke();
     }
@@ -186,10 +185,10 @@ public class NetworkService
         if (!installed)
             return;
 
-        Plugin.State.Translation.Version = plugin.Configuration.LastInstalledVersion = release.Version;
+        Plugin.State.Translation.Version = Plugin.Instance.Configuration.LastInstalledVersion = release.Version;
         Plugin.State.Translation.UpdateAvailable = false;
         Plugin.State.Translation.Installed = true;
-        plugin.Configuration.Save();
+        Plugin.Instance.Configuration.Save();
 
         OnTranslationInstalled?.Invoke();
     }
@@ -216,7 +215,7 @@ public class NetworkService
 
     public bool InstallDownloadedPenumbraAsync(string filePath)
     {
-        var engine = TranslationEngines.Get(plugin.Configuration.EngineId);
+        var engine = TranslationEngines.Get(Plugin.Instance.Configuration.EngineId);
 
         Plugin.PenumbraApi.DeleteMod(engine!.ModName);
 
@@ -259,7 +258,7 @@ public class NetworkService
     {
         try
         {
-            var engine = TranslationEngines.Get(plugin.Configuration.EngineId);
+            var engine = TranslationEngines.Get(Plugin.Instance.Configuration.EngineId);
 
             Plugin.State.PenumbraEnabled = Plugin.PenumbraApi.IsPenumbraEnabled();
 
@@ -271,20 +270,20 @@ public class NetworkService
     
             var remote = await GetLastRemoteVersionAsync() ?? "Unknown";
 
-            plugin.Configuration.LastKnownRemoteVersion = translationManifest.RemoteVersion = remote;
+            Plugin.Instance.Configuration.LastKnownRemoteVersion = translationManifest.RemoteVersion = remote;
 
-            Plugin.State.Translation.Version = plugin.Configuration.LastInstalledVersion;
+            Plugin.State.Translation.Version = Plugin.Instance.Configuration.LastInstalledVersion;
 
-            if (plugin.Configuration.LastInstalledVersion != plugin.Configuration.LastKnownRemoteVersion)
+            if (Plugin.Instance.Configuration.LastInstalledVersion != Plugin.Instance.Configuration.LastKnownRemoteVersion)
                 Plugin.State.Translation.UpdateAvailable = true;
 
             remote = await GetLastRemotePenumbraAsync() ?? "Unknown";
 
-            plugin.Configuration.LastKnownRemotePenumbra = penumbraManifest.RemoteVersion = remote;
+            Plugin.Instance.Configuration.LastKnownRemotePenumbra = penumbraManifest.RemoteVersion = remote;
 
-            plugin.Configuration.LastInstalledPenumbra = Plugin.State.Penumbra.Version = Plugin.PenumbraApi.GetModVersion(engine.ModName) ?? "Not installed";
+            Plugin.Instance.Configuration.LastInstalledPenumbra = Plugin.State.Penumbra.Version = Plugin.PenumbraApi.GetModVersion(engine.ModName) ?? "Not installed";
             
-            if (plugin.Configuration.LastInstalledPenumbra != plugin.Configuration.LastKnownRemotePenumbra)
+            if (Plugin.Instance.Configuration.LastInstalledPenumbra != Plugin.Instance.Configuration.LastKnownRemotePenumbra)
                 Plugin.State.Penumbra.UpdateAvailable = true;
 
             return true;
@@ -382,9 +381,9 @@ public class NetworkService
         };
     }
 
-    public NetworkService(Plugin pluginRef)
+    public NetworkService()
     {
-        plugin = pluginRef;
+        
     }
 
     public async Task<bool> DownloadRemoteAsync(string url, string targetFile, DownloadState state)

@@ -55,16 +55,16 @@ public sealed class Plugin : IDalamudPlugin
         Instance = this;
         HookLayers = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
         State = new UpdaterState();
-        networkService = new NetworkService(this);
+        networkService = new NetworkService();
         
         PenumbraApi = new PenumbraService(PluginInterface);
         
         Framework.Update += OnUpdate;
 
-        ConfigWindow = new ConfigWindow(this);
-        MainWindow = new MainWindow(this);
+        ConfigWindow = new ConfigWindow();
+        MainWindow = new MainWindow();
         DownloadWindow = new DownloadWindow();
-        Changelog = new ChangelogWindow(this);
+        Changelog = new ChangelogWindow();
 #if DEBUG
         Debug = new DebugWindow();
         WindowSystem.AddWindow(Debug);

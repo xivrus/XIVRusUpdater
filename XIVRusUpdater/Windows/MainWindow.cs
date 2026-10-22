@@ -12,7 +12,6 @@ namespace XIVRusUpdater.Windows;
 
 public class MainWindow : Window, IDisposable
 {
-    private readonly Plugin _plugin;
     private Task? _refreshTask;
     private Task? _downloadTask;
     
@@ -24,11 +23,9 @@ public class MainWindow : Window, IDisposable
         Error
     }
 
-    public MainWindow(Plugin plugin)
+    public MainWindow()
         : base($"{string.Format(Localization.PluginTitle, Plugin.PluginInterface.Manifest.AssemblyVersion)}###XIVMain")
     {
-        _plugin = plugin;
-
         SizeConstraints = new WindowSizeConstraints
         {
             MinimumSize = new Vector2(375, 330),
@@ -68,7 +65,7 @@ public class MainWindow : Window, IDisposable
 
                 ImGui.Text(Localization.LastCheck);
                 ImGui.SameLine();
-                ImGui.TextDisabled(_plugin.Configuration.LastUpdateCheck == default ? Localization.Never : _plugin.Configuration.LastUpdateCheck.ToString("G"));
+                ImGui.TextDisabled(Plugin.Instance.Configuration.LastUpdateCheck == default ? Localization.Never : Plugin.Instance.Configuration.LastUpdateCheck.ToString("G"));
             }
         }
 
@@ -118,13 +115,13 @@ public class MainWindow : Window, IDisposable
 
                 if (ImGui.Button(Localization.OpenConfiguration, new Vector2(-1, 0)))
                 {
-                    _plugin.ToggleConfigUi();
+                    Plugin.Instance.ToggleConfigUi();
                 }
 
 #if DEBUG
                 if(ImGui.Button(Localization.DebugOpen, new Vector2(-1, 0)))
                 {
-                    _plugin.ToggleDebugUi();
+                    Plugin.Instance.ToggleDebugUi();
                 }
 #endif
             }
@@ -136,12 +133,12 @@ public class MainWindow : Window, IDisposable
             {
                 ImGui.TextDisabled(Localization.Branch);
                 ImGui.SameLine();
-                ImGui.Text(_plugin.Configuration.Channel.ToString());
+                ImGui.Text(Plugin.Instance.Configuration.Channel.ToString());
 
                 ImGui.TextDisabled(Localization.TesterAccessAllowance);
                 ImGui.SameLine();
 
-                if (!_plugin.Configuration.TesterHumanCheck)
+                if (!Plugin.Instance.Configuration.TesterHumanCheck)
                     ImGui.TextColored(ImGuiColors.DalamudYellow, Localization.NotAllowed);
                 else
                     ImGui.TextColored(ImGuiColors.HealerGreen, Localization.Allowed);
