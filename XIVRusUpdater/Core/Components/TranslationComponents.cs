@@ -116,8 +116,8 @@ public sealed class ParamComponent
 [TranslationComponent("thirdparty", nameof(Localization.ThirdParty), nameof(Localization.ThirdPartyDescription))]
 public sealed class ThirtPartyComponent
 {
-    public static readonly Dictionary<string, int[]> Sheets = new()
+    public static readonly Dictionary<string, uint[]> Sheets = new()
     {
-        ["LogMessage"] = [4234, 5194]
+        ["LogMessage"] = [4234u, 5194u]
     };
 }
