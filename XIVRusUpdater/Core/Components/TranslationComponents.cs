@@ -149,6 +149,7 @@ public sealed class LifeStreamComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
     {
+        ["PlaceName"] = Array.Empty<uint>(),
         ["Addon"] = [115u, 2090u, 6349u, 6355u, 6782u, 6784u, 12519u, 12624u, 17531u],
         ["Lobby"] = [11u, 25u, 95u, 96u, 629u, 1117u, 1150u, 1218u],
         ["LogMessage"] = [430u, 9419u, 9426u, 9427u],
