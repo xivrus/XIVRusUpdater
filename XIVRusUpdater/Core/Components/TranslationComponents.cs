@@ -14,12 +14,14 @@ public sealed class TranslationComponentAttribute : Attribute
     public string Id { get; }
     public string DisplayName { get; }
     public string Description { get; }
+    public int Priority { get;  }
 
-    public TranslationComponentAttribute(string id, string displayNameKey, string descriptionKey)
+    public TranslationComponentAttribute(string id, string displayNameKey, string descriptionKey, int priority = 0)
     {
         Id = id;
         DisplayName = displayNameKey;
         Description = descriptionKey;
+        Priority = priority;
     }
 }
 
@@ -112,7 +114,7 @@ public sealed class ParamComponent
     public static readonly string[] Sheets = ["BaseParam"];
 }
 
-[TranslationComponent("Plugin LazyLoot", nameof(Localization.LazyLootPlugin), nameof(Localization.ThirdPartyDescription))]
+[TranslationComponent("Plugin LazyLoot", nameof(Localization.LazyLootPlugin), nameof(Localization.ThirdPartyDescription), 1)]
 public sealed class LazyLootComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -123,7 +125,7 @@ public sealed class LazyLootComponent
 
 // CustomDefaultQuantity, FastSearch, FixTarget
 
-[TranslationComponent("Plugin SimpleTweak", nameof(Localization.SimpleTweaksPlugin), nameof(Localization.ThirdPartyDescription))]
+[TranslationComponent("Plugin SimpleTweak", nameof(Localization.SimpleTweaksPlugin), nameof(Localization.ThirdPartyDescription), 1)]
 public sealed class SimpleTweaksComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -133,7 +135,7 @@ public sealed class SimpleTweaksComponent
 }
 
 
-[TranslationComponent("Plugin TriadBuddy", nameof(Localization.TriadBuddyPlugin), nameof(Localization.ThirdPartyDescription))]
+[TranslationComponent("Plugin TriadBuddy", nameof(Localization.TriadBuddyPlugin), nameof(Localization.ThirdPartyDescription), 1)]
 public sealed class TriadBuddyComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -142,7 +144,7 @@ public sealed class TriadBuddyComponent
     };
 }
 
-[TranslationComponent("Plugin Lifestream", nameof(Localization.LifestreamPlugin), nameof(Localization.ThirdPartyDescription))]
+[TranslationComponent("Plugin Lifestream", nameof(Localization.LifestreamPlugin), nameof(Localization.ThirdPartyDescription), 1)]
 public sealed class LifeStreamComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
