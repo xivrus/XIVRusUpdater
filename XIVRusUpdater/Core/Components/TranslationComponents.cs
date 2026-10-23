@@ -123,15 +123,14 @@ public sealed class LazyLootComponent
     };
 }
 
-// CustomDefaultQuantity, FastSearch, FixTarget, QuickSellItems, SimplifiedClassJobDisplay, ColoredDutyRoulette
+// CustomDefaultQuantity, FixTarget, QuickSellItems, ColoredDutyRoulette
 [TranslationComponent("SimpleTweakPlugin", nameof(Localization.SimpleTweaksPlugin), nameof(Localization.ThirdPartyDescription), 1)]
 public sealed class SimpleTweaksComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
     {
-        ["Addon"] = [93u, 914u, 915u, 3136u, 3621u, 5480u],
-        ["ContentRoulette"] = Array.Empty<uint>(),
-        ["ClassJobCategory"] = Array.Empty<uint>()
+        ["Addon"] = [93u, 914u, 915u, 3621u, 5480u],
+        ["ContentRoulette"] = Array.Empty<uint>()
     };
 }
 
