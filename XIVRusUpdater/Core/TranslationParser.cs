@@ -101,15 +101,18 @@ public class TranslationParser
         }
     }
 
-    internal bool TryGetRowTranslations(string sheet, uint rowId, out Translation[] translations)
+    internal bool TryGetRowTranslations(string sheet, uint rowId, out Translation[]? translations)
     {
         lock(syncRoot)
         {
             translations = null;
             if (_resources.TryGet(sheet, out var file) && file.TryGetData(rowId, out var columns))
             {
-                translations = columns;
-                return true;
+                if(columns != null)
+                { 
+                    translations = columns;
+                    return true;
+                }
             }
 
             return false;

@@ -29,9 +29,6 @@ public unsafe partial class EXDHooks : IDisposable
     {
         parser = new TranslationParser(engineId);
 
-        var hashTable = scanner.ScanText(HashTableStoreRowSig);
-        var ringBuffer = scanner.ScanText(RingBufferStoreRowSig);
-
         hashTableHook = provider.HookFromAddress<StoreRowDelegate>(scanner.ScanText(HashTableStoreRowSig), HashTableDetour);
         ringBufferHook = provider.HookFromAddress<StoreRowDelegate>(scanner.ScanText(RingBufferStoreRowSig), RingBufferDetour);
 
@@ -98,7 +95,7 @@ public unsafe partial class EXDHooks : IDisposable
         if (allocator == null)
             return false;
 
-        var newData = ExcelRowBuilder.Build(row, layout, translations, allocator);
+        var newData = ExcelRowBuilder.Build(row, layout, translations!, allocator);
         if (newData == null)
             return false;
 
