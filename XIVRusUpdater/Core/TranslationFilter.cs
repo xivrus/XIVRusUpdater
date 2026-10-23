@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using XIVRusUpdater.Core.Components;
-using static FFXIVClientStructs.FFXIV.Client.UI.RaptureAtkHistory.Delegates;
 
 namespace XIVRusUpdater.Core;
 
@@ -9,44 +8,38 @@ public sealed class TranslationFilter
 {
     private sealed class SheetState
     {
-        public bool? WholeSheet;
-        public Dictionary<uint, bool>? RowOverrides;
+        public bool Whole;
+        public HashSet<uint>? Rows;
     }
 
     private volatile Dictionary<string, SheetState> _sheets = new(StringComparer.OrdinalIgnoreCase);
-    private volatile Dictionary<string, bool> _prefixes = new(StringComparer.OrdinalIgnoreCase);
-  
+    private volatile List<string> _prefixes = new();
+
     public void Rebuild(IReadOnlySet<string> disabledComponents)
     {
         var sheets = new Dictionary<string, SheetState>(StringComparer.OrdinalIgnoreCase);
-        var prefixes = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
-        
+        var prefixes = new List<string>();
+
         foreach (var component in TranslationComponents.All)
         {
-            bool enabled = !disabledComponents.Contains(component.Id);
+            if (!disabledComponents.Contains(component.Id))
+                continue;
 
             foreach (var (sheetName, rows) in component.Sheets)
             {
                 if (sheetName.EndsWith('*'))
                 {
-                    var prefix = sheetName[..^1];
-                    prefixes[prefix] = enabled || prefixes.GetValueOrDefault(prefix);
+                    prefixes.Add(sheetName[..^1]);
                     continue;
                 }
-                
+
                 if (!sheets.TryGetValue(sheetName, out var state))
                     sheets[sheetName] = state = new SheetState();
 
                 if (rows.Length == 0)
-                {
-                    state.WholeSheet = (state.WholeSheet ?? false) || enabled;
-                }
+                    state.Whole = true;
                 else
-                {
-                    state.RowOverrides ??= new Dictionary<uint, bool>();
-                    foreach (var row in rows)
-                        state.RowOverrides[row] = enabled;
-                }
+                    (state.Rows ??= new HashSet<uint>()).UnionWith(rows);
             }
         }
 
@@ -56,25 +49,15 @@ public sealed class TranslationFilter
 
     public bool IsActive(string sheetName, uint rowId)
     {
-        if (_sheets.TryGetValue(sheetName, out var state))
-        {
-            if (state.RowOverrides is { } overrides && overrides.TryGetValue(rowId, out var rowActive))
-                return rowActive;
+        if (_sheets.TryGetValue(sheetName, out var state) && (state.Whole || state.Rows?.Contains(rowId) == true))
+            return false;
 
-            return state.WholeSheet ?? false;
+        foreach (var prefix in _prefixes)
+        {
+            if (sheetName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                return false;
         }
 
-        var matched = false;
-        foreach (var (prefix, enabled) in _prefixes)
-        {
-            if (!sheetName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                continue;
-
-            if (enabled)
-                return true;
-            matched = true;
-        }
-
-        return !matched;
+        return true;
     }
 }
