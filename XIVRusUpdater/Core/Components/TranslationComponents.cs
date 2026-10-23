@@ -114,7 +114,7 @@ public sealed class ParamComponent
     public static readonly string[] Sheets = ["BaseParam"];
 }
 
-[TranslationComponent("Plugin LazyLoot", nameof(Localization.LazyLootPlugin), nameof(Localization.ThirdPartyDescription), 1)]
+[TranslationComponent("LazyLootPlugin", nameof(Localization.LazyLootPlugin), nameof(Localization.ThirdPartyDescription), 1)]
 public sealed class LazyLootComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -124,7 +124,7 @@ public sealed class LazyLootComponent
 }
 
 // CustomDefaultQuantity, FastSearch, FixTarget, QuickSellItems, SimplifiedClassJobDisplay, ColoredDutyRoulette
-[TranslationComponent("Plugin SimpleTweak", nameof(Localization.SimpleTweaksPlugin), nameof(Localization.ThirdPartyDescription), 1)]
+[TranslationComponent("SimpleTweakPlugin", nameof(Localization.SimpleTweaksPlugin), nameof(Localization.ThirdPartyDescription), 1)]
 public sealed class SimpleTweaksComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -136,7 +136,7 @@ public sealed class SimpleTweaksComponent
 }
 
 
-[TranslationComponent("Plugin TriadBuddy", nameof(Localization.TriadBuddyPlugin), nameof(Localization.ThirdPartyDescription), 1)]
+[TranslationComponent("TriadBuddyPlugin", nameof(Localization.TriadBuddyPlugin), nameof(Localization.ThirdPartyDescription), 1)]
 public sealed class TriadBuddyComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -145,7 +145,7 @@ public sealed class TriadBuddyComponent
     };
 }
 
-[TranslationComponent("Plugin Lifestream", nameof(Localization.LifestreamPlugin), nameof(Localization.ThirdPartyDescription), 1)]
+[TranslationComponent("LifestreamPlugin", nameof(Localization.LifestreamPlugin), nameof(Localization.ThirdPartyDescription), 1)]
 public sealed class LifeStreamComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
