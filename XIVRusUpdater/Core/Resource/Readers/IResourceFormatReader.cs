@@ -8,5 +8,5 @@ namespace XIVRusUpdater.Core.Resource.Readers;
 
 public interface IResourceFormatReader
 {
-    Dictionary<uint, List<ByteArrayWrapper?>> Read(Stream stream, string sheetName);
+    public Dictionary<uint, Translation[]> Read(Stream stream, string sheetName);
 }

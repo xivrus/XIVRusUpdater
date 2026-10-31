@@ -28,8 +28,10 @@ public sealed class TranslationEngineDefinition : Attribute
     }
 }
 
-[TranslationEngineDefinition("XIVRusJapanese", "XIV Rus", "XIVRus — Japanese", "https://update.xivrus.ru/api/jp/", ResourceFormat.Xrt)]
+#if false
+[TranslationEngineDefinition("XIVRusJapanese", "XIV Rus", "XIVRus (Japanese)", "https://update.xivrus.ru/api/jp/", ResourceFormat.Xrt)]
 public sealed class XIVRusJapaneseEngine;
+#endif
 
-[TranslationEngineDefinition("XIVRusEnglish", "XIV Rus", "XIVRus — English", "https://update.xivrus.ru/api", ResourceFormat.Xrt)]
+[TranslationEngineDefinition("XIVRusEnglish", "XIV Rus", "XIVRus (English)", "https://update.xivrus.ru/api", ResourceFormat.Xrt)]
 public sealed class XIVRusEnglishEngine;

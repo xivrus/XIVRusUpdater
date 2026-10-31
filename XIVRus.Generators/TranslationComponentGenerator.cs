@@ -25,19 +25,25 @@ public sealed class TranslationComponentGenerator : IIncrementalGenerator
     private static ComponentModel? Extract(GeneratorAttributeSyntaxContext ctx)
     {
         var args = ctx.Attributes[0].ConstructorArguments;
-        if (args.Length != 3) return null;
+        if (args.Length < 3) return null;
 
         var id = args[0].Value as string ?? "";
-        var displayName = args[1].Value as string ?? "";
-        var description = args[2].Value as string ?? "";
+        var displayNameKey = args[1].Value as string ?? "";
+        var descriptionKey = args[2].Value as string ?? "";
+        var priority = args.Length > 3 && args[3].Value is int p ? p : 0;
+
+        if (!IsValidResourceKey(displayNameKey) || !IsValidResourceKey(descriptionKey))
+        {
+            return null;
+        }
 
         if (ctx.TargetSymbol is not INamedTypeSymbol typeSymbol) return null;
 
         var sheetsMember = typeSymbol.GetMembers("Sheets").FirstOrDefault(m => m is IFieldSymbol or IPropertySymbol);
-        if (sheetsMember is null) return new ComponentModel(id, displayName, description, Array.Empty<(string, int[])>());
+        if (sheetsMember is null) return new ComponentModel(id, displayNameKey, descriptionKey, priority, Array.Empty<(string, uint[])>());
 
         var syntaxRef = sheetsMember.DeclaringSyntaxReferences.FirstOrDefault();
-        if (syntaxRef is null) return new ComponentModel(id, displayName, description, Array.Empty<(string, int[])>());
+        if (syntaxRef is null) return new ComponentModel(id, displayNameKey, descriptionKey, priority, Array.Empty<(string, uint[])>());
 
         var node = syntaxRef.GetSyntax();
 
@@ -48,18 +54,18 @@ public sealed class TranslationComponentGenerator : IIncrementalGenerator
             _ => null
         };
 
-        if (valueExpr is null) return new ComponentModel(id, displayName, description, Array.Empty<(string, int[])>());
+        if (valueExpr is null) return new ComponentModel(id, displayNameKey, descriptionKey, priority, Array.Empty<(string, uint[])>());
 
         var tree = valueExpr.SyntaxTree;
         var model = tree == ctx.SemanticModel.SyntaxTree ? ctx.SemanticModel : ctx.SemanticModel.Compilation.GetSemanticModel(tree);
 
         var sheets = ExtractSheets(valueExpr, model);
-        return new ComponentModel(id, displayName, description, sheets.ToArray());
+        return new ComponentModel(id, displayNameKey, descriptionKey, priority, sheets.ToArray());
     }
 
-    private static List<(string Name, int[] Rows)> ExtractSheets(ExpressionSyntax expr, SemanticModel model)
+    private static List<(string Name, uint[] Rows)> ExtractSheets(ExpressionSyntax expr, SemanticModel model)
     {
-        var result = new List<(string, int[])>();
+        var result = new List<(string, uint[])>();
 
         InitializerExpressionSyntax? dictInitializer = expr switch
         {
@@ -75,13 +81,13 @@ public sealed class TranslationComponentGenerator : IIncrementalGenerator
                 if (element is AssignmentExpressionSyntax { Left: ImplicitElementAccessSyntax iea } assign && iea.ArgumentList.Arguments.Count == 1)
                 {
                     var key = model.GetConstantValue(iea.ArgumentList.Arguments[0].Expression).Value as string;
-                    if (key is not null) result.Add((key, ExtractIntArray(assign.Right, model)));
+                    if (key is not null) result.Add((key, ExtractUIntArray(assign.Right, model)));
                 }
             }
             return result;
         }
 
-        foreach (var name in ExtractStringArray(expr, model)) result.Add((name, Array.Empty<int>()));
+        foreach (var name in ExtractStringArray(expr, model)) result.Add((name, Array.Empty<uint>()));
 
         return result;
     }
@@ -97,7 +103,7 @@ public sealed class TranslationComponentGenerator : IIncrementalGenerator
 
     private static string[] ExtractStringArray(ExpressionSyntax expr, SemanticModel model) => UnwrapArrayElements(expr).Select(e => model.GetConstantValue(e).Value as string).Where(s => s is not null).Select(s => s!).ToArray();
 
-    private static int[] ExtractIntArray(ExpressionSyntax expr, SemanticModel model) => UnwrapArrayElements(expr).Select(e => model.GetConstantValue(e)).Where(v => v.HasValue && v.Value is int).Select(v => (int)v.Value!).ToArray();
+    private static uint[] ExtractUIntArray(ExpressionSyntax expr, SemanticModel model) => UnwrapArrayElements(expr).Select(e => model.GetConstantValue(e)).Where(v => v.HasValue && v.Value is byte or sbyte or short or ushort or int or uint or long or ulong).Select(v => Convert.ToUInt32(v.Value!)).ToArray();
 
     private static void Generate(SourceProductionContext context, ImmutableArray<ComponentModel> components)
     {
@@ -113,17 +119,17 @@ public sealed class TranslationComponentGenerator : IIncrementalGenerator
         sb.AppendLine("    public static IReadOnlyList<TranslationComponent> All { get; } = new TranslationComponent[]");
         sb.AppendLine("    {");
 
-        foreach (var c in components.OrderBy(c => c.Id, StringComparer.Ordinal))
+        foreach (var c in components.OrderBy(c => c.Priority).ThenBy(c => c.Id, StringComparer.Ordinal))
         {
             sb.AppendLine("        new(");
             sb.AppendLine($"            {Literal(c.Id)},");
-            sb.AppendLine($"            {Literal(c.DisplayName)},");
-            sb.AppendLine($"            {Literal(c.Description)},");
+            sb.AppendLine($"            global::XIVRusUpdater.Resource.Localization.{c.DisplayNameKey},");
+            sb.AppendLine($"            global::XIVRusUpdater.Resource.Localization.{c.DescriptionKey},");
             sb.AppendLine("            new Dictionary<string, uint[]>");
             sb.AppendLine("            {");
             foreach (var (name, rows) in c.Sheets)
             {
-                var rowsLiteral = rows.Length == 0 ? "Array.Empty<uint>()" : $"new[] {{ {string.Join(", ", rows)} }}";
+                var rowsLiteral = rows.Length == 0 ? "Array.Empty<uint>()" : $"new uint[] {{ {string.Join(", ", rows)} }}";
                 sb.AppendLine($"                [{Literal(name)}] = {rowsLiteral},");
             }
             sb.AppendLine("            }),");
@@ -137,22 +143,26 @@ public sealed class TranslationComponentGenerator : IIncrementalGenerator
 
     private static string Literal(string value) => SyntaxFactory.Literal(value).ToString();
 
+    private static bool IsValidResourceKey(string key) => SyntaxFacts.IsValidIdentifier(key);
+
     private sealed class ComponentModel : IEquatable<ComponentModel>
     {
         public string Id { get; }
-        public string DisplayName { get; }
-        public string Description { get; }
-        public (string Name, int[] Rows)[] Sheets { get; }
+        public string DisplayNameKey { get; }
+        public string DescriptionKey { get; }
+        public int Priority { get; }
+        public (string Name, uint[] Rows)[] Sheets { get; }
 
-        public ComponentModel(string id, string displayName, string description, (string, int[])[] sheets)
+        public ComponentModel(string id, string displayName, string description, int priority, (string, uint[])[] sheets)
         {
             Id = id;
-            DisplayName = displayName;
-            Description = description;
+            DisplayNameKey = displayName;
+            DescriptionKey = description;
+            Priority = priority;
             Sheets = sheets;
         }
 
-        public bool Equals(ComponentModel? other) => other is not null && Id == other.Id && DisplayName == other.DisplayName && Description == other.Description && Sheets.Select(s => s.Name).SequenceEqual(other.Sheets.Select(s => s.Name)) && Sheets.Zip(other.Sheets, (a, b) => a.Rows.SequenceEqual(b.Rows)).All(x => x);
+        public bool Equals(ComponentModel? other) => other is not null && Id == other.Id && Priority == other.Priority && DisplayNameKey == other.DisplayNameKey && DescriptionKey == other.DescriptionKey && Sheets.Select(s => s.Name).SequenceEqual(other.Sheets.Select(s => s.Name)) && Sheets.Zip(other.Sheets, (a, b) => a.Rows.SequenceEqual(b.Rows)).All(x => x);
 
         public override bool Equals(object? obj) => Equals(obj as ComponentModel);
         public override int GetHashCode() => Id.GetHashCode();

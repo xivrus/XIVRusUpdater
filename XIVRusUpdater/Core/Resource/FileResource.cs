@@ -6,14 +6,14 @@ using XIVRusUpdater.Utils;
 
 namespace XIVRusUpdater.Core.Resource;
 
-public class FileResource : IDisposable
+public class FileResource
 {
     // RowId -> String Columns Allocation
-    public Dictionary<uint, List<ByteArrayWrapper?>> Rows { get; init; }
+    public Dictionary<uint, Translation[]> Rows { get; init; }
 
     private static readonly Dictionary<ResourceFormat, Func<IResourceFormatReader>> Readers = new()
     {
-        [ResourceFormat.Xrt] = () => new XrtResourceFormatReader(),
+        [ResourceFormat.Xrt] = static() => new XrtResourceFormatReader(),
     };
 
     public FileResource(string filePath, ResourceFormat format, string? sheetName = null)
@@ -34,49 +34,29 @@ public class FileResource : IDisposable
     public FileResource(string filePath)
         : this(filePath, ResourceFormatParser.FromExtension(filePath)) { }
 
-    public bool TryGetData(uint rowId, uint column, out ByteArrayWrapper? value)
+    internal bool TryGetData(uint rowId, uint column, out Translation? value)
     {
         value = null;
 
         if (!Rows.TryGetValue(rowId, out var row))
             return false;
 
-        if (column >= row.Count)
+        if (column >= row.Length)
             return false;
 
         value = row[(int)column];
-        return value is not null && !value.IsError;
+        return value is not null;
     }
 
-    public long GetNativeMemoryUsage()
+    internal bool TryGetData(uint rowId, out Translation[]? columns)
     {
-        long size = 0;
-        foreach (var columns in Rows.Values)
+        columns = null;
+        if (Rows.TryGetValue(rowId, out var row))
         {
-            foreach (var column in columns)
-                size += column?.Length ?? 0;
+            columns = row;
+            return true;
         }
 
-        return size;
-    }
-
-    public void Dispose()
-    {
-        DisposeRows(Rows);
-        Rows.Clear();
-    }
-
-    public static void DisposeRows(Dictionary<uint, List<ByteArrayWrapper?>> rows)
-    {
-        foreach (var (_, columns) in rows)
-        {
-            DisposeColumns(columns);
-        }
-    }
-
-    internal static void DisposeColumns(IEnumerable<ByteArrayWrapper?> columns)
-    {
-        foreach (var column in columns)
-            column?.Dispose();
+        return false;
     }
 }

@@ -1,42 +1,36 @@
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using System;
-using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
-using XIVRusUpdater.Utils;
+using XIVRusUpdater.Resource;
 
 namespace XIVRusUpdater.Windows;
 
 public class MainWindow : Window, IDisposable
 {
-    private readonly string LogoImagePath;
-    private readonly Plugin plugin;
-    private Task? refreshTask;
-    private Task? downloadTask;
+    private Task? _refreshTask;
+    private Task? _downloadTask;
     
-    private enum OverallStatus
+    public enum OverallStatus
     {
         Ok,
         UpdateAvailable,
-        Warning,
         Disabled,
         Error
     }
 
-    public MainWindow(Plugin plugin, string logoImagePath)
-        : base("XIV Rus Auto Updater###XIVMain")
+    public MainWindow()
+        : base($"{string.Format(Localization.PluginTitle, Plugin.PluginInterface.Manifest.AssemblyVersion)}###XIVMain")
     {
         SizeConstraints = new WindowSizeConstraints
         {
             MinimumSize = new Vector2(375, 330),
             MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
         };
-
-        LogoImagePath = logoImagePath;
-        this.plugin = plugin;
     }
 
     public void Dispose() { }
@@ -49,88 +43,110 @@ public class MainWindow : Window, IDisposable
 
         ImGui.Spacing();
 
-        if (ImGui.CollapsingHeader("System Status", ImGuiTreeNodeFlags.DefaultOpen))
+        using (var header = ImRaii.Header(Localization.SystemStatus, ImGuiTreeNodeFlags.DefaultOpen))
         {
-            ImGui.BulletText($"Penumbra: {(state.PenumbraEnabled ? "Enabled" : "Disabled")}");
-
-            ImGui.Separator();
-
-            ImGui.BulletText($"Translation Status: {(state.Translation.Installed ? "Installed" : "Not Installed")}");
-
-            ImGui.BulletText($"Translation Version: {state.Translation.Version}");
-
-            ImGui.Separator();
-
-            ImGui.BulletText($"Penumbra Mod Status: {(state.Penumbra.Installed ? "Installed" : "Not Installed")}");
-
-            ImGui.BulletText($"Penumbra Mod Version: {state.Penumbra.Version}");
-        }
-
-        if (ImGui.CollapsingHeader("Version Information", ImGuiTreeNodeFlags.DefaultOpen))
-        {
-            ImGui.Text($"Translation Remote Version: {state.Translation.Version}");
-            ImGui.Text($"Penumbra Remote Version: {state.Penumbra.Version}");
-
-            ImGui.Text("Last Check: ");
-            ImGui.SameLine();
-            ImGui.TextDisabled(plugin.Configuration.LastUpdateCheck == default ? "Never" : plugin.Configuration.LastUpdateCheck.ToString("G"));
-        }
-
-        if (ImGui.CollapsingHeader("Last Changelog", ImGuiTreeNodeFlags.DefaultOpen))
-        {
-            ImGui.TextWrapped(Plugin.State.LastChangelog ?? "No changelog available.");
-        }
-
-        if (ImGui.CollapsingHeader("Actions", ImGuiTreeNodeFlags.DefaultOpen))
-        {
-            if (ImGui.Button("Refresh", new Vector2(-1, 0)))
+            if (header.Success)
             {
-                refreshTask ??= Plugin.networkService.CheckForUpdates();
+                ImGui.BulletText($"Penumbra: {(state.PenumbraEnabled ? Localization.PenumbraEnabled : Localization.PenumbraDisabled)}");
+
+                ImGui.Separator();
+
+                ImGui.BulletText(string.Format(Localization.TranslationStatus, state.Translation.Installed ? Localization.Installed : Localization.NotInstalled));
+                ImGui.BulletText(string.Format(Localization.TranslationVersion, state.Translation.Version ?? Localization.Unknown));
+                ImGui.BulletText(string.Format(Localization.RemoteTranslationVersion, state.Translation.RemoteVersion ?? Localization.Unknown));
+
+                ImGui.Separator();
+
+                ImGui.BulletText(string.Format(Localization.PenumbraModStatus, state.Penumbra.Installed ? Localization.Installed : Localization.NotInstalled));
+                ImGui.BulletText(string.Format(Localization.PenumbraModVersion, state.Penumbra.Version ?? Localization.Unknown));
+                ImGui.BulletText(string.Format(Localization.PenumbraModRemoteVersion, state.Penumbra.RemoteVersion ?? Localization.Unknown));
+
+                ImGui.Separator();
+
+                ImGui.Text(Localization.LastCheck);
+                ImGui.SameLine();
+                ImGui.TextDisabled(Plugin.Instance.Configuration.LastUpdateCheck == default ? Localization.Never : Plugin.Instance.Configuration.LastUpdateCheck.ToString("G"));
             }
+        }
 
-            if (refreshTask?.IsCompleted == true)
+        if (!string.IsNullOrEmpty(Plugin.State.LastChangelog))
+        {
+            using (var header = ImRaii.Header(Localization.LastChangelog, ImGuiTreeNodeFlags.None))
             {
-                refreshTask = null;
-            }
-
-            bool updateAvailable = Plugin.State.UpdateAvailable;
-
-            using (ImRaii.Disabled(!updateAvailable))
-            {
-                if (ImGui.Button("Update components", new Vector2(-1, 0)))
+                if (header.Success)
                 {
-                    downloadTask ??= Plugin.networkService.DownloadLatestModAsync();
+                    ImGui.TextWrapped(Plugin.State.LastChangelog);
                 }
             }
+        }
 
-            if(downloadTask?.IsCompleted == true)
+        using (var header = ImRaii.Header(Localization.Actions, ImGuiTreeNodeFlags.DefaultOpen))
+        {
+            if (header.Success)
             {
-                downloadTask = null;
-            }
+                var isChecking = Plugin.State.IsChecking;
+                using (var disabled = ImRaii.Disabled(isChecking))
+                { 
+                    if (ImGui.Button(Localization.Refresh, new Vector2(-1, 0)))
+                    {
+                        _refreshTask ??= Plugin.networkService.CheckForUpdates();
+                    }
+                }
 
-            if (ImGui.Button("Open config", new Vector2(-1, 0)))
-            {
-                plugin.ToggleConfigUi();
+                if (_refreshTask?.IsCompleted == true)
+                {
+                    _refreshTask = null;
+                }
+
+                bool updateAvailable = Plugin.State.UpdateAvailable;
+
+                using (var disable = ImRaii.Disabled(!updateAvailable || isChecking))
+                {
+                    if (ImGui.Button(Localization.UpdateComponents, new Vector2(-1, 0)))
+                    {
+                        _downloadTask ??= Plugin.networkService.DownloadLatestModAsync();
+                    }
+                }
+
+                if (_downloadTask?.IsCompleted == true)
+                {
+                    _downloadTask = null;
+                }
+
+                if (ImGui.Button(Localization.OpenConfiguration, new Vector2(-1, 0)))
+                {
+                    Plugin.Instance.ToggleConfigUi();
+                }
+
+#if DEBUG
+                if(ImGui.Button(Localization.DebugOpen, new Vector2(-1, 0)))
+                {
+                    Plugin.Instance.ToggleDebugUi();
+                }
+#endif
             }
         }
 
-        if (ImGui.CollapsingHeader("Diagnostics"))
+        using (var header = ImRaii.Header(Localization.Diagnostics, ImGuiTreeNodeFlags.None))
         {
-            ImGui.TextDisabled("Branch: ");
-            ImGui.SameLine();
-            ImGui.Text(plugin.Configuration.Channel.ToString());
+            if (header.Success)
+            {
+                ImGui.TextDisabled(Localization.Branch);
+                ImGui.SameLine();
+                ImGui.Text(Plugin.Instance.Configuration.Channel.ToString());
 
-            ImGui.TextDisabled("Tester Access Allowance: ");
-            ImGui.SameLine();
+                ImGui.TextDisabled(Localization.TesterAccessAllowance);
+                ImGui.SameLine();
 
-            if (!plugin.Configuration.TesterHumanCheck)
-                ImGui.TextColored(ImGuiColors.DalamudYellow, "Not Allowed");
-            else
-                ImGui.TextColored(ImGuiColors.HealerGreen, "Allowed");
+                if (!Plugin.Instance.Configuration.TesterHumanCheck)
+                    ImGui.TextColored(ImGuiColors.DalamudYellow, Localization.NotAllowed);
+                else
+                    ImGui.TextColored(ImGuiColors.HealerGreen, Localization.Allowed);
+            }
         }
     }
 
-    private OverallStatus GetOverallStatus()
+    public static OverallStatus GetOverallStatus()
     {
         var state = Plugin.State;
 
@@ -154,36 +170,38 @@ public class MainWindow : Window, IDisposable
         {
             case OverallStatus.Ok:
                 color = ImGuiColors.HealerGreen;
-                text = "Engine is up to date";
+                text = Localization.EngineUpToDate;
                 break;
 
             case OverallStatus.UpdateAvailable:
                 color = ImGuiColors.DalamudYellow;
-                text = "Update available";
+                text = Localization.UpdateAvailable;
                 break;
 
             case OverallStatus.Disabled:
                 color = ImGuiColors.DalamudRed;
-                text = "Engine temporarily disabled";
+                text = Localization.EngineTemporarilyDisabled;
                 break;
 
             default:
                 color = ImGuiColors.DalamudRed;
-                text = "Unable to determine status";
+                text = Localization.StatusUndetermined;
                 break;
         }
 
         using (ImRaii.PushColor(ImGuiCol.ChildBg, color * new Vector4(1, 1, 1, 0.15f)))
         {
-            ImGui.BeginChild("StatusBanner", new Vector2(-1, 50), true);
-
-            using (ImRaii.PushColor(ImGuiCol.Text, color))
+            using (var child = ImRaii.Child("StatusBanner", new Vector2(-1, 50 * ImGuiHelpers.GlobalScale), true))
             {
-                ImGui.SetCursorPosY(15);
-                ImGui.TextUnformatted(text);
+                if (child.Success)
+                {
+                    using (ImRaii.PushColor(ImGuiCol.Text, color))
+                    {
+                        ImGui.SetCursorPosY(15);
+                        ImGui.TextUnformatted(text);
+                    }
+                }
             }
-
-            ImGui.EndChild();
         }
     }
 }

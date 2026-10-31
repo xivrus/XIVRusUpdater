@@ -1,26 +1,33 @@
 using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using System;
 using System.Numerics;
-using XIVRusUpdater.Utils;
+using XIVRusUpdater.Resource;
 
 namespace XIVRusUpdater.Windows;
 
 public sealed class ChangelogWindow : Window, IDisposable
 {
-    private readonly Plugin plugin;
-
-    public ChangelogWindow(Plugin plugin)
-        : base("XIV Rus Update Changelog###XIVRusChangelog")
+    public ChangelogWindow()
+        : base($"{Localization.ChangelogTitle}###Changelog")
     {
-        Flags = ImGuiWindowFlags.NoCollapse;
         RespectCloseHotkey = false;
-        this.plugin = plugin;
+        RespectCloseHotkey = false;
 
-        Size = new Vector2(750, 600);
+        SizeConstraints = new WindowSizeConstraints
+        {
+            MinimumSize = new Vector2(375, 330),
+            MaximumSize = new Vector2(float.MaxValue, float.MaxValue),
+            
+        };
+        Size = new Vector2(750, 600) * ImGuiHelpers.GlobalScale;
+
+        Flags = ImGuiWindowFlags.NoCollapse;
         SizeCondition = ImGuiCond.FirstUseEver;
 
-        RespectCloseHotkey = false;
     }
 
     public void Dispose()
@@ -29,22 +36,23 @@ public sealed class ChangelogWindow : Window, IDisposable
 
     public override void Draw()
     {
-        ImGui.TextUnformatted("XIV Rus has been updated.");
+        using(ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.HealerGreen))
+        {
+            ImGui.TextWrapped(Localization.TranslationUpdated);
+        }
         ImGui.Separator();
 
-        var contentHeight = ImGui.GetContentRegionAvail().Y - 50;
+        var contentHeight = ImGui.GetContentRegionAvail().Y - 50 * ImGuiHelpers.GlobalScale;
 
-        ImGui.BeginChild("##changelog", new Vector2(0, contentHeight), true);
-
-        string markdown = Plugin.State.LastChangelog ?? "No changelog available.";
-
-        ImGui.TextWrapped(markdown);
-
-        ImGui.EndChild();
+        using(var child = ImRaii.Child("##changelog", new Vector2(0, contentHeight), true))
+        {
+            if(child.Success)
+                ImGui.TextWrapped(Plugin.State.LastChangelog ?? Localization.NoChangelogAvailable);
+        }
 
         ImGui.Spacing();
 
-        if (ImGui.Button("Accept", new Vector2(180, 0)))
+        if (ImGui.Button(Localization.Accept))
         {
             Plugin.State.Penumbra.ShowChangelog = false;
             Plugin.State.Translation.ShowChangelog = false;

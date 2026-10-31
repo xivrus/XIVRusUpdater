@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
@@ -17,20 +18,15 @@ namespace XIVRusUpdater;
 public sealed class Plugin : IDalamudPlugin
 {
     [PluginService] internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
-
     [PluginService] internal static IFramework Framework { get; private set; } = null!;
-
     [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
-
     [PluginService] internal static ISigScanner SigScanner { get; private set; } = null!;
-
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
-
     [PluginService] internal static IGameInteropProvider interopProvider { get; private set; } = null!;
+    [PluginService] internal static ICondition condition { get; private set;  } = null!;
 
     public static EXDHooks HookLayers { get; private set; } = null!;
-    public static TranslationFilter filter { get; private set; } = null!;
-
+    
     internal static PenumbraService PenumbraApi { get; private set; } = null!;
     internal static NetworkService networkService { get; private set; } = null!;
     internal static UpdaterState State { get; private set; } = null!;
@@ -47,38 +43,38 @@ public sealed class Plugin : IDalamudPlugin
     private readonly MainWindow MainWindow;
     private readonly DownloadWindow DownloadWindow;
     private readonly ChangelogWindow Changelog;
+#if DEBUG
     private readonly DebugWindow Debug;
+#endif
 
     public Plugin()
     {
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+        if (Configuration.WasMigrated)
+            Configuration.Save();
         Instance = this;
-        filter = new TranslationFilter();
-        filter.Rebuild(Configuration.DisabledComponents);
         HookLayers = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
         State = new UpdaterState();
-        networkService = new NetworkService(this);
-        networkService.TranslationInstalled += OnTranslationInstalled;
-
-
+        networkService = new NetworkService();
+        
         PenumbraApi = new PenumbraService(PluginInterface);
         
         Framework.Update += OnUpdate;
 
-        var iconPath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "icon.png");
-
-        ConfigWindow = new ConfigWindow(this);
-        MainWindow = new MainWindow(this, iconPath);
+        ConfigWindow = new ConfigWindow();
+        MainWindow = new MainWindow();
         DownloadWindow = new DownloadWindow();
-        Changelog = new ChangelogWindow(this);
+        Changelog = new ChangelogWindow();
+#if DEBUG
         Debug = new DebugWindow();
+        WindowSystem.AddWindow(Debug);
+#endif
 
         WindowSystem.AddWindow(ConfigWindow);
         WindowSystem.AddWindow(MainWindow);
         WindowSystem.AddWindow(DownloadWindow);
         WindowSystem.AddWindow(Changelog);
-        WindowSystem.AddWindow(Debug);
-
+        
         CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
             HelpMessage = "Open the plugin window. Use '/xivrus debug' for open debug window"
@@ -94,8 +90,7 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
         PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfigUi;
         PluginInterface.UiBuilder.OpenMainUi -= ToggleMainUi;
-        networkService.TranslationInstalled -= OnTranslationInstalled;
-
+        
         WindowSystem.RemoveAllWindows();
 
         HookLayers.Dispose();
@@ -108,29 +103,29 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnCommand(string command, string args)
     {
+#if DEBUG
         if (string.Equals(args.Trim(), "debug", StringComparison.OrdinalIgnoreCase))
-        { 
-            Debug.Toggle();
+        {
+            ToggleDebugUi();
             return;
         }
+#endif
 
-        MainWindow.Toggle();
+        ToggleMainUi();
     }
 
-    private void OnTranslationInstalled()
-    {
-        HookLayers.parser.Reload();
-        State.Translation.Installed = true;
-    }
+    public static bool BoundByDuty() => condition[ConditionFlag.BoundByDuty] || condition[ConditionFlag.BoundByDuty56] || condition[ConditionFlag.BoundByDuty95];
 
     private async void OnUpdate(IFramework framework)
     {
         if (DateTime.Now > nextRefresh)
         {
-            nextRefresh = DateTime.Now.AddMinutes(Configuration.UpdateCheckIntervalMinutes);
+            bool inDuty = Configuration.BlockUpdateWhileDuty && BoundByDuty();
+            nextRefresh = DateTime.Now.AddMinutes(inDuty ? 1 : Configuration.UpdateCheckIntervalMinutes);
             Log.Information($"Perform timed update... Next update: {nextRefresh.ToString()}");
 
-            _ = networkService.CheckForUpdates();
+            if(!inDuty)
+                _ = networkService.CheckForUpdates();
         }
 
         DownloadWindow.IsOpen = State.Penumbra.Download.IsDownloading || State.Translation.Download.IsDownloading;
@@ -139,4 +134,8 @@ public sealed class Plugin : IDalamudPlugin
 
     public void ToggleConfigUi() => ConfigWindow.Toggle();
     public void ToggleMainUi() => MainWindow.Toggle();
+
+#if DEBUG
+    public void ToggleDebugUi() => Debug.Toggle();
+#endif
 }

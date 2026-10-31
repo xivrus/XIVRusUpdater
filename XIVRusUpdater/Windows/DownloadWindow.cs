@@ -1,12 +1,9 @@
 using Dalamud.Bindings.ImGui;
-using Dalamud.Interface.Utility.Raii;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
 using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using XIVRusUpdater;
-using XIVRusUpdater.Utils;
+using XIVRusUpdater.Resource;
 using XIVRusUpdater.Utils.States;
 
 namespace XIVRusUpdater.Windows;
@@ -14,8 +11,14 @@ namespace XIVRusUpdater.Windows;
 public class DownloadWindow : Window
 {
     public DownloadWindow()
-        : base($"Downloading###DownloadWindow")
+        : base($"{Localization.Downloading}###DownloadWindow")
     {
+        SizeConstraints = new WindowSizeConstraints
+        {
+            MinimumSize = new Vector2(375, 330),
+            MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
+        };
+
         RespectCloseHotkey = false;
     }
 
@@ -36,20 +39,16 @@ public class DownloadWindow : Window
     {
         ImGui.TextWrapped(download.FileName);
 
-        ImGui.ProgressBar(
-            download.Progress,
-            new Vector2(-1, 24));
+        ImGui.ProgressBar(download.Progress, new Vector2(-1, 24 * ImGuiHelpers.GlobalScale));
 
         ImGui.Spacing();
 
-        ImGui.Text(string.Format("{0} MB / {1} MB",
+        ImGui.Text(string.Format(Localization.DownloadSize,
             Math.Round(download.DownloadedBytes / 1024f / 1024f),
             Math.Round(download.TotalBytes / 1024f / 1024f)));
 
-        ImGui.Text("Current Source: ");
-        ImGui.SameLine();
-        ImGui.TextWrapped(download.CurrentSource);
+        ImGui.TextWrapped(string.Format(Localization.CurrentSource, download.CurrentSource));
 
-        ImGui.Text(string.Format("Speed: {0} MB/s", Math.Round(download.SpeedMBps, 2)));
+        ImGui.Text(string.Format(Localization.DownloadSpeed, Math.Round(download.SpeedMBps, 2)));
     }
 }

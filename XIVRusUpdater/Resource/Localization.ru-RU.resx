@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PluginTitle" xml:space="preserve">
+    <value>XIVRus v{0}</value>
+  </data>
+  <data name="SystemStatus" xml:space="preserve">
+    <value>Состояние системы</value>
+  </data>
+  <data name="PenumbraEnabled" xml:space="preserve">
+    <value>Включён</value>
+  </data>
+  <data name="PenumbraDisabled" xml:space="preserve">
+    <value>Отключён</value>
+  </data>
+  <data name="TranslationStatus" xml:space="preserve">
+    <value>Статус перевода: {0}</value>
+  </data>
+  <data name="TranslationVersion" xml:space="preserve">
+    <value>Версия перевода: {0}</value>
+  </data>
+  <data name="RemoteTranslationVersion" xml:space="preserve">
+    <value>Версия перевода на сервере: {0}</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Установлен</value>
+  </data>
+  <data name="NotInstalled" xml:space="preserve">
+    <value>Не установлен</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Неизвестно</value>
+  </data>
+  <data name="LastCheck" xml:space="preserve">
+    <value>Последняя проверка</value>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>Никогда</value>
+  </data>
+  <data name="LastChangelog" xml:space="preserve">
+    <value>Последние изменения</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Действия</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Проверить обновления</value>
+  </data>
+  <data name="UpdateComponents" xml:space="preserve">
+    <value>Обновить компоненты</value>
+  </data>
+  <data name="OpenConfiguration" xml:space="preserve">
+    <value>Открыть настройки</value>
+  </data>
+  <data name="Diagnostics" xml:space="preserve">
+    <value>Диагностика</value>
+  </data>
+  <data name="Branch" xml:space="preserve">
+    <value>Ветка:</value>
+  </data>
+  <data name="TesterAccessAllowance" xml:space="preserve">
+    <value>Доступ тестировщика:</value>
+  </data>
+  <data name="Allowed" xml:space="preserve">
+    <value>Разрешён</value>
+  </data>
+  <data name="NotAllowed" xml:space="preserve">
+    <value>Не разрешён</value>
+  </data>
+  <data name="EngineUpToDate" xml:space="preserve">
+    <value>Компонент актуален</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Доступно обновление</value>
+  </data>
+  <data name="EngineTemporarilyDisabled" xml:space="preserve">
+    <value>Компонент временно отключён</value>
+  </data>
+  <data name="StatusUndetermined" xml:space="preserve">
+    <value>Не удалось определить состояние</value>
+  </data>
+  <data name="Downloading" xml:space="preserve">
+    <value>Загрузка</value>
+  </data>
+  <data name="CurrentSource" xml:space="preserve">
+    <value>Текущий источник: {0}</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>Скорость: {0} МБ/с</value>
+  </data>
+  <data name="DownloadSize" xml:space="preserve">
+    <value>{0} МБ / {1} МБ</value>
+  </data>
+  <data name="TranslationConfiguration" xml:space="preserve">
+    <value>Настройки перевода</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>Общие</value>
+  </data>
+  <data name="TranslationEngine" xml:space="preserve">
+    <value>Движок перевода</value>
+  </data>
+  <data name="ShowNotifications" xml:space="preserve">
+    <value>Показывать уведомления</value>
+  </data>
+  <data name="ShowChangelogAfterUpdate" xml:space="preserve">
+    <value>Показывать список изменений после обновления</value>
+  </data>
+  <data name="Components" xml:space="preserve">
+    <value>Компоненты</value>
+  </data>
+  <data name="EnableAll" xml:space="preserve">
+    <value>Включить все</value>
+  </data>
+  <data name="DisableAll" xml:space="preserve">
+    <value>Отключить все</value>
+  </data>
+  <data name="UpdateSection" xml:space="preserve">
+    <value>Обновление</value>
+  </data>
+  <data name="CheckIntervalMinutes" xml:space="preserve">
+    <value>Интервал проверки (в минутах)</value>
+  </data>
+  <data name="AutoDownloadUpdates" xml:space="preserve">
+    <value>Автоматически загружать обновления</value>
+  </data>
+  <data name="AccessLevel" xml:space="preserve">
+    <value>Уровень доступа</value>
+  </data>
+  <data name="Channel" xml:space="preserve">
+    <value>Канал</value>
+  </data>
+  <data name="TestVersionWarning" xml:space="preserve">
+    <value>Тестовые версии могут содержать непроверенные переводы, незавершённые изменения и неожиданные проблемы. Игра или локализация могут работать некорректно.</value>
+  </data>
+  <data name="AcknowledgeTestVersionRisk" xml:space="preserve">
+    <value>Я понимаю риски использования тестовых версий.</value>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>Информация</value>
+  </data>
+  <data name="LastInstalledTranslation" xml:space="preserve">
+    <value>Последний установленный перевод:</value>
+  </data>
+  <data name="LastRemoteTranslation" xml:space="preserve">
+    <value>Последняя версия перевода на сервере:</value>
+  </data>
+  <data name="LastInstalledPenumbraMod" xml:space="preserve">
+    <value>Последняя установленная версия мода:</value>
+  </data>
+  <data name="RemotePenumbraMod" xml:space="preserve">
+    <value>Последняя версия мода на сервере: {0}</value>
+  </data>
+  <data name="LastUpdateCheck" xml:space="preserve">
+    <value>Последняя проверка обновлений:</value>
+  </data>
+  <data name="LastSuccessfulUpdate" xml:space="preserve">
+    <value>Последнее успешное обновление:</value>
+  </data>
+  <data name="ChangelogTitle" xml:space="preserve">
+    <value>Список изменений обновления</value>
+  </data>
+  <data name="TranslationUpdated" xml:space="preserve">
+    <value>Перевод был обновлён. Вы можете продолжать играть без каких-либо проблем, но для применения нового перевода потребуется перезапустить игру.</value>
+  </data>
+  <data name="NoChangelogAvailable" xml:space="preserve">
+    <value>Список изменений недоступен.</value>
+  </data>
+  <data name="Accept" xml:space="preserve">
+    <value>Подтвердить</value>
+  </data>
+  <data name="EnemyNpcNames" xml:space="preserve">
+    <value>Враждебные NPC</value>
+  </data>
+  <data name="EnemyNpcNamesDescription" xml:space="preserve">
+    <value>Отключите этот компонент, если возникают трудности с поиском врагов для заданий, охоты и прочего.</value>
+  </data>
+  <data name="PlaceNames" xml:space="preserve">
+    <value>Названия локаций</value>
+  </data>
+  <data name="PlaceNamesDescription" xml:space="preserve">
+    <value>Отключите, если переведённые названия локаций мешают пользоваться вики, картами или руководствами.</value>
+  </data>
+  <data name="DutyNames" xml:space="preserve">
+    <value>Названия и описания миссий</value>
+  </data>
+  <data name="DutyNamesDescription" xml:space="preserve">
+    <value>Отключите этот компонент, если хотите видеть названия в Поиске миссий в оригинале. Обратите внимание, что с переводом оригинальное название миссии можно увидеть в её описании.</value>
+  </data>
+  <data name="FriendlyNpcNames" xml:space="preserve">
+    <value>Имена дружественных NPC</value>
+  </data>
+  <data name="FriendlyNpcNamesDescription" xml:space="preserve">
+    <value>Отключите, если возникают трудности с поиском торговцев, NPC для ремесла, обмена и других функциональных NPC.</value>
+  </data>
+  <data name="ActionsTraitsStatuses" xml:space="preserve">
+    <value>Описания действий, навыков и статус-эффектов</value>
+  </data>
+  <data name="ActionsTraitsStatusesDescription" xml:space="preserve">
+    <value>Отключите этот компонент, если хотите видеть указанные описания в оригинале.</value>
+  </data>
+  <data name="Achievements" xml:space="preserve">
+    <value>Достижения</value>
+  </data>
+  <data name="AchievementsDescription" xml:space="preserve">
+    <value>Отключите этот компонент, если нужны оригинальные названия достижений. Обратите внимание, что перевод описаний достижений пропадёт.</value>
+  </data>
+  <data name="PlayerTitles" xml:space="preserve">
+    <value>Титулы</value>
+  </data>
+  <data name="PlayerTitlesDescription" xml:space="preserve">
+    <value>Отключите этот компонент, если хотите видеть титулы игроков в оригинале.</value>
+  </data>
+  <data name="Collectibles" xml:space="preserve">
+    <value>Коллекционные предметы</value>
+  </data>
+  <data name="CollectiblesDescription" xml:space="preserve">
+    <value>Включает средства передвижения, миньонов, оформление карточек, украшения чокобо, карты Тройного Трио, записи о Бозье, записи о вариативных подземельях, оккультные записи и поручения.</value>
+  </data>
+  <data name="Emotes" xml:space="preserve">
+    <value>Эмоции</value>
+  </data>
+  <data name="EmotesDescription" xml:space="preserve">
+    <value>Отключите этот компонент, если хотите видеть названия эмоций в оригинале. Обратите внимание, что команды эмоций в любом случае не переводятся. Возможно, вам будет достаточно команд вместо названий.</value>
+  </data>
+  <data name="Attributes" xml:space="preserve">
+    <value>Характеристики</value>
+  </data>
+  <data name="AttributesDescription" xml:space="preserve">
+    <value>Названия характеристик и параметров персонажа.</value>
+  </data>
+  <data name="Colors" xml:space="preserve">
+    <value>Цвета (Краски)</value>
+  </data>
+  <data name="ColorsDescription" xml:space="preserve">
+    <value>Отключите это, если хотите видеть оригинальные названия цветов (красок).</value>
+  </data>
+  <data name="PenumbraModStatus" xml:space="preserve">
+    <value>Статус мода: {0}</value>
+  </data>
+  <data name="PenumbraModVersion" xml:space="preserve">
+    <value>Версия мода: {0}</value>
+  </data>
+  <data name="PenumbraModRemoteVersion" xml:space="preserve">
+    <value>Удалённая версия мода: {0}</value>
+  </data>
+  <data name="LastRemotePenumbraMod" xml:space="preserve">
+    <value>Последняя удалённая версия мода: </value>
+  </data>
+  <data name="RebootImportance" xml:space="preserve">
+    <value>Настоятельно рекомендуется перезапустить игру, чтобы изменения в компонентах вступили в силу. Хотя некоторые компоненты могут начать работать сразу, в целом рекомендуется выполнить перезапуск.</value>
+  </data>
+  <data name="DebugOpen" xml:space="preserve">
+    <value>Открыть отладочное меню</value>
+  </data>
+  <data name="BlockUpdateInDuty" xml:space="preserve">
+    <value>Не допускать обновлений, если вы находитесь в подземелье</value>
+  </data>
+  <data name="Reload" xml:space="preserve">
+    <value>Перезагрузить</value>
+  </data>
+  <data name="LazyLootPlugin" xml:space="preserve">
+    <value>LazyLoot</value>
+  </data>
+  <data name="ThirdPartyDescription" xml:space="preserve">
+    <value>Если указанный плагин работает некорректно из-за использования перевода, отключите этот компонент.</value>
+  </data>
+  <data name="SimpleTweaksPlugin" xml:space="preserve">
+    <value>Simple Tweaks</value>
+  </data>
+  <data name="TriadBuddyPlugin" xml:space="preserve">
+    <value>TriadBuddy</value>
+  </data>
+  <data name="LifestreamPlugin" xml:space="preserve">
+    <value>Lifestream</value>
+  </data>
+</root>

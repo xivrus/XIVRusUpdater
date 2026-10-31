@@ -17,6 +17,7 @@ public class DebugWindow : Window, IDisposable
     private readonly IDebugWindowWidget[] modules =
     [
         new XRTReaderWIdget(),
+        new RowMemoryWidget()
     ];
 
     private readonly IOrderedEnumerable<IDebugWindowWidget> orderedModules;

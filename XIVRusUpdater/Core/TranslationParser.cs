@@ -9,16 +9,20 @@ using XIVRusUpdater.Utils;
 
 namespace XIVRusUpdater.Core;
 
-public class TranslationParser : IDisposable
+public class TranslationParser
 {
     private readonly object syncRoot = new();
     
     private readonly List<TranslationResourceManager> retired = new();
     private TranslationResourceManager _resources { get; set; }
+    private static TranslationFilter filter { get; set; } = null!;
+
     private string _engineId { get; set; }
 
     public TranslationParser(string @engineId)
     {
+        filter = new TranslationFilter();
+        filter.Rebuild(Plugin.Instance.Configuration.DisabledComponents);
         _engineId = engineId;
         _resources = CreateResourceManager(_engineId);
     }
@@ -37,7 +41,6 @@ public class TranslationParser : IDisposable
         {
             if (engineId == _engineId)
             {
-                newManager.Dispose();
                 return;
             }
 
@@ -61,7 +64,7 @@ public class TranslationParser : IDisposable
         var engine = TranslationEngines.Get(engineId)
             ?? throw new ArgumentException($"Unknown translation engine: {engineId}", nameof(engineId));
 
-        return new TranslationResourceManager(Plugin.PluginInterface.AssemblyLocation.Directory!.FullName, engine.Id, engine.Format);
+        return new TranslationResourceManager(Plugin.PluginInterface.GetPluginConfigDirectory(), engine.Id, engine.Format);
     }
 
     public string GetResourceDir()
@@ -78,7 +81,12 @@ public class TranslationParser : IDisposable
             return _resources.IsLoaded(sheetName);
     }
 
-    public bool TryGetValue(string sheetName, uint RowId, uint Column, out ByteArrayWrapper? translation)
+    public bool IsNeedTranslate(string sheetName, uint rowId)
+    {
+        return IsSheetLoaded(sheetName) && filter.IsActive(sheetName, rowId);
+    }
+
+    internal bool TryGetValue(string sheetName, uint RowId, uint Column, out Translation? translation)
     {
         lock (syncRoot)
         {
@@ -93,6 +101,26 @@ public class TranslationParser : IDisposable
         }
     }
 
+    internal bool TryGetRowTranslations(string sheet, uint rowId, out Translation[]? translations)
+    {
+        lock(syncRoot)
+        {
+            translations = null;
+            if (_resources.TryGet(sheet, out var file) && file.TryGetData(rowId, out var columns))
+            {
+                if(columns != null)
+                { 
+                    translations = columns;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    public void UpdateFilter() => filter.Rebuild(Plugin.Instance.Configuration.DisabledComponents);
+
     public void Reload()
     {
         string id;
@@ -105,23 +133,13 @@ public class TranslationParser : IDisposable
         {
             if (id != _engineId)
             {
-                next.Dispose();
                 return;
             }
 
             retired.Add(_resources);
             _resources = next;
         }
-    }
 
-    public void Dispose()
-    {
-        lock (syncRoot)
-        {
-            foreach (var manager in retired)
-                manager.Dispose();
-            retired.Clear();
-            _resources.Dispose();
-        }
+        UpdateFilter();
     }
 }
