@@ -372,9 +372,6 @@
   <data name="BlockUpdateInDuty" xml:space="preserve">
     <value>Block updates if you are on duty</value>
   </data>
-  <data name="Reload" xml:space="preserve">
-    <value>Reload</value>
-  </data>
   <data name="LazyLootPlugin" xml:space="preserve">
     <value>LazyLoot</value>
   </data>

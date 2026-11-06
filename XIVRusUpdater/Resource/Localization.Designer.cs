@@ -691,15 +691,6 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Reload.
-        /// </summary>
-        internal static string Reload {
-            get {
-                return ResourceManager.GetString("Reload", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Last remote Penumbra mod: {0}.
         /// </summary>
         internal static string RemotePenumbraMod {

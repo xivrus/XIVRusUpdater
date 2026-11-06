@@ -41,11 +41,6 @@ public class ConfigWindow : Window, IDisposable
                     {
                         var currentEngine = TranslationEngines.Get(_config.EngineId);
                         
-                        if(ImGui.Button(Localization.Reload))
-                        {
-                            Plugin.HookLayers.parser.Reload();
-                        }
-
                         ImGui.SameLine();
 
                         using (var combo = ImRaii.Combo(Localization.TranslationEngine, currentEngine?.DisplayName ?? Localization.Unknown))
@@ -60,6 +55,7 @@ public class ConfigWindow : Window, IDisposable
                                     {
                                         _config.EngineId = engine.Id;
                                         _config.Save();
+                                        Plugin.Instance.ForceUpdateCheck();
                                     }
 
                                     if (selected)
