@@ -12,8 +12,6 @@ namespace XIVRusUpdater.Core;
 public class TranslationParser
 {
     private readonly object syncRoot = new();
-    
-    private readonly List<TranslationResourceManager> retired = new();
     private TranslationResourceManager _resources { get; set; }
     private static TranslationFilter filter { get; set; } = null!;
 
@@ -40,11 +38,8 @@ public class TranslationParser
         lock (syncRoot)
         {
             if (engineId == _engineId)
-            {
                 return;
-            }
 
-            retired.Add(_resources);
             _resources = newManager;
             _engineId = engineId;
         }
@@ -132,11 +127,8 @@ public class TranslationParser
         lock (syncRoot)
         {
             if (id != _engineId)
-            {
                 return;
-            }
 
-            retired.Add(_resources);
             _resources = next;
         }
 

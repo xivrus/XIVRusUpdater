@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
@@ -83,6 +84,7 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
         PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUi;
         PluginInterface.UiBuilder.OpenMainUi += ToggleMainUi;
+        networkService.OnTranslationInstalled += UpdateTranslation;
     }
 
     public void Dispose()
@@ -90,7 +92,8 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
         PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfigUi;
         PluginInterface.UiBuilder.OpenMainUi -= ToggleMainUi;
-        
+        networkService.OnTranslationInstalled -= UpdateTranslation;
+
         WindowSystem.RemoveAllWindows();
 
         HookLayers.Dispose();
@@ -131,6 +134,10 @@ public sealed class Plugin : IDalamudPlugin
         DownloadWindow.IsOpen = State.Penumbra.Download.IsDownloading || State.Translation.Download.IsDownloading;
         Changelog.IsOpen = State.ShowChangelog;
     }
+
+    public Task ForceUpdateCheck() => networkService.CheckForUpdates();
+
+    public void UpdateTranslation() => HookLayers.parser.Reload();
 
     public void ToggleConfigUi() => ConfigWindow.Toggle();
     public void ToggleMainUi() => MainWindow.Toggle();
