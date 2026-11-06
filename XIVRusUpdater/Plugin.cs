@@ -27,6 +27,7 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static ICondition condition { get; private set;  } = null!;
 
     public static EXDHooks HookLayers { get; private set; } = null!;
+    public static Utf8StringHook HookStrings { get; private set; } = null!;
     
     internal static PenumbraService PenumbraApi { get; private set; } = null!;
     internal static NetworkService networkService { get; private set; } = null!;
@@ -55,6 +56,7 @@ public sealed class Plugin : IDalamudPlugin
             Configuration.Save();
         Instance = this;
         HookLayers = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
+        HookStrings = new Utf8StringHook(interopProvider);
         State = new UpdaterState();
         networkService = new NetworkService();
         
@@ -97,6 +99,7 @@ public sealed class Plugin : IDalamudPlugin
         WindowSystem.RemoveAllWindows();
 
         HookLayers.Dispose();
+        HookStrings.Dispose();
         ConfigWindow.Dispose();
         MainWindow.Dispose();
         DownloadWindow.Dispose();
