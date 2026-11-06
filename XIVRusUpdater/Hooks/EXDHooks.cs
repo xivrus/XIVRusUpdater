@@ -6,13 +6,12 @@ using FFXIVClientStructs.FFXIV.Common.Component.Excel;
 using FFXIVClientStructs.FFXIV.Component.Excel;
 using System;
 using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
 using XIVRusUpdater.Core;
 using XIVRusUpdater.Utils.Memory;
-using static ImSharp.Im.Native.Methods;
 
 namespace XIVRusUpdater.Hooks;
 
+using StoreRowDelegate = IExcelPageRowResolver.Delegates.StoreRow;
 public unsafe partial class EXDHooks : IDisposable
 {
     private const string HashTableStoreRowSig = "48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC ?? 44 8B 49 ?? 33 C0 49 8B F0";
@@ -23,8 +22,7 @@ public unsafe partial class EXDHooks : IDisposable
 
     private readonly Hook<StoreRowDelegate> hashTableHook;
     private readonly Hook<StoreRowDelegate> ringBufferHook;
-    private delegate byte StoreRowDelegate(nint resolver, ExcelRowDescriptor* descriptor, ExcelRow* row);
-
+    
     public EXDHooks(IGameInteropProvider provider, ISigScanner scanner, string engineId)
     {
         parser = new TranslationParser(engineId);
@@ -54,13 +52,13 @@ public unsafe partial class EXDHooks : IDisposable
         ringBufferHook.Dispose();
     }
 
-    private byte HashTableDetour(nint resolver, ExcelRowDescriptor* descriptor, ExcelRow* row)
+    private bool HashTableDetour(IExcelPageRowResolver* resolver, ExcelRowDescriptor* descriptor, ExcelRow* row)
     {
         TryReplaceRow(row, descriptor);
         return hashTableHook.Original(resolver, descriptor, row);
     }
 
-    private byte RingBufferDetour(nint resolver, ExcelRowDescriptor* descriptor, ExcelRow* row)
+    private bool RingBufferDetour(IExcelPageRowResolver* resolver, ExcelRowDescriptor* descriptor, ExcelRow* row)
     {
         TryReplaceRow(row, descriptor);
         return ringBufferHook.Original(resolver, descriptor, row);
