@@ -260,7 +260,7 @@ public class NetworkService
         {
             var engine = TranslationEngines.Get(Plugin.Instance.Configuration.EngineId);
 
-            Plugin.State.PenumbraEnabled = Plugin.PenumbraApi.IsPenumbraEnabled();
+            Plugin.State.PenumbraEnabled = Plugin.PenumbraApi.IsPenumbraAvailable();
 
             var penumbraManifest = Plugin.State.Penumbra;
             var translationManifest = Plugin.State.Translation;
