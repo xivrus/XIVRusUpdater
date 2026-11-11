@@ -1,6 +1,8 @@
 using Dalamud.Plugin;
 using Dalamud.Plugin.Ipc.Exceptions;
+using Penumbra.Api.Wrappers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -28,12 +30,12 @@ public sealed class PenumbraService
         GetDirectory = new (@interface);
     }
 
-    public bool IsInstalled()
+    private bool IsInstalled()
     {
         return pluginInterface.InstalledPlugins.Any(p => p.InternalName.Equals(InternalName, StringComparison.OrdinalIgnoreCase));
     }
 
-    public bool IsPenumbraEnabled()
+    private bool IsPenumbraEnabled()
     {
         try
         { 
@@ -44,7 +46,32 @@ public sealed class PenumbraService
             return false;
         }
     }
-    
+
+    private bool TryGetMod(string modName, out ModWrapperOld mod)
+    {
+        try
+        {
+            var mods = ModList.Invoke();
+
+            foreach (var item in mods)
+            {
+                if (item.Identifier != modName)
+                    continue;
+
+                mod = item;
+                return true;
+            }
+
+            mod = default;
+            return false;
+        }
+        catch (IpcNotReadyError)
+        {
+            mod = default;
+            return false;
+        }
+    }
+
     public string? GetDefaultDirectory()
     {
         try
@@ -57,38 +84,22 @@ public sealed class PenumbraService
         }
     }
 
-    public bool IsModInstalled(string modName) => ModList.Invoke().Any(x => x.Identifier == modName);
+    public bool IsModInstalled(string modName) => TryGetMod(modName, out _);
 
-    public string? GetModVersion(string modName)
+    public bool IsPenumbraAvailable()
     {
-        try 
-        { 
-            var mod = ModList.Invoke().FirstOrDefault(x => x.Identifier == modName);
-
-            return mod.Version;
-        }
-        catch (IpcNotReadyError)
-        {
-            return null;
-        }
+        return IsInstalled() && IsPenumbraEnabled();
     }
 
-    public DirectoryInfo? GetModPath(string modName)
-    {
-        try
-        {
-            var mod = ModList.Invoke().FirstOrDefault(x => x.Identifier == modName);
+    public string? GetModVersion(string modName) => TryGetMod(modName, out var mod) ? mod.Version : null;
 
-            return mod.ModPath;
-        }
-        catch (IpcNotReadyError)
-        {
-            return null;
-        }
-    }
+    public DirectoryInfo? GetModPath(string modName) => TryGetMod(modName, out var mod) ? mod.ModPath : null;
 
     public bool DeleteMod(string modName)
     {
+        if (!IsPenumbraAvailable())
+            return false;
+
         try 
         {
             var responce = DeleteMOD.Invoke(string.Empty, modName);
@@ -98,12 +109,16 @@ public sealed class PenumbraService
         }
         catch(IpcNotReadyError)
         {
+            Plugin.Log.Error("Failed to delete mod: IPC Not Ready");
             return false;
         }
     }
 
     public bool InstallMod(string downloadPath)
     {
+        if (!IsPenumbraAvailable())
+            return false;
+
         try
         { 
             var response = InstallMOD.Invoke(downloadPath);
@@ -115,6 +130,7 @@ public sealed class PenumbraService
         }
         catch (IpcNotReadyError)
         {
+            Plugin.Log.Error("Failed to install mod: IPC Not Ready");
             return false;
         }
     }
