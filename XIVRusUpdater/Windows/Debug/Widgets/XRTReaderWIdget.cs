@@ -12,7 +12,6 @@ namespace XIVRusUpdater.Windows.Debug.Widgets;
 
 public class XRTReaderWIdget : IDebugWindowWidget
 {
-    public string[]? CommandShortcuts { get; init; } = ["xrt", "xrtreader"];
     public string DisplayName { get; init; } = "XRT Reader";
     public bool Ready { get; set; }
 
