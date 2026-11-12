@@ -16,8 +16,7 @@ public class DebugWindow : Window, IDisposable
 {
     private readonly IDebugWindowWidget[] modules =
     [
-        new XRTReaderWIdget(),
-        new RowMemoryWidget()
+        new XRTReaderWIdget()
     ];
 
     private readonly IOrderedEnumerable<IDebugWindowWidget> orderedModules;
@@ -49,32 +48,6 @@ public class DebugWindow : Window, IDisposable
 
     public override void OnClose()
     {
-    }
-
-    public T GetWidget<T>() where T : IDebugWindowWidget
-    {
-        foreach (var m in modules)
-        {
-            if (m is T w)
-                return w;
-        }
-
-        throw new ArgumentException($"No widget of type {typeof(T).FullName} found.");
-    }
-
-    public void SetDataKind(string dataKind)
-    {
-        if (string.IsNullOrEmpty(dataKind))
-            return;
-
-        if (modules.FirstOrDefault(module => module.IsWidgetCommand(dataKind)) is { } targetModule)
-        {
-            CurrentWidget = targetModule;
-        }
-        else
-        {
-            Plugin.Log.Error($"/xivrus debug: Invalid data type {dataKind}");
-        }
     }
 
     public override void Draw()
