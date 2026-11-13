@@ -67,18 +67,20 @@ To function correctly, the plugin expects a specific type of API with accessible
 $env{APIBASE}/branches/release.json
 
 $env{APIBASE}/branches/test.json
-
-$env{APIBASE}/branches/xrt.json
 ```json
 {
-  “game_version”: “Game version the translation is designed for”,
-  “urls”: [
-    “Direct download link 1”,
-    “Direct download link 2”,
-    “Direct download link 3”
+  "changelog": "Latest changelog (shared by translation and modpack)",
+  "game_version": "Game version the translation is designed for",
+  "translation_version": "1.19.1",
+  "translation_urls": [
+    "Direct download link to the XRT translation archive 1",
+    "Direct download link to the XRT translation archive 2"
   ],
-  “changelog”: “Latest translation changelog”,
-  “version”: “1.19.1”
+  "modpack_version": "1.19.1",
+  "modpack_urls": [
+    "Direct download link to the Penumbra modpack 1",
+    "Direct download link to the Penumbra modpack 2"
+  ]
 }
 ```
 

@@ -5,15 +5,18 @@ namespace XIVRusUpdater.Models;
 
 public sealed class TranslationManifest
 {
-    [JsonProperty("version")] 
-    public string Version { get; set; } = string.Empty;
-    public string PenumbraVersion { get; set; } = string.Empty;
-
-    [JsonProperty("changelog")] 
+    [JsonProperty("changelog")]
     public string Changelog { get; set; } = string.Empty;
-    public string PenumbraChangelog {  get; set; } = string.Empty;
+    [JsonProperty("game_version")]
+    public string GameVersion { get; set; } = string.Empty;
 
-    [JsonProperty("urls")] 
-    public List<string> DownloadUrl { get; set; } = [];
-    public List<string> PenumbraDownloadUrls { get; set; } = [];
+    [JsonProperty("translation_version")] 
+    public string TranslationVersion { get; set; } = string.Empty;
+    [JsonProperty("translation_urls")]
+    public List<string> TranslationUrls { get; set; } = [];
+
+    [JsonProperty("modpack_version")]
+    public string ModpackVersion { get; set; } = string.Empty;
+    [JsonProperty("modpack_urls")]
+    public List<string> ModpackUrls { get; set; } = [];
 }
