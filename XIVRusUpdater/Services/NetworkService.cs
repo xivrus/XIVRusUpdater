@@ -52,18 +52,6 @@ public class NetworkService
         return Plugin.Instance.Configuration.Channel == UpdateChannel.Beta ? $"{api}/branches/test.json" : $"{api}/branches/release.json";
     }
 
-    public string CurrentXRT()
-    {
-        var engine = TranslationEngines.Get(Plugin.Instance.Configuration.EngineId);
-
-        var api = engine?.ApiUrl;
-
-        if (string.IsNullOrEmpty(api))
-            return string.Empty;
-
-        return $"{api}/branches/xrt.json";
-    }
-
     public async Task<TranslationManifest?> GetBranchStatus()
     {
         var branch = CurrentBranch();
@@ -77,18 +65,8 @@ public class NetworkService
 
         var status = JsonConvert.DeserializeObject<TranslationManifest>(await responseMessage.Content.ReadAsStringAsync());
 
-        using HttpResponseMessage xrtMessage = await Client.GetAsync(CurrentXRT());
-
-        xrtMessage.EnsureSuccessStatusCode();
-
-        var xrtStatus = JsonConvert.DeserializeObject<TranslationManifest>(await xrtMessage.Content.ReadAsStringAsync());
-
-        xrtStatus!.PenumbraVersion = status!.Version;
-        xrtStatus.PenumbraChangelog = status.Changelog;
-        xrtStatus.PenumbraDownloadUrls = status.DownloadUrl;
-
-        Plugin.State.LastRemoteStatus = xrtStatus;
-        return xrtStatus;
+        Plugin.State.LastRemoteStatus = status;
+        return status;
     }
 
     public async Task<string?> GetLastRemoteVersionAsync()
@@ -96,7 +74,7 @@ public class NetworkService
         var response = await GetBranchStatus();
         if (response == null) return null;
 
-        return response.Version;
+        return response.TranslationVersion;
     }
 
     public async Task<string?> GetLastRemotePenumbraAsync()
@@ -104,7 +82,7 @@ public class NetworkService
         var response = await GetBranchStatus();
         if (response == null) return null;
 
-        return response.PenumbraVersion;
+        return response.ModpackVersion;
     }
 
     public async Task CheckForUpdates()
@@ -142,7 +120,7 @@ public class NetworkService
         var release = Plugin.State.LastRemoteStatus;
         if(release == null) return;
         
-        var downloadSource = await GetFastestSource(release.PenumbraDownloadUrls);
+        var downloadSource = await GetFastestSource(release.ModpackUrls);
         if (downloadSource == null)
             return;
 
@@ -156,7 +134,7 @@ public class NetworkService
         if (!InstallDownloadedPenumbraAsync(tempFile))
             return;
 
-        Plugin.State.Penumbra.Version = Plugin.Instance.Configuration.LastInstalledPenumbra = release.PenumbraVersion;
+        Plugin.State.Penumbra.Version = Plugin.Instance.Configuration.LastInstalledPenumbra = release.ModpackVersion;
         Plugin.State.Penumbra.UpdateAvailable = false;
         Plugin.Instance.Configuration.Save();
 
@@ -168,7 +146,7 @@ public class NetworkService
         var release = Plugin.State.LastRemoteStatus;
         if (release == null) return;
 
-        var downloadSource = await GetFastestSource(release.DownloadUrl);
+        var downloadSource = await GetFastestSource(release.TranslationUrls);
         if (downloadSource == null)
             return;
 
@@ -185,7 +163,7 @@ public class NetworkService
         if (!installed)
             return;
 
-        Plugin.State.Translation.Version = Plugin.Instance.Configuration.LastInstalledVersion = release.Version;
+        Plugin.State.Translation.Version = Plugin.Instance.Configuration.LastInstalledVersion = release.TranslationVersion;
         Plugin.State.Translation.UpdateAvailable = false;
         Plugin.State.Translation.Installed = true;
         Plugin.Instance.Configuration.Save();
