@@ -763,6 +763,15 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на I am aware that I should not report any bugs I find whilst using the beta version to the Russian localisation team&apos;s channels, and/or use screenshots containing text that has not yet been proofread or tested, as this would bring the XIVRus team into disrepute. .
+        /// </summary>
+        internal static string TestResponsibility {
+            get {
+                return ResourceManager.GetString("TestResponsibility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Test versions may contain unverified translations, incomplete changes, and unexpected issues. The game or localization may behave incorrectly..
         /// </summary>
         internal static string TestVersionWarning {

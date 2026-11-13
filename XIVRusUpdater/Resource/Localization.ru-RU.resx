@@ -387,4 +387,7 @@
   <data name="LifestreamPlugin" xml:space="preserve">
     <value>Lifestream</value>
   </data>
+  <data name="TestResponsibility" xml:space="preserve">
+    <value>Я понимаю, что НЕ СЛЕДУЕТ сообщать об ошибках, найденных мной при использовании тестовой версии, в каналы русификатора, и/или использовать скриншоты с ещё невычитанным и непротестированным текстом для компрометации команды XIVRus. </value>
+  </data>
 </root>
