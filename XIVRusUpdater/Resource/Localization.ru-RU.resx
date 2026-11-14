@@ -390,4 +390,7 @@
   <data name="TestResponsibility" xml:space="preserve">
     <value>Я понимаю, что НЕ СЛЕДУЕТ сообщать об ошибках, найденных мной при использовании тестовой версии, в каналы русификатора, и/или использовать скриншоты с ещё невычитанным и непротестированным текстом для компрометации команды XIVRus. </value>
   </data>
+  <data name="AutoRetainerPlugin" xml:space="preserve">
+    <value>AutoRetainer</value>
+  </data>
 </root>

@@ -163,3 +163,24 @@ public sealed class LifeStreamComponent
         ["custom/001/CmnDefHousingPersonalRoomEntrance_00178"] = [11u]
     };
 }
+
+[TranslationComponent("AutoRetainerPlugin", nameof(Localization.AutoRetainerPlugin), nameof(Localization.ThirdPartyDescription), 1)]
+public sealed class AutoRetainerComponent
+{
+    public static readonly Dictionary<string, uint[]> Sheets = new()
+    {
+        ["Addon"] = [2u, 5u, 97u, 98u, 99u, 110u, 116u, 153u, 281u, 397u, 398u, 399u, 632u, 2376u, 2377u, 2378u, 2379u, 2383u, 2385u, 2386u, 2387u, 2436u, 2817u, 3290u, 3473u, 4477u, 4617u, 4618u, 4619u, 5480u, 6587u, 6886u, 11502u, 13530u, 102433u, 102434u],
+        ["LogMessage"] = [4160u, 4169u, 4272u, 4330u, 4578u, 5800u],
+        ["Lobby"] = [618u, 1237u],
+        ["EObjName"] = [2000401u, 2002737u, 2004353u, 2005274u, 2007402u],
+        ["Warp"] = [131148u],
+        ["CustomTalk"] = [721154u, 721343u],
+        ["custom/000/CmnDefRetainerCall_00010"] = [194u, 195u, 196u, 197u, 198u, 199u, 200u, 201u, 202u, 215u, 402u],
+        ["custom/000/ComDefGrandCompanyOfficer_00073"] = [69u],
+        ["custom/000/CmnDefCabinet_00082"] = [1u],
+        ["custom/001/CmnDefHousingPersonalRoomEntrance_00178"] = [11u],
+        ["custom/002/CmnDefCompanyCommanderBoard_00258"] = [1u, 5u, 8u, 10u],
+        ["custom/003/HouFixMansionEntrance_00359"] = [0u, 4u],
+        ["custom/004/HouFixCompanySubmarine_00447"] = [2u, 3u, 6u, 8u, 9u, 10u, 11u]
+    };
+}

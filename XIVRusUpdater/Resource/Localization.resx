@@ -390,4 +390,7 @@
   <data name="TestResponsibility" xml:space="preserve">
     <value>I am aware that I should not report any bugs I find whilst using the beta version to the Russian localisation team's channels, and/or use screenshots containing text that has not yet been proofread or tested, as this would bring the XIVRus team into disrepute. </value>
   </data>
+  <data name="AutoRetainerPlugin" xml:space="preserve">
+    <value>AutoRetainer</value>
+  </data>
 </root>
