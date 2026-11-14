@@ -41,11 +41,6 @@ public class ConfigWindow : Window, IDisposable
                     {
                         var currentEngine = TranslationEngines.Get(_config.EngineId);
                         
-                        if(ImGui.Button(Localization.Reload))
-                        {
-                            Plugin.HookLayers.parser.Reload();
-                        }
-
                         ImGui.SameLine();
 
                         using (var combo = ImRaii.Combo(Localization.TranslationEngine, currentEngine?.DisplayName ?? Localization.Unknown))
@@ -60,6 +55,7 @@ public class ConfigWindow : Window, IDisposable
                                     {
                                         _config.EngineId = engine.Id;
                                         _config.Save();
+                                        Plugin.Instance.ForceUpdateCheck();
                                     }
 
                                     if (selected)
@@ -179,7 +175,7 @@ public class ConfigWindow : Window, IDisposable
         {
             if (header.Success)
             {
-                using (var child = ImRaii.Child("TesterSettings", new Vector2(0, 100) * ImGuiHelpers.GlobalScale, true))
+                using (var child = ImRaii.Child("TesterSettings", new Vector2(0, 150) * ImGuiHelpers.GlobalScale, true))
                 {
                     if (child.Success)
                     {
@@ -212,12 +208,18 @@ public class ConfigWindow : Window, IDisposable
                         bool testerHumanCheck = _config.TesterHumanCheck;
 
                         ImGui.TextWrapped(Localization.TestVersionWarning);
+                        ImGui.NewLine();
+                        using(ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudYellow))
+                        {
+                            ImGui.TextWrapped(Localization.TestResponsibility);
+                        }
 
                         if (ImGui.Checkbox(Localization.AcknowledgeTestVersionRisk, ref testerHumanCheck))
                         {
                             _config.TesterHumanCheck = testerHumanCheck;
                             _config.Save();
                         }
+
                     }
                 }
             }

@@ -169,6 +169,15 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на AutoRetainer.
+        /// </summary>
+        internal static string AutoRetainerPlugin {
+            get {
+                return ResourceManager.GetString("AutoRetainerPlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Block updates if you are on duty.
         /// </summary>
         internal static string BlockUpdateInDuty {
@@ -691,15 +700,6 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Reload.
-        /// </summary>
-        internal static string Reload {
-            get {
-                return ResourceManager.GetString("Reload", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Last remote Penumbra mod: {0}.
         /// </summary>
         internal static string RemotePenumbraMod {
@@ -768,6 +768,15 @@ namespace XIVRusUpdater.Resource {
         internal static string TesterAccessAllowance {
             get {
                 return ResourceManager.GetString("TesterAccessAllowance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на I am aware that I should not report any bugs I find whilst using the beta version to the Russian localisation team&apos;s channels, and/or use screenshots containing text that has not yet been proofread or tested, as this would bring the XIVRus team into disrepute. .
+        /// </summary>
+        internal static string TestResponsibility {
+            get {
+                return ResourceManager.GetString("TestResponsibility", resourceCulture);
             }
         }
         

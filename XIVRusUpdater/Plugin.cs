@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
@@ -26,6 +27,7 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static ICondition condition { get; private set;  } = null!;
 
     public static EXDHooks HookLayers { get; private set; } = null!;
+    public static Utf8StringHook HookStrings { get; private set; } = null!;
     
     internal static PenumbraService PenumbraApi { get; private set; } = null!;
     internal static NetworkService networkService { get; private set; } = null!;
@@ -54,6 +56,7 @@ public sealed class Plugin : IDalamudPlugin
             Configuration.Save();
         Instance = this;
         HookLayers = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
+        HookStrings = new Utf8StringHook(interopProvider);
         State = new UpdaterState();
         networkService = new NetworkService();
         
@@ -83,6 +86,7 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
         PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUi;
         PluginInterface.UiBuilder.OpenMainUi += ToggleMainUi;
+        networkService.OnTranslationInstalled += UpdateTranslation;
     }
 
     public void Dispose()
@@ -90,10 +94,12 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
         PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfigUi;
         PluginInterface.UiBuilder.OpenMainUi -= ToggleMainUi;
-        
+        networkService.OnTranslationInstalled -= UpdateTranslation;
+
         WindowSystem.RemoveAllWindows();
 
         HookLayers.Dispose();
+        HookStrings.Dispose();
         ConfigWindow.Dispose();
         MainWindow.Dispose();
         DownloadWindow.Dispose();
@@ -131,6 +137,10 @@ public sealed class Plugin : IDalamudPlugin
         DownloadWindow.IsOpen = State.Penumbra.Download.IsDownloading || State.Translation.Download.IsDownloading;
         Changelog.IsOpen = State.ShowChangelog;
     }
+
+    public Task ForceUpdateCheck() => networkService.CheckForUpdates();
+
+    public void UpdateTranslation() => HookLayers.parser.Reload();
 
     public void ToggleConfigUi() => ConfigWindow.Toggle();
     public void ToggleMainUi() => MainWindow.Toggle();
