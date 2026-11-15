@@ -5,6 +5,7 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using System;
+using System.Linq;
 using System.Numerics;
 using XIVRusUpdater.Core.Components;
 using XIVRusUpdater.Resource;
@@ -121,11 +122,13 @@ public class ConfigWindow : Window, IDisposable
 
                 foreach (var component in TranslationComponents.All)
                 {
-                    bool enabled = !_config.DisabledComponents.Contains(component.Id);
+                    bool isComponent = component.Type == TranslationComponentType.Component;
+
+                    bool enabled = isComponent ? !_config.DisabledComponents.Contains(component.Id) : _config.DisabledComponents.Contains(component.Id);
 
                     if (ImGui.Checkbox(component.DisplayName, ref enabled))
                     {
-                        if (enabled)
+                        if (isComponent ? enabled : !enabled)
                             _config.DisabledComponents.Remove(component.Id);
                         else
                             _config.DisabledComponents.Add(component.Id);

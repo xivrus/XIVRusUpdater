@@ -376,7 +376,7 @@
     <value>LazyLoot</value>
   </data>
   <data name="ThirdPartyDescription" xml:space="preserve">
-    <value>If the specified plugin does not work correctly due to the use of a translation, disable this component.</value>
+    <value>If the specified plugin does not work correctly due to the use of a translation, enable this component.</value>
   </data>
   <data name="SimpleTweaksPlugin" xml:space="preserve">
     <value>Simple Tweaks</value>

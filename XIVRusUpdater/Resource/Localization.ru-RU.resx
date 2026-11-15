@@ -376,7 +376,7 @@
     <value>LazyLoot</value>
   </data>
   <data name="ThirdPartyDescription" xml:space="preserve">
-    <value>Если указанный плагин работает некорректно из-за использования перевода, отключите этот компонент.</value>
+    <value>Если указанный плагин работает некорректно из-за использования перевода, включите этот компонент.</value>
   </data>
   <data name="SimpleTweaksPlugin" xml:space="preserve">
     <value>Simple Tweaks</value>

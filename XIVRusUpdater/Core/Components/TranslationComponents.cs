@@ -8,24 +8,30 @@ public static partial class TranslationComponents
 {
 }
 
+public enum TranslationComponentType
+{
+    Component,
+    Compatibility
+}
+
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class TranslationComponentAttribute : Attribute
 {
     public string Id { get; }
     public string DisplayName { get; }
     public string Description { get; }
-    public int Priority { get;  }
+    public TranslationComponentType Type { get; }
 
-    public TranslationComponentAttribute(string id, string displayNameKey, string descriptionKey, int priority = 0)
+    public TranslationComponentAttribute(string id, string displayNameKey, string descriptionKey, TranslationComponentType type = TranslationComponentType.Component)
     {
         Id = id;
         DisplayName = displayNameKey;
         Description = descriptionKey;
-        Priority = priority;
+        Type = type;
     }
 }
 
-public sealed record TranslationComponent(string Id, string DisplayName, string Description, IReadOnlyDictionary<string, uint[]> Sheets);
+public sealed record TranslationComponent(string Id, string DisplayName, string Description, TranslationComponentType Type, IReadOnlyDictionary<string, uint[]> Sheets);
 
 [TranslationComponent("enemy_npc", nameof(Localization.EnemyNpcNames), nameof(Localization.EnemyNpcNamesDescription))]
 public sealed class EnemyNpcComponent
@@ -114,7 +120,7 @@ public sealed class ParamComponent
     public static readonly string[] Sheets = ["BaseParam"];
 }
 
-[TranslationComponent("LazyLootPlugin", nameof(Localization.LazyLootPlugin), nameof(Localization.ThirdPartyDescription), 1)]
+[TranslationComponent("LazyLootPlugin", nameof(Localization.LazyLootPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
 public sealed class LazyLootComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -124,7 +130,7 @@ public sealed class LazyLootComponent
 }
 
 // CustomDefaultQuantity, FixTarget, QuickSellItems, ColoredDutyRoulette
-[TranslationComponent("SimpleTweakPlugin", nameof(Localization.SimpleTweaksPlugin), nameof(Localization.ThirdPartyDescription), 1)]
+[TranslationComponent("SimpleTweakPlugin", nameof(Localization.SimpleTweaksPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
 public sealed class SimpleTweaksComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -135,7 +141,7 @@ public sealed class SimpleTweaksComponent
 }
 
 
-[TranslationComponent("TriadBuddyPlugin", nameof(Localization.TriadBuddyPlugin), nameof(Localization.ThirdPartyDescription), 1)]
+[TranslationComponent("TriadBuddyPlugin", nameof(Localization.TriadBuddyPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
 public sealed class TriadBuddyComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -144,7 +150,7 @@ public sealed class TriadBuddyComponent
     };
 }
 
-[TranslationComponent("LifestreamPlugin", nameof(Localization.LifestreamPlugin), nameof(Localization.ThirdPartyDescription), 1)]
+[TranslationComponent("LifestreamPlugin", nameof(Localization.LifestreamPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
 public sealed class LifeStreamComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -164,7 +170,7 @@ public sealed class LifeStreamComponent
     };
 }
 
-[TranslationComponent("AutoRetainerPlugin", nameof(Localization.AutoRetainerPlugin), nameof(Localization.ThirdPartyDescription), 1)]
+[TranslationComponent("AutoRetainerPlugin", nameof(Localization.AutoRetainerPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
 public sealed class AutoRetainerComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()

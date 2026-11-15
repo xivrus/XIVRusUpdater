@@ -790,7 +790,7 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на If the specified plugin does not work correctly due to the use of a translation, disable this component..
+        ///   Ищет локализованную строку, похожую на If the specified plugin does not work correctly due to the use of a translation, enable this component..
         /// </summary>
         internal static string ThirdPartyDescription {
             get {
