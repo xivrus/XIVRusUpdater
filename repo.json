@@ -11,6 +11,8 @@
     "IconUrl": "https://raw.githubusercontent.com/xivrus/XIVRusUpdater/master/Data/icon.png",
     "ApplicableVersion": "any",
     "DalamudApiLevel": 15,
+	"LoadSync": true,
+	"LoadPriority": 1024,
     "LoadRequiredState": 2,
     "IsHide": false,
     "IsTestingExclusive": false,

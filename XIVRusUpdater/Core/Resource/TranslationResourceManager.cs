@@ -26,6 +26,9 @@ public sealed class TranslationResourceManager
         Version = GetVersion(Path.Combine(ResourceDir, "xivrus.ver"));
 
         var resourcesDir = string.IsNullOrEmpty(Version) ? ResourceDir : TranslationDir;
+        if (!Directory.Exists(resourcesDir))
+            return;
+
         foreach (var file in Directory.EnumerateFiles(resourcesDir, $"*.{_extension}", SearchOption.AllDirectories))
         {
             var relative = Path.GetRelativePath(resourcesDir, file);
@@ -39,10 +42,10 @@ public sealed class TranslationResourceManager
 
     private static string? GetVersion(string path)
     {
-        if (!Path.Exists(path) || Path.GetExtension(path) != "ver")
+        if (!Path.Exists(path) || Path.GetExtension(path) != ".ver")
             return null;
 
-        return File.ReadAllText(path);
+        return File.ReadAllText(path).Trim();
     }
 
     public TranslationResourceManager(string dataDir, string engine, string format)

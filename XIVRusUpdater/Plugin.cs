@@ -37,8 +37,7 @@ public sealed class Plugin : IDalamudPlugin
     private const string CommandName = "/xivrus";
 
     public Configuration Configuration { get; init; }
-    private DateTime nextRefresh = DateTime.MinValue;
-
+    private DateTime nextRefresh = DateTime.Now.AddMinutes(3);
 
     public readonly WindowSystem WindowSystem = new("XIV Rus Updater");
     private readonly ConfigWindow ConfigWindow;
