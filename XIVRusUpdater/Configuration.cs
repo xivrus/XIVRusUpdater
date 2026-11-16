@@ -2,8 +2,6 @@ using Dalamud.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using XIVRusUpdater.Core.Components;
 
 namespace XIVRusUpdater;
 
@@ -64,26 +62,47 @@ public class Configuration : IPluginConfiguration
         }
     }
 
-    #region Legacy
-    [JsonProperty("LastInstalledVersion", NullValueHandling = NullValueHandling.Ignore)]
-    private string? LegacyLastInstalledVersion { get; set; }
+    [JsonIgnore]
+    public string LastInstalledVersion
+    {
+        get => CurrentEngineState.LastInstalledVersion;
+        set => CurrentEngineState.LastInstalledVersion = value ?? string.Empty;
+    }
 
-    [JsonProperty("LastInstalledPenumbra", NullValueHandling = NullValueHandling.Ignore)]
-    private string? LegacyLastInstalledPenumbra { get; set; }
+    [JsonIgnore]
+    public string LastInstalledPenumbra
+    {
+        get => CurrentEngineState.LastInstalledPenumbra;
+        set => CurrentEngineState.LastInstalledPenumbra = value ?? string.Empty;
+    }
 
-    [JsonProperty("LastKnownRemoteVersion", NullValueHandling = NullValueHandling.Ignore)]
-    private string? LegacyLastKnownRemoteVersion { get; set; }
+    [JsonIgnore]
+    public string LastKnownRemoteVersion
+    {
+        get => CurrentEngineState.LastKnownRemoteVersion;
+        set => CurrentEngineState.LastKnownRemoteVersion = value ?? string.Empty;
+    }
 
-    [JsonProperty("LastKnownRemotePenumbra", NullValueHandling = NullValueHandling.Ignore)]
-    private string? LegacyLastKnownRemotePenumbra { get; set; }
+    [JsonIgnore]
+    public string LastKnownRemotePenumbra
+    {
+        get => CurrentEngineState.LastKnownRemotePenumbra;
+        set => CurrentEngineState.LastKnownRemotePenumbra = value ?? string.Empty;
+    }
 
-    [JsonProperty("LastUpdateCheck", NullValueHandling = NullValueHandling.Ignore)]
-    private DateTime? LegacyLastUpdateCheck { get; set; }
+    [JsonIgnore]
+    public DateTime LastUpdateCheck
+    {
+        get => CurrentEngineState.LastUpdateCheck;
+        set => CurrentEngineState.LastUpdateCheck = value;
+    }
 
-    [JsonProperty("LastSuccessfulUpdate", NullValueHandling = NullValueHandling.Ignore)]
-    private DateTime? LegacyLastSuccessfulUpdate { get; set; }
-    #endregion
-
+    [JsonIgnore]
+    public DateTime LastSuccessfulUpdate
+    {
+        get => CurrentEngineState.LastSuccessfulUpdate;
+        set => CurrentEngineState.LastSuccessfulUpdate = value;
+    }
     #endregion
 
     public HashSet<string> DisabledComponents { get; set; } = [];
