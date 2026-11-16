@@ -67,8 +67,7 @@ public class ConfigWindow : Window, IDisposable
 
                         var showNotify = _config.ShowNotifications;
                         var showChangelog = _config.ShowChangelogAfterUpdate;
-                        var blockDuty = _config.BlockUpdateWhileDuty;
-
+                        
                         if (ImGui.Checkbox(Localization.ShowNotifications, ref showNotify))
                         {
                             _config.ShowNotifications = showNotify;
@@ -77,11 +76,6 @@ public class ConfigWindow : Window, IDisposable
                         if (ImGui.Checkbox(Localization.ShowChangelogAfterUpdate, ref showChangelog))
                         {
                             _config.ShowChangelogAfterUpdate = showChangelog;
-                            _config.Save();
-                        }
-                        if(ImGui.Checkbox(Localization.BlockUpdateInDuty, ref blockDuty))
-                        {
-                            _config.BlockUpdateWhileDuty = blockDuty;
                             _config.Save();
                         }
                     }

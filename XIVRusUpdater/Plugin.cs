@@ -134,7 +134,7 @@ public sealed class Plugin : IDalamudPlugin
 
             if (DateTime.Now > nextRefresh)
             {
-                bool inDuty = Configuration.BlockUpdateWhileDuty && BoundByDuty();
+                bool inDuty = BoundByDuty();
                 nextRefresh = DateTime.Now.AddMinutes(inDuty ? 1 : Configuration.UpdateCheckIntervalMinutes);
                 Log.Information($"Perform timed update... Next update: {nextRefresh.ToString()}");
 

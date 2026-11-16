@@ -25,9 +25,6 @@ public class Configuration : IPluginConfiguration
     public int UpdateCheckIntervalMinutes { get; set; } = 60;
 
     public bool AutoDownloadUpdates { get; set; } = true;
-
-    public bool BlockUpdateWhileDuty { get; set; } = false;
-
     #endregion
 
     #region Tester Access
