@@ -4,6 +4,7 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using XIVRusUpdater.Resource;
@@ -104,7 +105,16 @@ public class MainWindow : Window, IDisposable
                 {
                     if (ImGui.Button(Localization.UpdateComponents, new Vector2(-1, 0)))
                     {
-                        _downloadTask ??= Plugin.networkService.DownloadLatestModAsync();
+                        var tasks = new List<Task>();
+
+                        if (Plugin.State.Penumbra.UpdateAvailable)
+                            tasks.Add(Plugin.networkService.DownloadLatestModAsync());
+
+                        if (Plugin.State.Translation.UpdateAvailable)
+                            tasks.Add(Plugin.networkService.DownloadLatestTranslationAsync());
+
+                        if (tasks.Count > 0)
+                            _downloadTask = Task.WhenAll(tasks);
                     }
                 }
 
@@ -150,10 +160,13 @@ public class MainWindow : Window, IDisposable
     {
         var state = Plugin.State;
 
-        if (!state.PenumbraEnabled)
+        if (!state.RemoteStatusKnown)
             return OverallStatus.Error;
 
-        if (Plugin.State.UpdateAvailable)
+        if (!state.PenumbraEnabled)
+            return OverallStatus.Disabled;
+
+        if (state.UpdateAvailable)
             return OverallStatus.UpdateAvailable;
 
         return OverallStatus.Ok;

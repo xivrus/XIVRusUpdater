@@ -14,8 +14,9 @@ public class TranslationParser
     private readonly object syncRoot = new();
     private TranslationResourceManager _resources { get; set; }
     private static TranslationFilter filter { get; set; } = null!;
-
     private string _engineId { get; set; }
+
+    public string? Version => _resources.Version;
 
     public TranslationParser(string @engineId)
     {
@@ -49,7 +50,7 @@ public class TranslationParser
     {
         lock (syncRoot)
         {
-            var dir = _resources.GetResourceDir();
+            var dir = _resources.ResourceDir;
             return !Directory.Exists(dir) || !Directory.EnumerateFileSystemEntries(dir).Any();
         }
     }
@@ -66,7 +67,7 @@ public class TranslationParser
     {
         lock (syncRoot)
         {
-            return _resources.GetResourceDir();
+            return _resources.ResourceDir;
         }
     }
 
