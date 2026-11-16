@@ -90,7 +90,7 @@ public class MainWindow : Window, IDisposable
                 { 
                     if (ImGui.Button(Localization.Refresh, new Vector2(-1, 0)))
                     {
-                        _refreshTask ??= Plugin.networkService.CheckForUpdates();
+                        _refreshTask ??= Plugin.Instance.ForceUpdateCheck();
                     }
                 }
 
@@ -101,26 +101,22 @@ public class MainWindow : Window, IDisposable
 
                 bool updateAvailable = Plugin.State.UpdateAvailable;
 
-                using (var disable = ImRaii.Disabled(!updateAvailable || isChecking))
+                using (var disable = ImRaii.Disabled(!updateAvailable || isChecking || !(_downloadTask?.IsCompleted ?? true)))
                 {
                     if (ImGui.Button(Localization.UpdateComponents, new Vector2(-1, 0)))
                     {
+                        var token = Plugin.Instance.LifetimeToken;
                         var tasks = new List<Task>();
 
                         if (Plugin.State.Penumbra.UpdateAvailable)
-                            tasks.Add(Plugin.networkService.DownloadLatestModAsync());
+                            tasks.Add(Plugin.networkService.DownloadLatestModAsync(token));
 
                         if (Plugin.State.Translation.UpdateAvailable)
-                            tasks.Add(Plugin.networkService.DownloadLatestTranslationAsync());
+                            tasks.Add(Plugin.networkService.DownloadLatestTranslationAsync(token));
 
                         if (tasks.Count > 0)
                             _downloadTask = Task.WhenAll(tasks);
                     }
-                }
-
-                if (_downloadTask?.IsCompleted == true)
-                {
-                    _downloadTask = null;
                 }
 
                 if (ImGui.Button(Localization.OpenConfiguration, new Vector2(-1, 0)))

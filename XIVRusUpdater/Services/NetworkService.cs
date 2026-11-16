@@ -63,7 +63,7 @@ public class NetworkService
             using var response = await Client.GetAsync(source, cancellationToken);
             response.EnsureSuccessStatusCode();
 
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
             var manifest = JsonConvert.DeserializeObject<TranslationManifest>(json);
 
             if (manifest == null || string.IsNullOrWhiteSpace(manifest.TranslationVersion) || string.IsNullOrWhiteSpace(manifest.ModpackVersion))
@@ -82,14 +82,14 @@ public class NetworkService
         }
     }
 
-    private async Task<TranslationManifest?> RefreshBranchStatusAsync()
+    private async Task<TranslationManifest?> RefreshBranchStatusAsync(CancellationToken token)
     {
         var sources = GetBranchSources().Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToArray();
 
         if (sources.Length == 0)
             return null;
 
-        using var cancellationTokenSource = new CancellationTokenSource();
+        using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
 
         var pending = sources.Select(source => FetchBranchAsync(source, cancellationTokenSource.Token)).ToList();
 
@@ -112,9 +112,9 @@ public class NetworkService
         return null;
     }
 
-    public async Task CheckForUpdates()
+    public async Task CheckForUpdates(CancellationToken token)
     {
-        if (!await checkLock.WaitAsync(0)) return;
+        if (!await checkLock.WaitAsync(0, token)) return;
 
         Plugin.State.IsChecking = true;
         try
@@ -122,18 +122,24 @@ public class NetworkService
             Plugin.Log.Information("Update Check started");
             Plugin.Instance.Configuration.LastUpdateCheck = DateTime.Now;
 
-            if (!await RefreshAsync()) return;
+            if (!await RefreshAsync(token)) return;
             Plugin.Instance.Configuration.LastSuccessfulUpdate = DateTime.Now;
 
             if (!Plugin.Instance.Configuration.AutoDownloadUpdates) return;
 
+            token.ThrowIfCancellationRequested();
+
             var downloadTasks = new List<Task>();
 
-            if (Plugin.State.Penumbra.UpdateAvailable) downloadTasks.Add(DownloadLatestModAsync());
-            if (Plugin.State.Translation.UpdateAvailable) downloadTasks.Add(DownloadLatestTranslationAsync());
+            if (Plugin.State.Penumbra.UpdateAvailable) downloadTasks.Add(DownloadLatestModAsync(token));
+            if (Plugin.State.Translation.UpdateAvailable) downloadTasks.Add(DownloadLatestTranslationAsync(token));
 
             if (downloadTasks.Count > 0)
                 await Task.WhenAll(downloadTasks);
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
+        {
+            Plugin.Log.Information("Update Check canceled");
         }
         catch (Exception ex)
         {
@@ -147,56 +153,85 @@ public class NetworkService
         }
     }
 
-    public async Task DownloadLatestModAsync()
+    public async Task DownloadLatestModAsync(CancellationToken token)
     {
-        var release = Plugin.State.LastRemoteStatus;
-        if (release == null)
-            return;
-
-        var targetDir = Plugin.PenumbraApi.GetDefaultDirectory() ?? Path.GetTempPath();
-
-        var download = await DownloadVerifiedAsync(release.ModpackUrls, release.ModpackHash, targetDir, Plugin.State.Penumbra.Download);
-
-        if (download is not { } file)
-            return;
-
-        Plugin.Log.Info($"Downloading {Path.GetFileName(file.Path)} successful complete (hash verified: {file.Verified})");
-
-        if (!InstallDownloadedPenumbraAsync(file.Path))
-            return;
-
-        Plugin.State.Penumbra.Version = Plugin.Instance.Configuration.LastInstalledPenumbra = release.ModpackVersion;
-        Plugin.State.Penumbra.UpdateAvailable = false;
-
-        OnPenumbraInstalled?.Invoke();
-    }
-
-    public async Task DownloadLatestTranslationAsync()
-    {
-        var release = Plugin.State.LastRemoteStatus;
-        if (release == null)
-            return;
-
-        var download = await DownloadVerifiedAsync(release.TranslationUrls, release.TranslationHash, Path.GetTempPath(), Plugin.State.Translation.Download);
-
-        if (download is not { } file)
-            return;
-
         try
         {
-            var installed = await InstallDownloadedVersionAsync(file.Path, file.Verified);
-            if (!installed)
+            var release = Plugin.State.LastRemoteStatus;
+            if (release == null)
                 return;
 
-            Plugin.State.Translation.Version = Plugin.Instance.Configuration.LastInstalledVersion = release.TranslationVersion;
-            Plugin.State.Translation.UpdateAvailable = false;
-            Plugin.State.Translation.Installed = true;
+            var targetDir = Plugin.PenumbraApi.GetDefaultDirectory() ?? Path.GetTempPath();
 
-            OnTranslationInstalled?.Invoke();
+            var download = await DownloadVerifiedAsync(release.ModpackUrls, release.ModpackHash, targetDir, Plugin.State.Penumbra.Download, token);
+
+            if (download is not { } file)
+                return;
+
+            Plugin.Log.Info($"Downloading {Path.GetFileName(file.Path)} successful complete (hash verified: {file.Verified})");
+
+            token.ThrowIfCancellationRequested();
+
+            if (!InstallDownloadedPenumbraAsync(file.Path))
+            {
+                TryDelete(file.Path);
+                return;
+            }
+
+            Plugin.State.Penumbra.Version = Plugin.Instance.Configuration.LastInstalledPenumbra = release.ModpackVersion;
+            Plugin.State.Penumbra.UpdateAvailable = false;
+
+            OnPenumbraInstalled?.Invoke();
         }
-        finally
+        catch(OperationCanceledException) when (token.IsCancellationRequested)
         {
-            TryDelete(file.Path);
+            Plugin.Log.Warning("Modpack download canceled");
+        }
+        catch(Exception ex)
+        {
+            Plugin.Log.Error(ex, "Error in modpacp download");
+        }
+    }
+
+    public async Task DownloadLatestTranslationAsync(CancellationToken token)
+    {
+        try
+        {
+            var release = Plugin.State.LastRemoteStatus;
+            if (release == null)
+                return;
+
+            var download = await DownloadVerifiedAsync(release.TranslationUrls, release.TranslationHash, Path.GetTempPath(), Plugin.State.Translation.Download, token);
+
+            if (download is not { } file)
+                return;
+
+            try
+            {
+                token.ThrowIfCancellationRequested();
+
+                var installed = await InstallDownloadedVersionAsync(file.Path, file.Verified);
+                if (!installed)
+                    return;
+
+                Plugin.State.Translation.Version = Plugin.Instance.Configuration.LastInstalledVersion = release.TranslationVersion;
+                Plugin.State.Translation.UpdateAvailable = false;
+                Plugin.State.Translation.Installed = true;
+
+                OnTranslationInstalled?.Invoke();
+            }
+            finally
+            {
+                TryDelete(file.Path);
+            }
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
+        {
+            Plugin.Log.Warning("Translation download canceled");
+        }
+        catch (Exception ex)
+        {
+            Plugin.Log.Error(ex, "Error in translation download");
         }
     }
 
@@ -273,7 +308,7 @@ public class NetworkService
         }
     }
 
-    public async Task<bool> RefreshAsync()
+    public async Task<bool> RefreshAsync(CancellationToken cancellationToken)
     {
         string? installedTranslationVersion = null;
         string? penumbraVersion = null;
@@ -304,8 +339,9 @@ public class NetworkService
 
             installedPenumbraVersion = !string.IsNullOrWhiteSpace(penumbraVersion) ? penumbraVersion : Plugin.Instance.Configuration.LastInstalledPenumbra;
 
-            var remote = await RefreshBranchStatusAsync();
+            var remote = await RefreshBranchStatusAsync(cancellationToken);
 
+            cancellationToken.ThrowIfCancellationRequested();
             if (remote == null)
                 return false;
 
@@ -338,6 +374,10 @@ public class NetworkService
             Plugin.State.RemoteStatusKnown = true;
             return true;
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;   // Rethrow techique. Pass to exception to next call stack element
+        }
         catch (Exception ex)
         {
             Plugin.Log.Error(ex, "Refresh failed");
@@ -356,7 +396,7 @@ public class NetworkService
         }
     }
 
-    private static async Task<DownloadSourceInfo?> GetFastestSource(IEnumerable<string> sources)
+    private static async Task<DownloadSourceInfo?> GetFastestSource(IEnumerable<string> sources, CancellationToken token)
     {
         var tasks = sources.Select(async source =>
         {
@@ -367,7 +407,7 @@ public class NetworkService
                 request.Headers.Range = new RangeHeaderValue(0, SourceProbeSize);
 
                 stopwatch.Start();
-                using var response = await Client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                using var response = await Client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -376,7 +416,7 @@ public class NetworkService
                     return (Url: source, FileName: string.Empty, SpeedMbps: 0.0, Success: false);
                 }
 
-                byte[] content = await response.Content.ReadAsByteArrayAsync();
+                byte[] content = await response.Content.ReadAsByteArrayAsync(token);
                 stopwatch.Stop();
 
                 double seconds = stopwatch.Elapsed.TotalSeconds;
@@ -442,7 +482,7 @@ public class NetworkService
         };
     }
 
-    public async Task<bool> DownloadRemoteAsync(string url, string targetFile, DownloadState state)
+    public async Task<bool> DownloadRemoteAsync(string url, string targetFile, DownloadState state, CancellationToken token)
     {
         state.IsDownloading = true;
         state.CurrentSource = url;
@@ -463,9 +503,13 @@ public class NetworkService
 
             await using var file = File.Create(targetFile);
 
-            await Client.DownloadDataAsync(url, file, progress);
+            await Client.DownloadDataAsync(url, file, progress, token);
 
             return true;
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
+        {
+            throw; // Rethrow to upper stack caller
         }
         catch (Exception ex)
         {
@@ -479,10 +523,10 @@ public class NetworkService
         }
     }
 
-    private static async Task<string> ComputeSha256Async(string path)
+    private static async Task<string> ComputeSha256Async(string path, CancellationToken token)
     {
         await using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
-        return Convert.ToHexString(await SHA256.HashDataAsync(fs));
+        return Convert.ToHexString(await SHA256.HashDataAsync(fs, token));
     }
 
     private static void TryDelete(string path)
@@ -494,26 +538,34 @@ public class NetworkService
         catch { }
     }
 
-    private async Task<VerifiedDownload?> DownloadVerifiedAsync(IEnumerable<string> sources, string? expectedHash, string targetDir, DownloadState state)
+    private async Task<VerifiedDownload?> DownloadVerifiedAsync(IEnumerable<string> sources, string? expectedHash, string targetDir, DownloadState state, CancellationToken token)
     {
         var all = sources.ToList();
-        var failed = new HashSet<string>();
+        if (all.Count == 0)
+        {
+            Plugin.Log.Warning("No download sources provided.");
+            return null;
+        }
 
+        var failed = new HashSet<string>();
+        
         for (var attempt = 1; attempt <= MaxDownloadAttempts; attempt++)
         {
+            token.ThrowIfCancellationRequested();
+
             var candidates = all.Where(x => !failed.Contains(x)).ToList();
-            var source = await GetFastestSource(candidates.Count > 0 ? candidates : all);
+            var source = await GetFastestSource(candidates.Count > 0 ? candidates : all, token);
 
             if (source != null)
             {
                 var target = Path.Combine(targetDir, Path.GetFileName(source.FileName));
 
-                if (await DownloadRemoteAsync(source.Url, target, state))
+                if (await DownloadRemoteAsync(source.Url, target, state, token))
                 {
                     if (string.IsNullOrWhiteSpace(expectedHash))
                         return new VerifiedDownload(target, false);
 
-                    var actual = await ComputeSha256Async(target);
+                    var actual = await ComputeSha256Async(target, token);
                     if (string.Equals(actual, expectedHash.Trim(), StringComparison.OrdinalIgnoreCase))
                         return new VerifiedDownload(target, true);
 
@@ -526,7 +578,7 @@ public class NetworkService
             }
 
             if (attempt < MaxDownloadAttempts)
-                await Task.Delay(TimeSpan.FromSeconds(2 * attempt));
+                await Task.Delay(TimeSpan.FromSeconds(2 * attempt), token);
         }
 
         Plugin.Log.Error("Download failed after all attempts");

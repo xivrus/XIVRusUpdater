@@ -1,12 +1,13 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using XIVRusUpdater.Core;
 using XIVRusUpdater.Hooks;
 using XIVRusUpdater.Services;
@@ -37,7 +38,9 @@ public sealed class Plugin : IDalamudPlugin
     private const string CommandName = "/xivrus";
 
     public Configuration Configuration { get; init; }
-    private DateTime nextRefresh = DateTime.Now.AddMinutes(3);
+    public CancellationToken LifetimeToken => lifetime.Token;
+    private DateTime nextRefresh = DateTime.Now.AddMinutes(1);
+    private readonly CancellationTokenSource lifetime = new();
 
     public readonly WindowSystem WindowSystem = new("XIV Rus Updater");
     private readonly ConfigWindow ConfigWindow;
@@ -59,8 +62,6 @@ public sealed class Plugin : IDalamudPlugin
         
         PenumbraApi = new PenumbraService(PluginInterface);
         
-        Framework.Update += OnUpdate;
-
         ConfigWindow = new ConfigWindow();
         MainWindow = new MainWindow();
         DownloadWindow = new DownloadWindow();
@@ -84,15 +85,20 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUi;
         PluginInterface.UiBuilder.OpenMainUi += ToggleMainUi;
         networkService.OnTranslationInstalled += UpdateTranslation;
+
+        Framework.Update += OnUpdate;
     }
 
     public void Dispose()
     {
+        Framework.Update -= OnUpdate;
+        lifetime.Cancel();
+
         PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
         PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfigUi;
         PluginInterface.UiBuilder.OpenMainUi -= ToggleMainUi;
         networkService.OnTranslationInstalled -= UpdateTranslation;
-
+        
         WindowSystem.RemoveAllWindows();
 
         ExcelLayer.Dispose();
@@ -121,21 +127,47 @@ public sealed class Plugin : IDalamudPlugin
 
     private async void OnUpdate(IFramework framework)
     {
-        if (DateTime.Now > nextRefresh)
+        try
         {
-            bool inDuty = Configuration.BlockUpdateWhileDuty && BoundByDuty();
-            nextRefresh = DateTime.Now.AddMinutes(inDuty ? 1 : Configuration.UpdateCheckIntervalMinutes);
-            Log.Information($"Perform timed update... Next update: {nextRefresh.ToString()}");
+            if (lifetime.IsCancellationRequested)
+                return;
 
-            if(!inDuty)
-                _ = networkService.CheckForUpdates();
+            if (DateTime.Now > nextRefresh)
+            {
+                bool inDuty = Configuration.BlockUpdateWhileDuty && BoundByDuty();
+                nextRefresh = DateTime.Now.AddMinutes(inDuty ? 1 : Configuration.UpdateCheckIntervalMinutes);
+                Log.Information($"Perform timed update... Next update: {nextRefresh.ToString()}");
+
+                if (!inDuty)
+                    _ = RunCheckAsync();
+            }
+
+            DownloadWindow.IsOpen = State.Penumbra.Download.IsDownloading || State.Translation.Download.IsDownloading;
+            Changelog.IsOpen = State.ShowChangelog;
         }
-
-        DownloadWindow.IsOpen = State.Penumbra.Download.IsDownloading || State.Translation.Download.IsDownloading;
-        Changelog.IsOpen = State.ShowChangelog;
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed framework update");
+        }
     }
 
-    public Task ForceUpdateCheck() => networkService.CheckForUpdates();
+    private async Task RunCheckAsync()
+    {
+        try 
+        { 
+            await networkService.CheckForUpdates(lifetime.Token); 
+        }
+        catch (OperationCanceledException) 
+        {
+            Log.Warning("Update check canceled by token");
+        }
+        catch (Exception ex) 
+        { 
+            Log.Error(ex, "Update check failed"); 
+        }
+    }
+
+    public Task ForceUpdateCheck() => networkService.CheckForUpdates(lifetime.Token);
 
     public void UpdateTranslation() => ExcelLayer.parser.Reload();
 
