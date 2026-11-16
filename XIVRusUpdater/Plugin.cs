@@ -26,8 +26,8 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static IGameInteropProvider interopProvider { get; private set; } = null!;
     [PluginService] internal static ICondition condition { get; private set;  } = null!;
 
-    public static EXDHooks HookLayers { get; private set; } = null!;
-    public static Utf8StringHook HookStrings { get; private set; } = null!;
+    public static EXDHooks ExcelLayer { get; private set; } = null!;
+    public static Utf8StringHook UTF8Layer { get; private set; } = null!;
     
     internal static PenumbraService PenumbraApi { get; private set; } = null!;
     internal static NetworkService networkService { get; private set; } = null!;
@@ -52,11 +52,9 @@ public sealed class Plugin : IDalamudPlugin
     public Plugin()
     {
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-        if (Configuration.WasMigrated)
-            Configuration.Save();
         Instance = this;
-        HookLayers = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
-        HookStrings = new Utf8StringHook(interopProvider);
+        ExcelLayer = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
+        UTF8Layer = new Utf8StringHook(interopProvider);
         State = new UpdaterState();
         networkService = new NetworkService();
         
@@ -98,8 +96,8 @@ public sealed class Plugin : IDalamudPlugin
 
         WindowSystem.RemoveAllWindows();
 
-        HookLayers.Dispose();
-        HookStrings.Dispose();
+        ExcelLayer.Dispose();
+        UTF8Layer.Dispose();
         ConfigWindow.Dispose();
         MainWindow.Dispose();
         DownloadWindow.Dispose();
@@ -140,7 +138,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public Task ForceUpdateCheck() => networkService.CheckForUpdates();
 
-    public void UpdateTranslation() => HookLayers.parser.Reload();
+    public void UpdateTranslation() => ExcelLayer.parser.Reload();
 
     public void ToggleConfigUi() => ConfigWindow.Toggle();
     public void ToggleMainUi() => MainWindow.Toggle();

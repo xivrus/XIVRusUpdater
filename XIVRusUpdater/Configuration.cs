@@ -64,105 +64,6 @@ public class Configuration : IPluginConfiguration
         }
     }
 
-    [JsonIgnore]
-    public string LastInstalledVersion
-    {
-        get => CurrentEngineState.LastInstalledVersion;
-        set => CurrentEngineState.LastInstalledVersion = value ?? string.Empty;
-    }
-
-    [JsonIgnore]
-    public string LastInstalledPenumbra
-    {
-        get => CurrentEngineState.LastInstalledPenumbra;
-        set => CurrentEngineState.LastInstalledPenumbra = value ?? string.Empty;
-    }
-
-    [JsonIgnore]
-    public string LastKnownRemoteVersion
-    {
-        get => CurrentEngineState.LastKnownRemoteVersion;
-        set => CurrentEngineState.LastKnownRemoteVersion = value ?? string.Empty;
-    }
-
-    [JsonIgnore]
-    public string LastKnownRemotePenumbra
-    {
-        get => CurrentEngineState.LastKnownRemotePenumbra;
-        set => CurrentEngineState.LastKnownRemotePenumbra = value ?? string.Empty;
-    }
-
-    [JsonIgnore]
-    public DateTime LastUpdateCheck
-    {
-        get => CurrentEngineState.LastUpdateCheck;
-        set => CurrentEngineState.LastUpdateCheck = value;
-    }
-
-    [JsonIgnore]
-    public DateTime LastSuccessfulUpdate
-    {
-        get => CurrentEngineState.LastSuccessfulUpdate;
-        set => CurrentEngineState.LastSuccessfulUpdate = value;
-    }
-
-    [OnDeserialized]
-    private void OnDeserialized(StreamingContext context)
-    {
-        UpdateStates ??= new Dictionary<string, UpdateInfo>();
-
-        bool hasLegacyData =
-            LegacyLastInstalledVersion is not null ||
-            LegacyLastInstalledPenumbra is not null ||
-            LegacyLastKnownRemoteVersion is not null ||
-            LegacyLastKnownRemotePenumbra is not null ||
-            LegacyLastUpdateCheck.HasValue ||
-            LegacyLastSuccessfulUpdate.HasValue;
-
-        if (Version < 2 || hasLegacyData)
-        {
-            string engineId = string.IsNullOrWhiteSpace(EngineId) ? "XIVRusEnglish" : EngineId;
-
-            if (!UpdateStates.TryGetValue(engineId, out var state) || state is null)
-            {
-                state = new UpdateInfo();
-                UpdateStates[engineId] = state;
-            }
-
-            if (!string.IsNullOrEmpty(LegacyLastInstalledVersion))
-                state.LastInstalledVersion = LegacyLastInstalledVersion;
-
-            if (!string.IsNullOrEmpty(LegacyLastInstalledPenumbra))
-                state.LastInstalledPenumbra = LegacyLastInstalledPenumbra;
-
-            if (!string.IsNullOrEmpty(LegacyLastKnownRemoteVersion))
-                state.LastKnownRemoteVersion = LegacyLastKnownRemoteVersion;
-
-            if (!string.IsNullOrEmpty(LegacyLastKnownRemotePenumbra))
-                state.LastKnownRemotePenumbra = LegacyLastKnownRemotePenumbra;
-
-            if (LegacyLastUpdateCheck is { } lastCheck && lastCheck != default)
-            {
-                state.LastUpdateCheck = lastCheck;
-            }
-
-            if (LegacyLastSuccessfulUpdate is { } lastSuccess && lastSuccess != default)
-            {
-                state.LastSuccessfulUpdate = lastSuccess;
-            }
-
-            Version = 2;
-            WasMigrated = true;
-        }
-
-        LegacyLastInstalledVersion = null;
-        LegacyLastInstalledPenumbra = null;
-        LegacyLastKnownRemoteVersion = null;
-        LegacyLastKnownRemotePenumbra = null;
-        LegacyLastUpdateCheck = null;
-        LegacyLastSuccessfulUpdate = null;
-    }
-
     #region Legacy
     [JsonProperty("LastInstalledVersion", NullValueHandling = NullValueHandling.Ignore)]
     private string? LegacyLastInstalledVersion { get; set; }
@@ -181,9 +82,6 @@ public class Configuration : IPluginConfiguration
 
     [JsonProperty("LastSuccessfulUpdate", NullValueHandling = NullValueHandling.Ignore)]
     private DateTime? LegacyLastSuccessfulUpdate { get; set; }
-
-    [JsonIgnore]
-    public bool WasMigrated { get; private set; }
     #endregion
 
     #endregion

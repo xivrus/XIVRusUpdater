@@ -203,7 +203,7 @@ public class NetworkService
 
     public async Task<bool> InstallDownloadedVersionAsync(string filePath)
     {
-        var resourceDir = Plugin.HookLayers.parser.GetResourceDir();
+        var resourceDir = Plugin.ExcelLayer.parser.GetResourceDir();
 
         try
         {
@@ -283,9 +283,9 @@ public class NetworkService
             var translationManifest = Plugin.State.Translation;
 
             penumbraManifest.Installed = Plugin.PenumbraApi.IsModInstalled(engine.ModName);
-            translationManifest.Installed = !Plugin.HookLayers.parser.IsResourceEmpty();
+            translationManifest.Installed = !Plugin.ExcelLayer.parser.IsResourceEmpty();
 
-            installedTranslationVersion = Plugin.HookLayers.parser.Version;
+            installedTranslationVersion = Plugin.ExcelLayer.parser.Version;
             if (string.IsNullOrWhiteSpace(installedTranslationVersion))
                 installedTranslationVersion = Plugin.Instance.Configuration.LastInstalledVersion;
 

@@ -93,7 +93,7 @@ public class ConfigWindow : Window, IDisposable
         {
             if (header.Success)
             {
-                var parser = Plugin.HookLayers.parser;
+                var parser = Plugin.ExcelLayer.parser;
                 
                 using(ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudYellow))
                 {
