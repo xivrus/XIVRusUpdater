@@ -9,7 +9,7 @@ namespace XIVRusUpdater.Core.Resource;
 public sealed class TranslationResourceManager
 {
     public readonly string ResourceDir;
-    public string TranslationDir => Path.Combine(ResourceDir, "exd");
+    
     private readonly string _extension;
     public readonly string? Version;
     
@@ -24,14 +24,11 @@ public sealed class TranslationResourceManager
             return;
 
         Version = GetVersion(Path.Combine(ResourceDir, "xivrus.ver"));
+        Plugin.Log.Debug($"Load resources with version: {Version}");
 
-        var resourcesDir = string.IsNullOrEmpty(Version) ? ResourceDir : TranslationDir;
-        if (!Directory.Exists(resourcesDir))
-            return;
-
-        foreach (var file in Directory.EnumerateFiles(resourcesDir, $"*.{_extension}", SearchOption.AllDirectories))
+        foreach (var file in Directory.EnumerateFiles(ResourceDir, $"*.{_extension}", SearchOption.AllDirectories))
         {
-            var relative = Path.GetRelativePath(resourcesDir, file);
+            var relative = Path.GetRelativePath(ResourceDir, file);
             relative = Path.ChangeExtension(relative, null)!;
 
             var sheetName = relative.Replace(Path.DirectorySeparatorChar, '/');
@@ -52,8 +49,6 @@ public sealed class TranslationResourceManager
         : this(dataDir, engine, ResourceFormatParser.Parse(format))
     {
     }
-
-    public string GetResourceDir() => ResourceDir;
 
     public bool IsLoaded(string sheetName) => _cache.ContainsKey(sheetName);
 

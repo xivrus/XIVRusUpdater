@@ -1,4 +1,3 @@
-using Lumina.Excel.Sheets;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using XIVRusUpdater.Core.Components;
@@ -28,6 +28,7 @@ public class NetworkService
 
     private readonly SemaphoreSlim checkLock = new(1, 1);
     private const int SourceProbeSize = 2 * 1024 * 1024;
+    private const int MaxDownloadAttempts = 3;
 
     private static HttpClient CreateClient()
     {
@@ -52,7 +53,7 @@ public class NetworkService
         var engineUrl = $"{engine.ApiUrl.TrimEnd('/')}/branches/{branch}.json";
 
         return Plugin.Instance.Configuration.Channel == UpdateChannel.Beta ? [engineUrl]
-        : [engineUrl, $"https://github.com/xivrus/xiv_ru_weblate/releases/latest/{branch}.json"];
+        : [engineUrl, $"https://github.com/xivrus/xiv_ru_weblate/releases/latest/download/{branch}.json"];
     }
 
     private static async Task<TranslationManifest?> FetchBranchAsync(string source, CancellationToken cancellationToken)
@@ -149,76 +150,86 @@ public class NetworkService
     public async Task DownloadLatestModAsync()
     {
         var release = Plugin.State.LastRemoteStatus;
-        if(release == null) return;
-        
-        var downloadSource = await GetFastestSource(release.ModpackUrls);
-        if (downloadSource == null)
+        if (release == null)
             return;
 
-        Plugin.Log.Information($"Starting download {downloadSource.FileName} from {downloadSource.Url}...");
+        var targetDir = Plugin.PenumbraApi.GetDefaultDirectory() ?? Path.GetTempPath();
 
-        var tempFile = Path.Combine(Plugin.PenumbraApi.GetDefaultDirectory() ?? Path.GetTempPath(), downloadSource.FileName);
-        if (!await DownloadRemoteAsync(downloadSource.Url, tempFile, Plugin.State.Penumbra.Download))
+        var download = await DownloadVerifiedAsync(release.ModpackUrls, release.ModpackHash, targetDir, Plugin.State.Penumbra.Download);
+
+        if (download is not { } file)
             return;
 
-        Plugin.Log.Info($"Downloading {downloadSource.FileName} successful complete");
-        if (!InstallDownloadedPenumbraAsync(tempFile))
+        Plugin.Log.Info($"Downloading {Path.GetFileName(file.Path)} successful complete (hash verified: {file.Verified})");
+
+        if (!InstallDownloadedPenumbraAsync(file.Path))
             return;
 
         Plugin.State.Penumbra.Version = Plugin.Instance.Configuration.LastInstalledPenumbra = release.ModpackVersion;
         Plugin.State.Penumbra.UpdateAvailable = false;
-        
+
         OnPenumbraInstalled?.Invoke();
     }
 
     public async Task DownloadLatestTranslationAsync()
     {
         var release = Plugin.State.LastRemoteStatus;
-        if (release == null) 
+        if (release == null)
             return;
 
-        var downloadSource = await GetFastestSource(release.TranslationUrls);
-        if (downloadSource == null)
+        var download = await DownloadVerifiedAsync(release.TranslationUrls, release.TranslationHash, Path.GetTempPath(), Plugin.State.Translation.Download);
+
+        if (download is not { } file)
             return;
 
-        Plugin.Log.Information($"Starting download {downloadSource.FileName} from {downloadSource.Url}...");
+        try
+        {
+            var installed = await InstallDownloadedVersionAsync(file.Path, file.Verified);
+            if (!installed)
+                return;
 
-        var tempFile = Path.Combine(Path.GetTempPath(), downloadSource.FileName);
-        if (!await DownloadRemoteAsync(downloadSource.Url, tempFile, Plugin.State.Translation.Download))
-            return;
+            Plugin.State.Translation.Version = Plugin.Instance.Configuration.LastInstalledVersion = release.TranslationVersion;
+            Plugin.State.Translation.UpdateAvailable = false;
+            Plugin.State.Translation.Installed = true;
 
-        Plugin.Log.Info($"Downloading {downloadSource.FileName} successful complete");
-
-        var installed = await InstallDownloadedVersionAsync(tempFile);
-        File.Delete(tempFile);
-        if (!installed)
-            return;
-
-        Plugin.State.Translation.Version = Plugin.Instance.Configuration.LastInstalledVersion = release.TranslationVersion;
-        Plugin.State.Translation.UpdateAvailable = false;
-        Plugin.State.Translation.Installed = true;
-        
-        OnTranslationInstalled?.Invoke();
+            OnTranslationInstalled?.Invoke();
+        }
+        finally
+        {
+            TryDelete(file.Path);
+        }
     }
 
-    public async Task<bool> InstallDownloadedVersionAsync(string filePath)
+    public async Task<bool> InstallDownloadedVersionAsync(string filePath, bool cleanInstall)
     {
         var resourceDir = Plugin.ExcelLayer.parser.GetResourceDir();
 
         try
         {
-            await ExtractFirePatchAsync(filePath, resourceDir);
+            if (!cleanInstall)
+            {
+                Plugin.Log.Debug("Clean install picked");
+                await ExtractFirePatchAsync(filePath, resourceDir);
+                return true;
+            }
 
-            Plugin.Log.Information($"XIV Rus: firePatch extracted to {resourceDir}");
+            Plugin.Log.Debug("Existing install picked");
+            var newDir = resourceDir + ".new";
+            if (Directory.Exists(newDir)) 
+                Directory.Delete(newDir, true);
+
+            await ExtractFirePatchAsync(filePath, newDir);
+
+            if (Directory.Exists(resourceDir)) 
+                Directory.Delete(resourceDir, true);
+            Directory.Move(newDir, resourceDir);
+            return true;
         }
         catch (Exception ex)
         {
-            Plugin.Log.Error($"XIV Rus: failed to extract patch: {ex}");
+            Plugin.Log.Error($"Failed to install transaltion: {ex}");
             return false;
         }
-
-        Plugin.Log.Information($"XIV Rus has been extracted to resource path ({resourceDir}).");
-        return true;
     }
 
     public bool InstallDownloadedPenumbraAsync(string filePath)
@@ -468,10 +479,66 @@ public class NetworkService
         }
     }
 
+    private static async Task<string> ComputeSha256Async(string path)
+    {
+        await using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
+        return Convert.ToHexString(await SHA256.HashDataAsync(fs));
+    }
+
+    private static void TryDelete(string path)
+    {
+        try { 
+            if (File.Exists(path)) 
+                File.Delete(path); 
+        } 
+        catch { }
+    }
+
+    private async Task<VerifiedDownload?> DownloadVerifiedAsync(IEnumerable<string> sources, string? expectedHash, string targetDir, DownloadState state)
+    {
+        var all = sources.ToList();
+        var failed = new HashSet<string>();
+
+        for (var attempt = 1; attempt <= MaxDownloadAttempts; attempt++)
+        {
+            var candidates = all.Where(x => !failed.Contains(x)).ToList();
+            var source = await GetFastestSource(candidates.Count > 0 ? candidates : all);
+
+            if (source != null)
+            {
+                var target = Path.Combine(targetDir, Path.GetFileName(source.FileName));
+
+                if (await DownloadRemoteAsync(source.Url, target, state))
+                {
+                    if (string.IsNullOrWhiteSpace(expectedHash))
+                        return new VerifiedDownload(target, false);
+
+                    var actual = await ComputeSha256Async(target);
+                    if (string.Equals(actual, expectedHash.Trim(), StringComparison.OrdinalIgnoreCase))
+                        return new VerifiedDownload(target, true);
+
+                    Plugin.Log.Warning($"Hash mismatch (attempt {attempt}/{MaxDownloadAttempts}): {source.Url}. Expected {expectedHash}, got {actual}");
+                    state.Error = "Hash mismatch";
+                    failed.Add(source.Url);
+                }
+
+                TryDelete(target);
+            }
+
+            if (attempt < MaxDownloadAttempts)
+                await Task.Delay(TimeSpan.FromSeconds(2 * attempt));
+        }
+
+        Plugin.Log.Error("Download failed after all attempts");
+        return null;
+    }
+
     public sealed class DownloadSourceInfo
     {
         public string Url { get; init; } = string.Empty;
 
         public string FileName { get; init; } = string.Empty;
     }
+
+    private readonly record struct VerifiedDownload(string Path, bool Verified);
 }
