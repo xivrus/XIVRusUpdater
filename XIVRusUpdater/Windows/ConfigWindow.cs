@@ -83,11 +83,13 @@ public class ConfigWindow : Window, IDisposable
             }
         }
 
-        using(var header = ImRaii.Header(Localization.Components, ImGuiTreeNodeFlags.DefaultOpen))
+        var components = TranslationComponents.All.ToLookup(x => x.Type);
+        var parser = Plugin.ExcelLayer.parser;
+
+        using (var header = ImRaii.Header(Localization.Components, ImGuiTreeNodeFlags.DefaultOpen))
         {
             if (header.Success)
             {
-                var parser = Plugin.ExcelLayer.parser;
                 
                 using(ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudYellow))
                 {
@@ -106,7 +108,7 @@ public class ConfigWindow : Window, IDisposable
                 {
                     _config.DisabledComponents.Clear();
 
-                    foreach (var component in TranslationComponents.All)
+                    foreach (var component in components[TranslationComponentType.Component])
                         _config.DisabledComponents.Add(component.Id);
 
                     parser.UpdateFilter();
@@ -114,15 +116,14 @@ public class ConfigWindow : Window, IDisposable
 
                 ImGui.Separator();
 
-                foreach (var component in TranslationComponents.All)
+                foreach (var component in components[TranslationComponentType.Component])
                 {
-                    bool isComponent = component.Type == TranslationComponentType.Component;
-
-                    bool enabled = isComponent ? !_config.DisabledComponents.Contains(component.Id) : _config.DisabledComponents.Contains(component.Id);
+                    
+                    bool enabled = !_config.DisabledComponents.Contains(component.Id);
 
                     if (ImGui.Checkbox(component.DisplayName, ref enabled))
                     {
-                        if (isComponent ? enabled : !enabled)
+                        if (enabled)
                             _config.DisabledComponents.Remove(component.Id);
                         else
                             _config.DisabledComponents.Add(component.Id);
@@ -139,7 +140,41 @@ public class ConfigWindow : Window, IDisposable
             }
         }
 
-        using(var header = ImRaii.Header(Localization.UpdateSection, ImGuiTreeNodeFlags.None))
+        using (var header = ImRaii.Header(Localization.ThirdPartyHeader, ImGuiTreeNodeFlags.None))
+        {
+            if (header.Success)
+            {
+                using (ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudYellow))
+                {
+                    ImGui.TextWrapped(Localization.ThirdPartyNotice);
+                }
+
+                ImGui.Separator();
+
+                foreach (var component in components[TranslationComponentType.Compatibility])
+                {
+                    bool disabled = _config.DisabledComponents.Contains(component.Id);
+
+                    if (ImGui.Checkbox(component.DisplayName, ref disabled))
+                    {
+                        if (disabled)
+                            _config.DisabledComponents.Add(component.Id);
+                        else
+                            _config.DisabledComponents.Remove(component.Id);
+
+                        parser.UpdateFilter();
+                    }
+
+                    ImGui.SameLine();
+
+                    ImGuiComponents.HelpMarker(component.Description);
+                }
+
+                _config.Save();
+            }
+        }
+
+        using (var header = ImRaii.Header(Localization.UpdateSection, ImGuiTreeNodeFlags.None))
         {
             if (header.Success)
             {

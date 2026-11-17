@@ -390,4 +390,10 @@
   <data name="AutoRetainerPlugin" xml:space="preserve">
     <value>AutoRetainer</value>
   </data>
+  <data name="ThirdPartyHeader" xml:space="preserve">
+    <value>Сторонние плагины</value>
+  </data>
+  <data name="ThirdPartyNotice" xml:space="preserve">
+    <value>Если по каким-то причинам, у вас есть проблемы с одним из перечисленных плагинов, включите соответствующую галочку совместимости. Это отключит перевод отдельных игровых строк, в угоду улучшения работоспособности другого плагина.</value>
+  </data>
 </root>

@@ -390,4 +390,10 @@
   <data name="AutoRetainerPlugin" xml:space="preserve">
     <value>AutoRetainer</value>
   </data>
+  <data name="ThirdPartyHeader" xml:space="preserve">
+    <value>Third-party plugins</value>
+  </data>
+  <data name="ThirdPartyNotice" xml:space="preserve">
+    <value>If, for any reason, you are experiencing issues with one of the plugins listed, tick the relevant compatibility box. This will disable the translation of specific in-game text strings in order to improve the performance of the other plugin.</value>
+  </data>
 </root>

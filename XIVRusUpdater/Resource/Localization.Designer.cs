@@ -790,6 +790,24 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Third-party plugins.
+        /// </summary>
+        internal static string ThirdPartyHeader {
+            get {
+                return ResourceManager.GetString("ThirdPartyHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на If, for any reason, you are experiencing issues with one of the plugins listed, tick the relevant compatibility box. This will disable the translation of specific in-game text strings in order to improve the performance of the other plugin..
+        /// </summary>
+        internal static string ThirdPartyNotice {
+            get {
+                return ResourceManager.GetString("ThirdPartyNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Translation configuration.
         /// </summary>
         internal static string TranslationConfiguration {
