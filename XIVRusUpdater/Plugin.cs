@@ -39,8 +39,8 @@ public sealed class Plugin : IDalamudPlugin
 
     public Configuration Configuration { get; init; }
     public CancellationToken LifetimeToken => lifetime.Token;
-    private DateTime nextRefresh = DateTime.Now.AddMinutes(1);
     private readonly CancellationTokenSource lifetime = new();
+    private Task? updateLoop;
 
     public readonly WindowSystem WindowSystem = new("XIV Rus Updater");
     private readonly ConfigWindow ConfigWindow;
@@ -81,20 +81,26 @@ public sealed class Plugin : IDalamudPlugin
             HelpMessage = "Open the plugin window. Use '/xivrus debug' for open debug window"
         });
 
-        PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
+        PluginInterface.UiBuilder.Draw += DrawUI;
         PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUi;
         PluginInterface.UiBuilder.OpenMainUi += ToggleMainUi;
         networkService.OnTranslationInstalled += UpdateTranslation;
 
-        Framework.Update += OnUpdate;
+        updateLoop = Task.Run(() => UpdateLoopAsync(lifetime.Token));
+    }
+
+    private void DrawUI()
+    {
+        DownloadWindow.IsOpen = State.Penumbra.Download.IsDownloading || State.Translation.Download.IsDownloading;
+        Changelog.IsOpen = State.ShowChangelog;
+        WindowSystem.Draw();
     }
 
     public void Dispose()
     {
-        Framework.Update -= OnUpdate;
         lifetime.Cancel();
 
-        PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
+        PluginInterface.UiBuilder.Draw -= DrawUI;
         PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfigUi;
         PluginInterface.UiBuilder.OpenMainUi -= ToggleMainUi;
         networkService.OnTranslationInstalled -= UpdateTranslation;
@@ -125,29 +131,30 @@ public sealed class Plugin : IDalamudPlugin
 
     public static bool BoundByDuty() => condition[ConditionFlag.BoundByDuty] || condition[ConditionFlag.BoundByDuty56] || condition[ConditionFlag.BoundByDuty95];
 
-    private async void OnUpdate(IFramework framework)
+    private async Task UpdateLoopAsync(CancellationToken ct)
     {
         try
         {
-            if (lifetime.IsCancellationRequested)
-                return;
+            if (!ExcelLayer.parser.IsResourceEmpty())
+                await Task.Delay(TimeSpan.FromSeconds(30), ct);
 
-            if (DateTime.Now > nextRefresh)
+            while(!ct.IsCancellationRequested)
             {
-                bool inDuty = BoundByDuty();
-                nextRefresh = DateTime.Now.AddMinutes(inDuty ? 1 : Configuration.UpdateCheckIntervalMinutes);
-                Log.Information($"Perform timed update... Next update: {nextRefresh.ToString()}");
+                var inDuty = await Framework.RunOnFrameworkThread(BoundByDuty);
 
                 if (!inDuty)
-                    _ = RunCheckAsync();
-            }
+                    await RunCheckAsync();
 
-            DownloadWindow.IsOpen = State.Penumbra.Download.IsDownloading || State.Translation.Download.IsDownloading;
-            Changelog.IsOpen = State.ShowChangelog;
+                var delay = inDuty ? TimeSpan.FromMinutes(1) : TimeSpan.FromMinutes(Math.Max(1, Configuration.UpdateCheckIntervalMinutes));
+
+                Log.Information($"Next update check in {delay.TotalMinutes:F0} min");
+                await Task.Delay(delay, ct);
+            }
         }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Failed framework update");
+        catch (OperationCanceledException) { }
+        catch (Exception ex) 
+        { 
+            Log.Error(ex, "Update loop failed"); 
         }
     }
 

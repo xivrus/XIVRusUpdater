@@ -6,6 +6,7 @@ using FFXIVClientStructs.FFXIV.Common.Component.Excel;
 using FFXIVClientStructs.FFXIV.Component.Excel;
 using System;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using XIVRusUpdater.Core;
 using XIVRusUpdater.Utils.Memory;
 
@@ -33,18 +34,21 @@ public unsafe partial class EXDHooks : IDisposable
         EnableAll();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EnableAll()
     {
         hashTableHook.Enable();
         ringBufferHook.Enable();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DisableAll()
     {
         hashTableHook.Disable();
         ringBufferHook.Disable();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Dispose()
     {
         DisableAll();
@@ -93,11 +97,13 @@ public unsafe partial class EXDHooks : IDisposable
         if (allocator == null)
             return false;
 
+        var data = (byte*)row->Data;
         var newData = ExcelRowBuilder.Build(row, layout, translations!, allocator);
         if (newData == null)
             return false;
 
         row->Data = newData;
+        allocator->Free(data);
         return true;
     }
 }

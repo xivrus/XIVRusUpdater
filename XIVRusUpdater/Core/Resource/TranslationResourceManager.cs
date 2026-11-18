@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using File = System.IO.File;
 
 namespace XIVRusUpdater.Core.Resource;
@@ -14,27 +18,41 @@ public sealed class TranslationResourceManager
     public readonly string? Version;
     
     private readonly Dictionary<string, FileResource> _cache = new();
-    
+
     public TranslationResourceManager(string dataDir, string engine, ResourceFormat format)
     {
         _extension = ResourceFormatParser.GetExtension(format);
         ResourceDir = Path.Combine(dataDir, engine, _extension);
- 
+
         if (!Directory.Exists(ResourceDir))
             return;
 
         Version = GetVersion(Path.Combine(ResourceDir, "xivrus.ver"));
-        Plugin.Log.Debug($"Load resources with version: {Version}");
 
-        foreach (var file in Directory.EnumerateFiles(ResourceDir, $"*.{_extension}", SearchOption.AllDirectories))
-        {
-            var relative = Path.GetRelativePath(ResourceDir, file);
-            relative = Path.ChangeExtension(relative, null)!;
+        var sw = Stopwatch.StartNew();
+        var files = Directory.GetFiles(ResourceDir, $"*.{_extension}", SearchOption.AllDirectories);
+        var results = new ConcurrentDictionary<string, FileResource>();
+        var failed = 0;
 
-            var sheetName = relative.Replace(Path.DirectorySeparatorChar, '/');
+        Parallel.ForEach(files, file => {
+            var sheetName = Path.ChangeExtension(Path.GetRelativePath(ResourceDir, file), null)!
+                .Replace(Path.DirectorySeparatorChar, '/');
 
-            _cache[sheetName] = new FileResource(file, format, sheetName);
-        }
+            try
+            {
+                results[sheetName] = new FileResource(file, format, sheetName);
+            }
+            catch (Exception ex)
+            {
+                Interlocked.Increment(ref failed);
+                Plugin.Log.Warning(ex, $"Failed to load {file}");
+            }
+        });
+
+        foreach (var (name, resource) in results)
+            _cache[name] = resource;
+
+        Plugin.Log.Information($"Resources loaded: {_cache.Count}/{files.Length} sheets, {failed} failed, {sw.ElapsedMilliseconds} ms");
     }
 
     private static string? GetVersion(string path)

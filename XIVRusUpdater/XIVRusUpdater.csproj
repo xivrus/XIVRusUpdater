@@ -18,6 +18,7 @@
 
 	    <!-- Runtime / loading -->
 	    <ApplicableVersion>any</ApplicableVersion>
+        <LoadSync>true</LoadSync>
 	    <LoadRequiredState>2</LoadRequiredState>
     </PropertyGroup>
 
