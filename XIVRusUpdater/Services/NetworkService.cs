@@ -416,11 +416,26 @@ public class NetworkService
                     return (Url: source, FileName: string.Empty, SpeedMbps: 0.0, Success: false);
                 }
 
-                byte[] content = await response.Content.ReadAsByteArrayAsync(token);
+                await using var stream = await response.Content.ReadAsStreamAsync(token);
+
+                byte[] buffer = new byte[8192];
+                int totalBytes = 0;
+
+                while (totalBytes < SourceProbeSize)
+                {
+                    int bytesToRead = Math.Min(buffer.Length, SourceProbeSize - totalBytes);
+
+                    int read = await stream.ReadAsync(buffer.AsMemory(0, bytesToRead), token);
+
+                    if (read == 0)
+                        break;
+
+                    totalBytes += read;
+                }
                 stopwatch.Stop();
 
                 double seconds = stopwatch.Elapsed.TotalSeconds;
-                double speedMBps = content.Length / (1024.0*1024.0) / seconds;
+                double speedMBps = totalBytes / (1024.0*1024.0) / seconds;
 
                 string? fileName = response.Content.Headers.ContentDisposition?.FileNameStar ?? response.Content.Headers.ContentDisposition?.FileName;
 
@@ -555,6 +570,7 @@ public class NetworkService
 
             var candidates = all.Where(x => !failed.Contains(x)).ToList();
             var source = await GetFastestSource(candidates.Count > 0 ? candidates : all, token);
+            Plugin.Log.Debug($"Faster avaible source: {source.Url}");
 
             if (source != null)
             {
@@ -577,6 +593,7 @@ public class NetworkService
                 TryDelete(target);
             }
 
+            Plugin.Log.Warning("Download attempt faled");
             if (attempt < MaxDownloadAttempts)
                 await Task.Delay(TimeSpan.FromSeconds(2 * attempt), token);
         }
