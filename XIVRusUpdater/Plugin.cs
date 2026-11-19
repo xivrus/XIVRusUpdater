@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using XIVRusUpdater.Core;
+using XIVRusUpdater.Core.Components;
 using XIVRusUpdater.Hooks;
 using XIVRusUpdater.Services;
 using XIVRusUpdater.Utils.States;
@@ -22,6 +23,7 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] internal static IFramework Framework { get; private set; } = null!;
     [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
+    [PluginService] internal static IDataManager DataManager { get; private set; } = null!;
     [PluginService] internal static ISigScanner SigScanner { get; private set; } = null!;
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
     [PluginService] internal static IGameInteropProvider interopProvider { get; private set; } = null!;
@@ -53,8 +55,9 @@ public sealed class Plugin : IDalamudPlugin
 
     public Plugin()
     {
-        Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Instance = this;
+        Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+        TranslationComponents.Initialize(DataManager);
         ExcelLayer = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
         UTF8Layer = new Utf8StringHook(interopProvider);
         State = new UpdaterState();

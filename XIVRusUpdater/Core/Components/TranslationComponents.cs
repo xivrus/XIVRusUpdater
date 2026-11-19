@@ -1,11 +1,78 @@
 using System;
 using System.Collections.Generic;
 using XIVRusUpdater.Resource;
+using XIVRusUpdater.Utils;
+using Dalamud.Plugin.Services;
+using System.Linq;
+using System.Reflection;
 
 namespace XIVRusUpdater.Core.Components;
 
-public static partial class TranslationComponents
+public static class TranslationComponents
 {
+    private static ILookup<TranslationComponentType, TranslationComponent>? _all;
+
+    public static ILookup<TranslationComponentType, TranslationComponent> All =>
+        _all ?? throw new InvalidOperationException("TranslationComponents not initialized.");
+
+    public static IEnumerable<TranslationComponent> Normal => All[TranslationComponentType.Component];
+
+    public static IEnumerable<TranslationComponent> Plugin => All[TranslationComponentType.Compatibility];
+
+    public static void Initialize(IDataManager dataManager)
+    {
+        if (_all is not null)
+            return;
+
+        _all = typeof(TranslationComponent).Assembly.GetTypes().Select(t => (Type: t, Attribute: t.GetCustomAttribute<TranslationComponentAttribute>())).Where(x => x.Attribute is not null)
+            .Select(x => Create(x.Type, x.Attribute!, dataManager)).OrderBy(x => x.Type).ThenBy(x => x.Id, StringComparer.Ordinal).ToLookup(x => x.Type);
+    }
+
+    private static TranslationComponent Create(Type type, TranslationComponentAttribute attribute, IDataManager dataManager)
+    {
+        var sheets = new Dictionary<string, uint[]>();
+        var member = type.GetField("Sheets", BindingFlags.Public | BindingFlags.Static)?.GetValue(null);
+
+        switch (member)
+        {
+            case string[] names:
+                foreach (var name in names)
+                    sheets[name] = [];
+                break;
+            case IReadOnlyDictionary<string, uint[]> staticSheets:
+                foreach (var (name, rows) in staticSheets)
+                    sheets[name] = rows;
+                break;
+            case IReadOnlyDictionary<string, object[]> dynamicSheets:
+                foreach (var (name, values) in dynamicSheets)
+                    sheets[name] = Resolve(values, dataManager);
+                break;
+        }
+
+        return new TranslationComponent(attribute.Id, GetLocalization(attribute.DisplayName), GetLocalization(attribute.Description), attribute.Type, sheets);
+    }
+
+    private static uint[] Resolve(object[] values, IDataManager dataManager)
+    {
+        var result = new List<uint>();
+
+        foreach (var value in values)
+        {
+            switch (value)
+            {
+                case uint id:
+                    result.Add(id);
+                    break;
+                case DynamicRowValue dynamic:
+                    result.AddRange(dynamic.Resolve(dataManager));
+                    break;
+            }
+        }
+
+        return result.ToArray();
+    }
+
+    private static string GetLocalization(string key) => (string?)typeof(Localization).GetProperty(key, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null) ?? throw new InvalidOperationException($"Localization not found: {key}");
 }
 
 public enum TranslationComponentType
@@ -120,7 +187,7 @@ public sealed class ParamComponent
     public static readonly string[] Sheets = ["BaseParam"];
 }
 
-[TranslationComponent("LazyLootPlugin", nameof(Localization.LazyLootPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
+[TranslationComponent("LazyLoot", nameof(Localization.LazyLootPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
 public sealed class LazyLootComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -130,7 +197,7 @@ public sealed class LazyLootComponent
 }
 
 // CustomDefaultQuantity, FixTarget, QuickSellItems, ColoredDutyRoulette
-[TranslationComponent("SimpleTweakPlugin", nameof(Localization.SimpleTweaksPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
+[TranslationComponent("SimpleTweak", nameof(Localization.SimpleTweaksPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
 public sealed class SimpleTweaksComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -141,16 +208,17 @@ public sealed class SimpleTweaksComponent
 }
 
 
-[TranslationComponent("TriadBuddyPlugin", nameof(Localization.TriadBuddyPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
+[TranslationComponent("TriadBuddy", nameof(Localization.TriadBuddyPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
 public sealed class TriadBuddyComponent
 {
-    public static readonly Dictionary<string, uint[]> Sheets = new()
+    public static readonly Dictionary<string, object[]> Sheets = new()
     {
-        ["TripleTriadRule"] = Array.Empty<uint>()
+        ["TripleTriadRule"] = Array.Empty<object>(),
+        ["ENpcResident"] = [DynamicRow.TriadResident],
     };
 }
 
-[TranslationComponent("LifestreamPlugin", nameof(Localization.LifestreamPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
+[TranslationComponent("Lifestream", nameof(Localization.LifestreamPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
 public sealed class LifeStreamComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()
@@ -170,7 +238,7 @@ public sealed class LifeStreamComponent
     };
 }
 
-[TranslationComponent("AutoRetainerPlugin", nameof(Localization.AutoRetainerPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
+[TranslationComponent("AutoRetainer", nameof(Localization.AutoRetainerPlugin), nameof(Localization.ThirdPartyDescription), TranslationComponentType.Compatibility)]
 public sealed class AutoRetainerComponent
 {
     public static readonly Dictionary<string, uint[]> Sheets = new()

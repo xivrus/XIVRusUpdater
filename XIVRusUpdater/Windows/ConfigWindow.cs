@@ -106,7 +106,7 @@ public class ConfigWindow : Window, IDisposable
                 if (ImGui.Button(Localization.DisableAll))
                 {
                     _config.DisabledComponents.Clear();
-                    foreach (var component in TranslationComponents.Normal!)
+                    foreach (var component in TranslationComponents.Normal)
                         _config.DisabledComponents.Add(component.Id);
 
                     parser.UpdateFilter();
@@ -114,7 +114,7 @@ public class ConfigWindow : Window, IDisposable
 
                 ImGui.Separator();
 
-                foreach (var component in TranslationComponents.Normal!)
+                foreach (var component in TranslationComponents.Normal)
                 {
                     
                     bool enabled = !_config.DisabledComponents.Contains(component.Id);
@@ -150,7 +150,7 @@ public class ConfigWindow : Window, IDisposable
                 if (ImGui.Button(Localization.EnableAll))
                 {
                     _config.PluginCompatability.Clear();
-                    foreach (var component in TranslationComponents.Plugin!)
+                    foreach (var component in TranslationComponents.Plugin)
                         _config.PluginCompatability.Add(component.Id);
 
                     parser.UpdateFilter();
@@ -166,7 +166,7 @@ public class ConfigWindow : Window, IDisposable
 
                 ImGui.Separator();
 
-                foreach (var component in TranslationComponents.Plugin!)
+                foreach (var component in TranslationComponents.Plugin)
                 {
                     bool disabled = _config.PluginCompatability.Contains(component.Id);
 
