@@ -21,7 +21,7 @@ public class TranslationParser
     public TranslationParser(string @engineId)
     {
         filter = new TranslationFilter();
-        filter.Rebuild(Plugin.Instance.Configuration.DisabledComponents);
+        filter.Rebuild(Plugin.Instance.Configuration.DisabledComponents, Plugin.Instance.Configuration.PluginCompatability);
         _engineId = engineId;
         _resources = CreateResourceManager(_engineId);
     }
@@ -115,7 +115,11 @@ public class TranslationParser
         }
     }
 
-    public void UpdateFilter() => filter.Rebuild(Plugin.Instance.Configuration.DisabledComponents);
+    public void UpdateFilter()
+    {
+        var config = Plugin.Instance.Configuration;
+        filter.Rebuild(config.DisabledComponents, config.PluginCompatability);
+    }
 
     public void Reload()
     {

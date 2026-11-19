@@ -103,6 +103,7 @@ public class Configuration : IPluginConfiguration
     #endregion
 
     public HashSet<string> DisabledComponents { get; set; } = [];
+    public HashSet<string> PluginCompatability { get; set; } = [];
 
     public void Save()
     {

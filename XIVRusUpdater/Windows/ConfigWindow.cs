@@ -83,7 +83,6 @@ public class ConfigWindow : Window, IDisposable
             }
         }
 
-        var components = TranslationComponents.All.ToLookup(x => x.Type);
         var parser = Plugin.ExcelLayer.parser;
 
         using (var header = ImRaii.Header(Localization.Components, ImGuiTreeNodeFlags.DefaultOpen))
@@ -107,8 +106,7 @@ public class ConfigWindow : Window, IDisposable
                 if (ImGui.Button(Localization.DisableAll))
                 {
                     _config.DisabledComponents.Clear();
-
-                    foreach (var component in components[TranslationComponentType.Component])
+                    foreach (var component in TranslationComponents.Normal!)
                         _config.DisabledComponents.Add(component.Id);
 
                     parser.UpdateFilter();
@@ -116,7 +114,7 @@ public class ConfigWindow : Window, IDisposable
 
                 ImGui.Separator();
 
-                foreach (var component in components[TranslationComponentType.Component])
+                foreach (var component in TranslationComponents.Normal!)
                 {
                     
                     bool enabled = !_config.DisabledComponents.Contains(component.Id);
@@ -149,18 +147,35 @@ public class ConfigWindow : Window, IDisposable
                     ImGui.TextWrapped(Localization.ThirdPartyNotice);
                 }
 
+                if (ImGui.Button(Localization.EnableAll))
+                {
+                    _config.PluginCompatability.Clear();
+                    foreach (var component in TranslationComponents.Plugin!)
+                        _config.PluginCompatability.Add(component.Id);
+
+                    parser.UpdateFilter();
+                }
+
+                ImGui.SameLine();
+
+                if (ImGui.Button(Localization.DisableAll))
+                {
+                    _config.PluginCompatability.Clear();
+                    parser.UpdateFilter();
+                }
+
                 ImGui.Separator();
 
-                foreach (var component in components[TranslationComponentType.Compatibility])
+                foreach (var component in TranslationComponents.Plugin!)
                 {
-                    bool disabled = _config.DisabledComponents.Contains(component.Id);
+                    bool disabled = _config.PluginCompatability.Contains(component.Id);
 
                     if (ImGui.Checkbox(component.DisplayName, ref disabled))
                     {
                         if (disabled)
-                            _config.DisabledComponents.Add(component.Id);
+                            _config.PluginCompatability.Add(component.Id);
                         else
-                            _config.DisabledComponents.Remove(component.Id);
+                            _config.PluginCompatability.Remove(component.Id);
 
                         parser.UpdateFilter();
                     }
