@@ -79,7 +79,7 @@ public sealed class Plugin : IDalamudPlugin
         
         CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
-            HelpMessage = "Open the plugin window. Use '/xivrus debug' for open debug window"
+            HelpMessage = "Open the plugin window. Use '/xivrus settings' for open settings window"
         });
 
         PluginInterface.UiBuilder.Draw += DrawUI;
@@ -125,6 +125,11 @@ public sealed class Plugin : IDalamudPlugin
             return;
         }
 #endif
+        if (string.Equals(args.Trim(), "settings", StringComparison.OrdinalIgnoreCase))
+        {
+            ToggleConfigUi();
+            return;
+        }
 
         ToggleMainUi();
     }
