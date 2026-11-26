@@ -31,6 +31,7 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static ICondition condition { get; private set;  } = null!;
 
     public static EXDHooks ExcelLayer { get; private set; } = null!;
+    public static QuestHook questHook { get; private set; } = null!;
     
     internal static PenumbraService PenumbraApi { get; private set; } = null!;
     internal static NetworkService networkService { get; private set; } = null!;
@@ -61,6 +62,7 @@ public sealed class Plugin : IDalamudPlugin
         TranslationComponents.Initialize(DataManager);
         Notification = new NotificationService(NotificationManager);
         ExcelLayer = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
+        questHook = new QuestHook(interopProvider, DataManager, ExcelLayer.parser);
         State = new UpdaterState();
         networkService = new NetworkService();
         
