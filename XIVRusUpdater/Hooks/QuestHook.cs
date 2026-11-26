@@ -13,6 +13,10 @@ namespace XIVRusUpdater.Hooks;
 public unsafe class QuestHook : IDisposable
 {
     private const string SayToDo = "SAYTODO";
+
+    /// <summary>
+    /// QuestEventHandler_vf30
+    /// </summary>
     private const string IsAcceptSayEventSig = "48 89 5C 24 ?? 4C 89 4C 24 ?? 4C 89 44 24 ?? 48 89 54 24 ?? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC ?? 4C 8B 35";
     private const int KeyColumn = 0;
     private const int ValueColumn = 1;
@@ -41,7 +45,6 @@ public unsafe class QuestHook : IDisposable
 
     private bool IsAcceptSayHandler(QuestEventHandler* @this, Utf8String* text, GameObject** target, uint* value)
     {
-        Plugin.Log.Information($"Called IsAcceptSay with arg:\nText: {text->ToString()}\nQuestId: {@this->QuestId}, ScriptId: {@this->ScriptId}, scriptPath: {@this->ScriptPath}");
         var sheetPath = $"quest/{@this->ScriptPath}";
         if (!parser.IsSheetLoaded(sheetPath))
             return hook.Original(@this, text, target, value);
