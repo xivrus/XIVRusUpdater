@@ -27,6 +27,7 @@ public class NetworkService
     public event Action? OnPenumbraInstalled;
 
     private readonly SemaphoreSlim checkLock = new(1, 1);
+    private readonly SemaphoreSlim downloadLock = new(1, 1);
     private const int SourceProbeSize = 2 * 1024 * 1024;
     private const int MaxDownloadAttempts = 3;
 
@@ -78,6 +79,7 @@ public class NetworkService
         catch (Exception ex)
         {
             Plugin.Log.Warning($"Branch source failed: {source}. {ex.Message}");
+            Plugin.Notification.Warning($"Branch source failed: {source}.");
             return null;
         }
     }
@@ -125,31 +127,75 @@ public class NetworkService
             if (!await RefreshAsync(token)) return;
             Plugin.Instance.Configuration.LastSuccessfulUpdate = DateTime.Now;
 
-            if (!Plugin.Instance.Configuration.AutoDownloadUpdates) return;
+            if (!Plugin.Instance.Configuration.AutoDownloadUpdates)
+            {
+                Plugin.Notification.Information("Translation update avaible", ("Update", () => _ = DownloadFromNotificationAsync()));
+                return;
+            }
 
             token.ThrowIfCancellationRequested();
 
-            var downloadTasks = new List<Task>();
-
-            if (Plugin.State.Penumbra.UpdateAvailable) downloadTasks.Add(DownloadLatestModAsync(token));
-            if (Plugin.State.Translation.UpdateAvailable) downloadTasks.Add(DownloadLatestTranslationAsync(token));
-
-            if (downloadTasks.Count > 0)
-                await Task.WhenAll(downloadTasks);
+            await DownloadAvailableUpdatesAsync(token);
         }
         catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             Plugin.Log.Information("Update Check canceled");
+            Plugin.Notification.Warning($"Update check canceled");
         }
         catch (Exception ex)
         {
             Plugin.Log.Error(ex, "CheckForUpdates failed");
+            Plugin.Notification.Error("Failed to perform check for update");
         }
         finally
         {
             Plugin.Instance.Configuration.Save();
             Plugin.State.IsChecking = false;
             checkLock.Release();
+        }
+    }
+
+    private async Task DownloadFromNotificationAsync()
+    {
+        var token = Plugin.Instance.LifetimeToken;
+
+        try
+        {
+            await DownloadAvailableUpdatesAsync(token);
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
+        {
+            Plugin.Log.Information("Update download canceled");
+            Plugin.Notification.Warning("Update download canceled");
+        }
+        catch (Exception ex)
+        {
+            Plugin.Log.Error(ex, "Download updates failed");
+            Plugin.Notification.Error("Failed to download updates");
+        }
+    }
+
+    public async Task DownloadAvailableUpdatesAsync(CancellationToken token)
+    {
+        if (!await downloadLock.WaitAsync(0, token))
+            return;
+
+        try
+        {
+            var tasks = new List<Task>();
+
+            if (Plugin.State.Penumbra.UpdateAvailable)
+                tasks.Add(DownloadLatestModAsync(token));
+
+            if (Plugin.State.Translation.UpdateAvailable)
+                tasks.Add(DownloadLatestTranslationAsync(token));
+
+            if (tasks.Count > 0)
+                await Task.WhenAll(tasks);
+        }
+        finally
+        {
+            downloadLock.Release();
         }
     }
 
@@ -186,10 +232,12 @@ public class NetworkService
         catch(OperationCanceledException) when (token.IsCancellationRequested)
         {
             Plugin.Log.Warning("Modpack download canceled");
+            Plugin.Notification.Warning("Modpack download canceled");
         }
         catch(Exception ex)
         {
-            Plugin.Log.Error(ex, "Error in modpacp download");
+            Plugin.Log.Error(ex, "Error in modpack download");
+            Plugin.Notification.Error("Error in modpack download");
         }
     }
 
@@ -228,10 +276,12 @@ public class NetworkService
         catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             Plugin.Log.Warning("Translation download canceled");
+            Plugin.Notification.Warning("Translation download canceled");
         }
         catch (Exception ex)
         {
             Plugin.Log.Error(ex, "Error in translation download");
+            Plugin.Notification.Error("Error in translation download");
         }
     }
 
@@ -263,6 +313,7 @@ public class NetworkService
         catch (Exception ex)
         {
             Plugin.Log.Error($"Failed to install transaltion: {ex}");
+            Plugin.Notification.Error($"Failed to install transaltion");
             return false;
         }
     }
@@ -274,7 +325,8 @@ public class NetworkService
         Plugin.PenumbraApi.DeleteMod(engine!.ModName);
 
         bool isInstall = Plugin.PenumbraApi.InstallMod(filePath);
-        Plugin.Log.Information($"XIV Rus has been queued for installation in Penumbra. Status: {isInstall}");
+        Plugin.Log.Information($"Modpack has been queued for installation in Penumbra. Status: {isInstall}");
+        Plugin.Notification.Information("Wait for the mod import to finish");
         return isInstall;
     }
 
@@ -381,6 +433,7 @@ public class NetworkService
         catch (Exception ex)
         {
             Plugin.Log.Error(ex, "Refresh failed");
+            Plugin.Notification.Error("Refresh failed");
             return false;
         }
         finally
@@ -412,6 +465,7 @@ public class NetworkService
                 if (!response.IsSuccessStatusCode)
                 {
                     Plugin.Log.Warning($"Download source unavailable: {source}. HTTP {(int)response.StatusCode}");
+                    Plugin.Notification.Warning($"Download source unavailable: {source}. HTTP {(int)response.StatusCode}");
 
                     return (Url: source, FileName: string.Empty, SpeedMbps: 0.0, Success: false);
                 }
@@ -457,18 +511,21 @@ public class NetworkService
             catch (OperationCanceledException ex)
             {
                 Plugin.Log.Warning($"Download source timed out or was canceled: {source}. {ex.Message}");
+                Plugin.Notification.Warning($"Download source timed out or was canceled: {source}.");
 
                 return (Url: source, FileName: string.Empty, SpeedMbps: 0.0, Success: false);
             }
             catch (HttpRequestException ex)
             {
                 Plugin.Log.Warning($"Download source connection failed: {source}. {ex.Message}");
+                Plugin.Notification.Warning($"Download source connection failed: {source}.");
 
                 return (Url: source, FileName: string.Empty, SpeedMbps: 0.0, Success: false);
             }
             catch (Exception ex)
             {
                 Plugin.Log.Warning($"Download source check failed: {source}. {ex.Message}");
+                Plugin.Notification.Warning($"Download source check failed: {source}.");
 
                 return (Url: source, FileName: string.Empty, SpeedMbps: 0.0, Success: false);
             }
@@ -485,6 +542,7 @@ public class NetworkService
         if (!bestSource.Success)
         {
             Plugin.Log.Warning("No available download sources found.");
+            Plugin.Notification.Warning("No available download sources found.");
             return null; 
         }
 
@@ -559,6 +617,7 @@ public class NetworkService
         if (all.Count == 0)
         {
             Plugin.Log.Warning("No download sources provided.");
+            Plugin.Notification.Warning("No download sources provided.");
             return null;
         }
 
@@ -594,11 +653,13 @@ public class NetworkService
             }
 
             Plugin.Log.Warning("Download attempt faled");
+            Plugin.Notification.Warning("Download attempt faled");
             if (attempt < MaxDownloadAttempts)
                 await Task.Delay(TimeSpan.FromSeconds(2 * attempt), token);
         }
 
         Plugin.Log.Error("Download failed after all attempts");
+        Plugin.Notification.Error("Download failed after all attempts");
         return null;
     }
 

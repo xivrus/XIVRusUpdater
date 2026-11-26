@@ -23,6 +23,7 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] internal static IFramework Framework { get; private set; } = null!;
     [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
+    [PluginService] internal static INotificationManager NotificationManager { get; private set; } = null!;
     [PluginService] internal static IDataManager DataManager { get; private set; } = null!;
     [PluginService] internal static ISigScanner SigScanner { get; private set; } = null!;
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
@@ -33,6 +34,7 @@ public sealed class Plugin : IDalamudPlugin
     
     internal static PenumbraService PenumbraApi { get; private set; } = null!;
     internal static NetworkService networkService { get; private set; } = null!;
+    internal static NotificationService Notification { get; private set; } = null!;
     internal static UpdaterState State { get; private set; } = null!;
     internal static Plugin Instance { get; private set; } = null!;
 
@@ -57,6 +59,7 @@ public sealed class Plugin : IDalamudPlugin
         Instance = this;
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         TranslationComponents.Initialize(DataManager);
+        Notification = new NotificationService(NotificationManager);
         ExcelLayer = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
         State = new UpdaterState();
         networkService = new NetworkService();
@@ -159,7 +162,8 @@ public sealed class Plugin : IDalamudPlugin
         catch (OperationCanceledException) { }
         catch (Exception ex) 
         { 
-            Log.Error(ex, "Update loop failed"); 
+            Log.Error(ex, "Update loop failed");
+            Notification.Error($"An error occured in update loop");
         }
     }
 
@@ -172,10 +176,12 @@ public sealed class Plugin : IDalamudPlugin
         catch (OperationCanceledException) 
         {
             Log.Warning("Update check canceled by token");
+            Notification.Warning("Update check canceled by token");
         }
         catch (Exception ex) 
         { 
-            Log.Error(ex, "Update check failed"); 
+            Log.Error(ex, "Update check failed");
+            Notification.Error("Failed to perform update check");
         }
     }
 

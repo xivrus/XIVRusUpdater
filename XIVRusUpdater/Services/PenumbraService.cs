@@ -100,11 +100,13 @@ public sealed class PenumbraService
         if (!IsPenumbraAvailable())
             return false;
 
-        try 
+        try
         {
-            var responce = DeleteMOD.Invoke(string.Empty, modName);
-            if (responce == Penumbra.Api.Enums.PenumbraApiEc.Success) return true;
-            Plugin.Log.Error($"Failed to delete mod: Recieve {Enum.GetName(responce)} from Penumbra");
+            var response = DeleteMOD.Invoke(string.Empty, modName);
+            if (response == Penumbra.Api.Enums.PenumbraApiEc.Success) return true;
+            Plugin.Log.Error($"Failed to delete mod: Recieve {Enum.GetName(response)} from Penumbra");
+            if (response != Penumbra.Api.Enums.PenumbraApiEc.NothingChanged)
+                Plugin.Notification.Error("Failed to delete mod");
             return false; 
         }
         catch(IpcNotReadyError)
@@ -126,6 +128,8 @@ public sealed class PenumbraService
             if (response == Penumbra.Api.Enums.PenumbraApiEc.Success) return true;
 
             Plugin.Log.Error($"Failed to install mod: Recieve {Enum.GetName(response)} from Penumbra");
+            if (response != Penumbra.Api.Enums.PenumbraApiEc.NothingChanged)
+                Plugin.Notification.Error("Failed to install mod");
             return false;
         }
         catch (IpcNotReadyError)

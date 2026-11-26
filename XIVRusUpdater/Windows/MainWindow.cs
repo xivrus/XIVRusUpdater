@@ -105,17 +105,7 @@ public class MainWindow : Window, IDisposable
                 {
                     if (ImGui.Button(Localization.UpdateComponents, new Vector2(-1, 0)))
                     {
-                        var token = Plugin.Instance.LifetimeToken;
-                        var tasks = new List<Task>();
-
-                        if (Plugin.State.Penumbra.UpdateAvailable)
-                            tasks.Add(Plugin.networkService.DownloadLatestModAsync(token));
-
-                        if (Plugin.State.Translation.UpdateAvailable)
-                            tasks.Add(Plugin.networkService.DownloadLatestTranslationAsync(token));
-
-                        if (tasks.Count > 0)
-                            _downloadTask = Task.WhenAll(tasks);
+                        _downloadTask = Plugin.networkService.DownloadAvailableUpdatesAsync(Plugin.Instance.LifetimeToken);
                     }
                 }
 
