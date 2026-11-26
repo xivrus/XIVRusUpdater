@@ -70,6 +70,24 @@ namespace XIVRusUpdater.Resource {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Accept English quest phrases.
+        /// </summary>
+        internal static string AcceptEnglishQuestPhrases {
+            get {
+                return ResourceManager.GetString("AcceptEnglishQuestPhrases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Lets you enter quest phrases (&quot;say&quot; objectives) in either client language or translated. Without it, only the translated text is accepted..
+        /// </summary>
+        internal static string AcceptEnglishQuestPhrases_Description {
+            get {
+                return ResourceManager.GetString("AcceptEnglishQuestPhrases_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Access Level.
         /// </summary>
         internal static string AccessLevel {

@@ -396,4 +396,10 @@
   <data name="ThirdPartyNotice" xml:space="preserve">
     <value>If, for any reason, you are experiencing issues with one of the plugins listed, tick the relevant compatibility box. This will disable the translation of specific in-game text strings in order to improve the performance of the other plugin.</value>
   </data>
+  <data name="AcceptEnglishQuestPhrases" xml:space="preserve">
+    <value>Accept English quest phrases</value>
+  </data>
+  <data name="AcceptEnglishQuestPhrases_Description" xml:space="preserve">
+    <value>Lets you enter quest phrases ("say" objectives) in either client language or translated. Without it, only the translated text is accepted.</value>
+  </data>
 </root>

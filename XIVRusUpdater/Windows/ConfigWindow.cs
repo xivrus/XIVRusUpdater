@@ -5,6 +5,7 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using XIVRusUpdater.Core.Components;
@@ -67,6 +68,7 @@ public class ConfigWindow : Window, IDisposable
 
                         var showNotify = _config.ShowNotifications;
                         var showChangelog = _config.ShowChangelogAfterUpdate;
+                        var englishSay = _config.AllowSayInEnglish;
                         
                         if (ImGui.Checkbox(Localization.ShowNotifications, ref showNotify))
                         {
@@ -78,6 +80,17 @@ public class ConfigWindow : Window, IDisposable
                             _config.ShowChangelogAfterUpdate = showChangelog;
                             _config.Save();
                         }
+                        if(ImGui.Checkbox(Localization.AcceptEnglishQuestPhrases, ref englishSay))
+                        {
+                            _config.AllowSayInEnglish = englishSay;
+                            _config.Save();
+                            if (englishSay) Plugin.questHook.EnableAll();
+                            else Plugin.questHook.DisableAll();
+                        }
+
+                        ImGui.SameLine();
+
+                        ImGuiComponents.HelpMarker(Localization.AcceptEnglishQuestPhrases_Description);
                     }
                 }
             }

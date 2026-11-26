@@ -396,4 +396,10 @@
   <data name="ThirdPartyNotice" xml:space="preserve">
     <value>Если по каким-то причинам, у вас есть проблемы с одним из перечисленных плагинов, включите соответствующую галочку совместимости. Это отключит перевод отдельных игровых строк, в угоду улучшения работоспособности другого плагина.</value>
   </data>
+  <data name="AcceptEnglishQuestPhrases" xml:space="preserve">
+    <value>Принимать английские фразы в квестах</value>
+  </data>
+  <data name="AcceptEnglishQuestPhrases_Description" xml:space="preserve">
+    <value>Позволяет вводить фразы для квестовых заданий («Cказать») в оригинале и переводе. Без этой опции принимается только переведённый текст.</value>
+  </data>
 </root>

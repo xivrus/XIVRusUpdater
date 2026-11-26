@@ -63,6 +63,8 @@ public sealed class Plugin : IDalamudPlugin
         Notification = new NotificationService(NotificationManager);
         ExcelLayer = new EXDHooks(interopProvider, SigScanner, Configuration.EngineId);
         questHook = new QuestHook(interopProvider, DataManager, ExcelLayer.parser);
+        if (Configuration.AllowSayInEnglish)
+            questHook.EnableAll();
         State = new UpdaterState();
         networkService = new NetworkService();
         

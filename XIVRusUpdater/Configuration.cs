@@ -18,6 +18,8 @@ public class Configuration : IPluginConfiguration
 
     public bool ShowChangelogAfterUpdate { get; set; } = true;
 
+    public bool AllowSayInEnglish { get; set; } = true;
+
     #endregion
 
     #region Updates
