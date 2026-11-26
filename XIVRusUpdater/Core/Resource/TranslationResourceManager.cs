@@ -53,7 +53,8 @@ public sealed class TranslationResourceManager
             _cache[name] = resource;
 
         Plugin.Log.Information($"Resources loaded: {_cache.Count}/{files.Length} sheets, {failed} failed, {sw.ElapsedMilliseconds} ms");
-        Plugin.Notification.Warning($"Failed to load {failed} sheets");
+        if(failed > 0)
+            Plugin.Notification.Warning($"Failed to load {failed} sheets");
     }
 
     private static string? GetVersion(string path)
